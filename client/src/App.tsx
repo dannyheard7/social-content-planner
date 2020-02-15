@@ -15,11 +15,13 @@ import { ApolloClient } from "apollo-client";
 import { createHttpLink } from "apollo-link-http";
 import { setContext } from "apollo-link-context";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import AppState from "./Common/AppState";
 
 const useStyles = makeStyles(styles);
 
 const Routes: React.FC = () => {
-  const { isAuthenticated, idToken } = useContext(AuthenticationContext);
+  const { isAuthenticated, user } = useContext(AuthenticationContext);
+  console.log(user);
 
   if (isAuthenticated) {
     const httpLink = createHttpLink({
@@ -30,7 +32,7 @@ const Routes: React.FC = () => {
       return {
         headers: {
           ...headers,
-          authorization: idToken ? `Bearer ${idToken.__raw}` : ""
+          authorization: user ? `Bearer ${user.__raw}` : ""
         }
       };
     });
@@ -81,12 +83,18 @@ const Layout: React.FC = ({ children }) => {
   );
 };
 
+const onRedirectCallback = (appState: AppState) => {
+  if (appState && appState.targetUrl)
+    window.location.pathname = appState.targetUrl;
+};
+
 function App() {
   return (
     <AuthenticationContextProvider
       domain={process.env.REACT_APP_AUTH0_DOMAIN!}
       clientId={process.env.REACT_APP_AUTH0_CLIENT_ID!}
       redirectUri={`${window.location.protocol}//${process.env.REACT_APP_CLIENT_ADDRESS}/login-callback`}
+      onRedirectCallback={onRedirectCallback}
     >
       <Layout>
         <BrowserRouter>

@@ -10,12 +10,12 @@ const SOCIAL_PROVIDERS = gql`
 `;
 
 const Dashboard: React.FC = () => {
-  const { idToken } = useContext(AuthenticationContext);
+  const { user } = useContext(AuthenticationContext);
   const { data } = useQuery(SOCIAL_PROVIDERS);
 
   return (
     <p>
-      Hello {idToken?.given_name} {idToken?.family_name}
+      Hello {user?.given_name} {user?.family_name}
     </p>
   );
 };

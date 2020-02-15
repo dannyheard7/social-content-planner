@@ -2,11 +2,11 @@ import React, { useContext, useEffect } from "react";
 import { AuthenticationContext } from "../Authentication/AuthenticationContextProvider";
 
 const LoginCallback: React.FC = () => {
-  const { handleRedirectCallback } = useContext(AuthenticationContext);
+  const { loading, handleRedirectCallback } = useContext(AuthenticationContext);
 
   useEffect(() => {
-    handleRedirectCallback();
-  }, [handleRedirectCallback]);
+    if (!loading) handleRedirectCallback();
+  }, [loading, handleRedirectCallback]);
 
   return null;
 };
