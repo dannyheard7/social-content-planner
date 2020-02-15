@@ -1,14 +1,13 @@
 import { UseGuards } from '@nestjs/common';
-import { Mutation, Resolver } from '@nestjs/graphql';
+import { Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthGuard } from '../authz/auth.guard';
 import { CurrentUser } from '../authz/current.user.decorator';
 
-@Resolver()
+@Resolver(of => Boolean)
 export class SocialProviderResolver {
   @UseGuards(GqlAuthGuard)
-  @Mutation()
+  @Query(of => Boolean)
   async addSocialProvider(@CurrentUser() user: any): Promise<boolean> {
-    console.log(user);
     return true;
   }
 }

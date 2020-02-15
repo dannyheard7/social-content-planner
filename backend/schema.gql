@@ -3,41 +3,6 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-type Household {
-  id: ID!
-  name: String!
-  habitants: [HouseholdHabitant!]!
-}
-
-type HouseholdHabitant {
-  user: User!
-  household: Household!
-}
-
-type Mutation {
-  createHousehold(newHousehold: NewHouseholdInput!): Household!
-  updateUser(user: UpdateUserInput!): User!
-}
-
-input NewHouseholdInput {
-  name: String!
-}
-
 type Query {
-  user(email: String!): User!
-  me: User!
-}
-
-input UpdateUserInput {
-  firstName: String!
-}
-
-type User {
-  id: ID!
-  firstName: String!
-  lastName: String!
-  email: String!
-  facebookId: String!
-  googleId: String!
-  households: [HouseholdHabitant!]!
+  addSocialProvider: Boolean!
 }

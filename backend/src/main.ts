@@ -13,6 +13,6 @@ async function bootstrap() {
     { cors: true },
   );
   app.use(helmet());
-  await app.listen(3000);
+  await app.listen(7000);
 }
 bootstrap();
