@@ -41,7 +41,7 @@ const AppMenu: React.FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Photos
+            Smarketing
           </Typography>
           {auth && (
             <div>

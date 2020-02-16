@@ -16,12 +16,12 @@ import { createHttpLink } from "apollo-link-http";
 import { setContext } from "apollo-link-context";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import AppState from "./Common/AppState";
+import CreatePost from "./Components/CreatePost/CreatePost";
 
 const useStyles = makeStyles(styles);
 
 const Routes: React.FC = () => {
   const { isAuthenticated, user } = useContext(AuthenticationContext);
-  console.log(user);
 
   if (isAuthenticated) {
     const httpLink = createHttpLink({
@@ -48,8 +48,11 @@ const Routes: React.FC = () => {
           <Route exact path="/dashboard">
             <Dashboard />
           </Route>
+          <Route exact path="/post/new">
+            <CreatePost />
+          </Route>
           <Route>
-            <Redirect to="/dashboard" />
+            <Redirect to="/post/new" />
           </Route>
         </Switch>
       </ApolloProvider>
