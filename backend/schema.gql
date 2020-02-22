@@ -3,6 +3,16 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Mutation {
+  createPost(post: PostInput!): Boolean!
+}
+
+input PostInput {
+  text: String!
+  images: [String!]!
+  networks: [String!]!
+}
+
 type Query {
   addSocialProvider: Boolean!
 }

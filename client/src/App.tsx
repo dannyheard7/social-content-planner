@@ -21,18 +21,19 @@ import CreatePost from "./Components/CreatePost/CreatePost";
 const useStyles = makeStyles(styles);
 
 const Routes: React.FC = () => {
-  const { isAuthenticated, user } = useContext(AuthenticationContext);
+  const { isAuthenticated, token } = useContext(AuthenticationContext);
 
   if (isAuthenticated) {
     const httpLink = createHttpLink({
-      uri: process.env.REACT_APP_GRAPHQL_HOST!
+      uri: process.env.REACT_APP_GRAPHQL_HOST!,
+
     });
 
     const authLink = setContext((_, { headers }) => {
       return {
         headers: {
           ...headers,
-          authorization: user ? `Bearer ${user.__raw}` : ""
+          authorization: token ? `Bearer ${token}` : ""
         }
       };
     });

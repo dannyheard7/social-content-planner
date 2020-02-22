@@ -12,11 +12,11 @@ export async function resetOrientation(image: File): Promise<FileWithPreview> {
         image,
         (canvas: HTMLCanvasElement) => {
           const base64 = canvas.toDataURL(image.type);
-          const rotatedImage1: FileWithPreview = {
+          const rotatedImage: FileWithPreview = {
             ...image,
             preview: base64,
           };
-          resolve(rotatedImage1);
+          resolve(rotatedImage);
         },
         { canvas: true, orientation },
       );

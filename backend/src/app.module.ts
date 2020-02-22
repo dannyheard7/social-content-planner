@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AuthzModule } from './authz/authz.module';
 import { SocialProviderModule } from './social-provider/social-provider.module';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -28,12 +29,13 @@ import { SocialProviderModule } from './social-provider/social-provider.module';
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: 'schema.gql',
+      uploads: true,
       context: ({ req }) => ({ req }),
     }),
     AuthzModule,
     SocialProviderModule,
+    PostModule,
   ],
-  controllers: [],
   providers: [],
 })
 export class AppModule {}
