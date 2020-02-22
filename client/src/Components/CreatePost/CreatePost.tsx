@@ -1,13 +1,13 @@
-import { Grid, makeStyles, TextField, Typography, FormControlLabel, Checkbox, Button, FormGroup } from '@material-ui/core';
+import { useMutation } from '@apollo/react-hooks';
+import { Button, Checkbox, FormControlLabel, FormGroup, Grid, makeStyles, TextField, Typography } from '@material-ui/core';
 import classNames from 'classnames';
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useForm, ErrorMessage } from 'react-hook-form'
+import { ErrorMessage, useForm } from 'react-hook-form';
+import { useUploadFile } from '../../Common/FileUploadHook';
 import { resetOrientation } from '../../Common/Image';
-import styles from './CreatePost.styles';
-import { useMutation } from '@apollo/react-hooks';
 import { CREATE_POST_MUTATION } from '../../GraphQL/Mutations/CreatePost';
-import { uploadFile } from '../../Common/ImageUpload';
+import styles from './CreatePost.styles';
 
 
 const useStyles = makeStyles(styles);
@@ -17,10 +17,11 @@ interface FileWithPreview extends File {
 }
 
 const CreatePost: React.FC = () => {
-  const { register, handleSubmit, errors } = useForm()
+  const { register, handleSubmit, errors } = useForm();
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const classes = useStyles();
   const [createPost] = useMutation(CREATE_POST_MUTATION);
+  const { uploadFile } = useUploadFile();
 
   const onSubmit = (values: Record<string, any>) => {
     createPost({
@@ -37,11 +38,11 @@ const CreatePost: React.FC = () => {
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     setFiles(await Promise.all(
       acceptedFiles.map(async (f) => {
-        uploadFile(process.env.REACT_APP_FILE_UPLOAD_ENDPOINT!, f);
+        uploadFile(f);
         return await resetOrientation(f)
       })
     ));
-  }, []);
+  }, [uploadFile]);
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({ onDrop, accept: 'image/*' });
 

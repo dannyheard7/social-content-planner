@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { AuthzModule } from './authz/authz.module';
 import { SocialProviderModule } from './social-provider/social-provider.module';
 import { PostModule } from './post/post.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { PostModule } from './post/post.module';
     AuthzModule,
     SocialProviderModule,
     PostModule,
+    FileModule,
   ],
   providers: [],
 })

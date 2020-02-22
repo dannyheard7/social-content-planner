@@ -3,6 +3,13 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type File {
+  id: ID!
+  user_id: ID!
+  filename: String!
+  ext: String!
+}
+
 type Mutation {
   createPost(post: PostInput!): Boolean!
 }

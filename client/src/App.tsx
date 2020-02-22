@@ -17,6 +17,7 @@ import { setContext } from "apollo-link-context";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import AppState from "./Common/AppState";
 import CreatePost from "./Components/CreatePost/CreatePost";
+import { AppContextProvider } from "./Components/AppContext/AppContextProvider";
 
 const useStyles = makeStyles(styles);
 
@@ -94,18 +95,20 @@ const onRedirectCallback = (appState: AppState) => {
 
 function App() {
   return (
-    <AuthenticationContextProvider
-      domain={process.env.REACT_APP_AUTH0_DOMAIN!}
-      clientId={process.env.REACT_APP_AUTH0_CLIENT_ID!}
-      redirectUri={`${window.location.protocol}//${process.env.REACT_APP_CLIENT_ADDRESS}/login-callback`}
-      onRedirectCallback={onRedirectCallback}
-    >
-      <Layout>
-        <BrowserRouter>
-          <Routes />
-        </BrowserRouter>
-      </Layout>
-    </AuthenticationContextProvider>
+    <AppContextProvider>
+      <AuthenticationContextProvider
+        domain={process.env.REACT_APP_AUTH0_DOMAIN!}
+        clientId={process.env.REACT_APP_AUTH0_CLIENT_ID!}
+        redirectUri={`${window.location.protocol}//${process.env.REACT_APP_CLIENT_ADDRESS}/login-callback`}
+        onRedirectCallback={onRedirectCallback}
+      >
+        <Layout>
+          <BrowserRouter>
+            <Routes />
+          </BrowserRouter>
+        </Layout>
+      </AuthenticationContextProvider>
+    </AppContextProvider>
   );
 }
 
