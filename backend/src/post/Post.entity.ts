@@ -1,5 +1,11 @@
 import { Field, ID, ObjectType } from 'type-graphql';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  JoinTable,
+} from 'typeorm';
 import { PostImage } from './PostImage.entity';
 import { PostNetwork } from './PostNetwork.entity';
 
@@ -16,13 +22,15 @@ export class Post {
 
   @OneToMany(
     type => PostImage,
-    postImage => postImage.post_id,
+    postImage => postImage.post,
   )
-  images: PostImage[];
+  @JoinTable()
+  images: Promise<PostImage[]>;
 
   @OneToMany(
     type => PostNetwork,
-    postNetwork => postNetwork.post_id,
+    postNetwork => postNetwork.post,
   )
+  @JoinTable()
   networks: PostNetwork[];
 }

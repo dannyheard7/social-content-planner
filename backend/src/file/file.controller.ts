@@ -5,6 +5,9 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  Get,
+  Param,
+  Response,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -17,6 +20,13 @@ import { FileService } from './file.service';
 @Controller('files')
 export class FilesController {
   constructor(private readonly fileService: FileService) {}
+
+  @Get(':imgId')
+  async test(@Param('imgId') imgId, @Response() res) {
+    const file = await this.fileService.findById(imgId);
+
+    return res.sendFile(file.filename, { root: 'files' });
+  }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('upload')

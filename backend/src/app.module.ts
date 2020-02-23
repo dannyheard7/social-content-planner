@@ -6,6 +6,7 @@ import { AuthzModule } from './authz/authz.module';
 import { SocialProviderModule } from './social-provider/social-provider.module';
 import { PostModule } from './post/post.module';
 import { FileModule } from './file/file.module';
+import { PublisherModule } from './publisher/publisher.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { FileModule } from './file/file.module';
     SocialProviderModule,
     PostModule,
     FileModule,
+    PublisherModule,
   ],
   providers: [],
 })

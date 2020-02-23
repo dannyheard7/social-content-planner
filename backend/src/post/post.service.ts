@@ -21,6 +21,7 @@ export class PostService {
   async create(postInput: PostInput): Promise<Post> {
     const post = new Post();
     post.id = uuid();
+    post.text = postInput.text;
 
     const images = postInput.images.map(image => {
       const postImage = new PostImage();
