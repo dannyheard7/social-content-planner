@@ -1,5 +1,5 @@
 import { Field, ID, ObjectType } from 'type-graphql';
-import { Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('file')
 @ObjectType('File')
@@ -8,12 +8,15 @@ export class FileEntity {
   @Field(type => ID)
   id: string;
 
+  @Column({ nullable: false })
   @Field(type => ID)
   user_id: string;
 
+  @Column({ length: 50, nullable: false })
   @Field(type => String)
   filename: string;
 
+  @Column({ length: 10, nullable: false })
   @Field(type => String)
   ext: string;
 }

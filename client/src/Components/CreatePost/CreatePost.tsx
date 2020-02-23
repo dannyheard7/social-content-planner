@@ -38,7 +38,7 @@ const CreatePost: React.FC = () => {
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     setFiles(await Promise.all(
       acceptedFiles.map(async (f) => {
-        uploadFile(f);
+        if (files.some(file => file.name !== f.name)) uploadFile(f);
         return await resetOrientation(f)
       })
     ));

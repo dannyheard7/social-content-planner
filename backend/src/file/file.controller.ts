@@ -42,6 +42,7 @@ export class FilesController {
     fileEntity.ext = extname(file.filename);
     fileEntity.filename = basename(file.filename);
     fileEntity.user_id = (req.user as any).sub;
+    console.log(fileEntity);
     return await this.fileService.createOrUpdate(fileEntity);
   }
 }
