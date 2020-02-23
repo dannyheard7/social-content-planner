@@ -1,10 +1,10 @@
-import { Field, InputType } from 'type-graphql';
+import { Field, InputType, ID } from 'type-graphql';
 
 @InputType()
 export class PostInput {
   @Field()
   text: string;
-  @Field(type => [String])
+  @Field(type => [ID])
   images: string[];
   @Field(type => [String])
   networks: string[];

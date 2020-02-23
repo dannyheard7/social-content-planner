@@ -15,7 +15,7 @@ import { ApolloClient } from "apollo-client";
 import { createHttpLink } from "apollo-link-http";
 import { setContext } from "apollo-link-context";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import AppState from "./Common/AppState";
+import AppState from "./Common/Interfaces/AppState";
 import CreatePost from "./Components/CreatePost/CreatePost";
 import { AppContextProvider } from "./Components/AppContext/AppContextProvider";
 

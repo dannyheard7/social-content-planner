@@ -1,7 +1,7 @@
 import createAuth0Client from "@auth0/auth0-spa-js";
 import Auth0Client from "@auth0/auth0-spa-js/dist/typings/Auth0Client";
 import React, { useState, useEffect } from "react";
-import AppState from "../../Common/AppState";
+import AppState from "../../Common/Interfaces/AppState";
 
 interface IAuthenticationContext {
   isAuthenticated: boolean;
@@ -30,7 +30,7 @@ export const AuthenticationContext = React.createContext<
   getIdTokenClaims: () => Promise.resolve({ __raw: "token" }),
   getTokenSilently: () => Promise.resolve(),
   getTokenWithPopup: () => Promise.resolve("string"),
-  logout: () => {}
+  logout: () => { }
 });
 
 interface Props {

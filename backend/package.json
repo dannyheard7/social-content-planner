@@ -44,7 +44,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "type-graphql": "^0.17.6",
-    "typeorm": "^0.2.22"
+    "typeorm": "^0.2.22",
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^6.14.2",

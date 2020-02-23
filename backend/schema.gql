@@ -11,13 +11,28 @@ type File {
 }
 
 type Mutation {
-  createPost(post: PostInput!): Boolean!
+  createPost(post: PostInput!): Post!
+}
+
+type Post {
+  id: ID!
+  text: String!
+}
+
+type PostImage {
+  post_id: ID!
+  image_id: ID!
 }
 
 input PostInput {
   text: String!
-  images: [String!]!
+  images: [ID!]!
   networks: [String!]!
+}
+
+type PostNetwork {
+  post_id: ID!
+  network: String!
 }
 
 type Query {

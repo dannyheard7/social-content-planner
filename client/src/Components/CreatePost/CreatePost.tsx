@@ -9,7 +9,6 @@ import { resetOrientation } from '../../Common/Image';
 import { CREATE_POST_MUTATION } from '../../GraphQL/Mutations/CreatePost';
 import styles from './CreatePost.styles';
 
-
 const useStyles = makeStyles(styles);
 
 interface FileWithPreview extends File {
@@ -18,17 +17,17 @@ interface FileWithPreview extends File {
 
 const CreatePost: React.FC = () => {
   const { register, handleSubmit, errors } = useForm();
-  const [files, setFiles] = useState<FileWithPreview[]>([]);
+  const [filePreviews, setFilePreviews] = useState<FileWithPreview[]>([]);
   const classes = useStyles();
   const [createPost] = useMutation(CREATE_POST_MUTATION);
-  const { uploadFile } = useUploadFile();
+  const { uploadFile, files } = useUploadFile();
 
   const onSubmit = (values: Record<string, any>) => {
     createPost({
       variables: {
         post: {
           text: values.text,
-          images: ["1"], // TODO: this will be the image ids
+          images: files.map(f => f.id),
           networks: ["facebook"]
         }
       }
@@ -36,13 +35,13 @@ const CreatePost: React.FC = () => {
   };
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    setFiles(await Promise.all(
+    setFilePreviews(await Promise.all(
       acceptedFiles.map(async (f) => {
-        if (files.some(file => file.name !== f.name)) uploadFile(f);
+        if (!filePreviews.some(file => file.name === f.name)) uploadFile(f);
         return await resetOrientation(f)
       })
     ));
-  }, [uploadFile]);
+  }, [uploadFile, filePreviews]);
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({ onDrop, accept: 'image/*' });
 
@@ -67,9 +66,9 @@ const CreatePost: React.FC = () => {
           </div>
         </Grid>
         {
-          files.length > 0 && (
+          filePreviews.length > 0 && (
             <Grid item md={12} container direction="row">
-              {files.map(file => (
+              {filePreviews.map(file => (
                 <Grid item md={3}>
                   <img
                     alt="Preview"
@@ -98,7 +97,7 @@ const CreatePost: React.FC = () => {
                 name="facebook"
               />
             }
-            label="facebook"
+            label="Facebook"
           />
         </FormGroup>
         <Button type="submit" variant="contained">Create Post</Button>

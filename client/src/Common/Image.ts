@@ -1,4 +1,4 @@
-import FileWithPreview from './FIleWithPreview';
+import FileWithPreview from './Interfaces/FIleWithPreview';
 import loadImage from 'blueimp-load-image';
 
 export async function resetOrientation(image: File): Promise<FileWithPreview> {
