@@ -6,6 +6,6 @@ export class PostInput {
   text: string;
   @Field(type => [ID])
   images: string[];
-  @Field(type => [String])
-  networks: string[];
+  @Field(type => [ID])
+  platformConnections: string[];
 }

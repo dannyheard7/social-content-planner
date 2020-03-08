@@ -18,6 +18,7 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import AppState from "./Common/Interfaces/AppState";
 import CreatePost from "./Components/CreatePost/CreatePost";
 import { AppContextProvider } from "./Components/AppContext/AppContextProvider";
+import PlatformConnections from "./Components/PlatformConnection/PlatformConnections";
 
 const useStyles = makeStyles(styles);
 
@@ -49,6 +50,9 @@ const Routes: React.FC = () => {
         <Switch>
           <Route exact path="/dashboard">
             <Dashboard />
+          </Route>
+          <Route exact path="/platforms">
+            <PlatformConnections />
           </Route>
           <Route exact path="/post/new">
             <CreatePost />
@@ -102,11 +106,11 @@ function App() {
         redirectUri={`${window.location.protocol}//${process.env.REACT_APP_CLIENT_ADDRESS}/login-callback`}
         onRedirectCallback={onRedirectCallback}
       >
-        <Layout>
-          <BrowserRouter>
+        <BrowserRouter>
+          <Layout>
             <Routes />
-          </BrowserRouter>
-        </Layout>
+          </Layout>
+        </BrowserRouter>
       </AuthenticationContextProvider>
     </AppContextProvider>
   );

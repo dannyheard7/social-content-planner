@@ -5,10 +5,15 @@ import {
   MenuItem,
   Toolbar,
   Typography,
-  AppBar
+  AppBar,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
 } from "@material-ui/core";
 import { AccountCircle, Menu as MenuIcon } from "@material-ui/icons";
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles({
   root: {
@@ -26,7 +31,8 @@ const AppMenu: React.FC = () => {
   const classes = useStyles();
   const [auth] = useState(true);
   const [anchorEl] = useState(null);
-  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
   return (
     <div className={classes.root}>
@@ -37,6 +43,7 @@ const AppMenu: React.FC = () => {
             className={classes.menuButton}
             color="inherit"
             aria-label="menu"
+            onClick={() => setDrawerOpen(true)}
           >
             <MenuIcon />
           </IconButton>
@@ -44,12 +51,21 @@ const AppMenu: React.FC = () => {
             Smarketing
           </Typography>
           {auth && (
-            <div>
+            <Fragment>
+              <Drawer open={drawerOpen} onClose={() => { setDrawerOpen(false) }}>
+                <List>
+                  <ListItem button>
+                    <Link to="/platforms">
+                      <ListItemText>Platforms</ListItemText>
+                    </Link>
+                  </ListItem>
+                </List>
+              </Drawer>
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
-                onClick={() => setMenuOpen(!menuOpen)}
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
                 color="inherit"
                 ref={anchorEl}
               >
@@ -67,15 +83,15 @@ const AppMenu: React.FC = () => {
                   vertical: "top",
                   horizontal: "right"
                 }}
-                open={menuOpen}
-                onClose={() => setMenuOpen(false)}
+                open={userMenuOpen}
+                onClose={() => setUserMenuOpen(false)}
               >
-                <MenuItem onClick={() => setMenuOpen(false)}>Profile</MenuItem>
-                <MenuItem onClick={() => setMenuOpen(false)}>
+                <MenuItem onClick={() => setUserMenuOpen(false)}>Profile</MenuItem>
+                <MenuItem onClick={() => setUserMenuOpen(false)}>
                   My account
                 </MenuItem>
               </Menu>
-            </div>
+            </Fragment>
           )}
         </Toolbar>
       </AppBar>

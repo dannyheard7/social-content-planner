@@ -7,7 +7,7 @@ import {
   JoinTable,
 } from 'typeorm';
 import { PostImage } from './PostImage.entity';
-import { PostNetwork } from './PostNetwork.entity';
+import { PostPlatform } from './PostPlatform.entity';
 
 @Entity('post')
 @ObjectType('Post')
@@ -32,9 +32,9 @@ export class Post {
   images: Promise<PostImage[]>;
 
   @OneToMany(
-    type => PostNetwork,
+    type => PostPlatform,
     postNetwork => postNetwork.post,
   )
   @JoinTable()
-  networks: PostNetwork[];
+  networks: PostPlatform[];
 }

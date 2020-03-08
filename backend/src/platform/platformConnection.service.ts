@@ -13,6 +13,12 @@ export class PlatformConnectionService {
     >,
   ) {}
 
+  async getAllForUser(user: User): Promise<PlatformConnection[]> {
+    return await this.platformConnectionRepository.find({
+      userId: user.sub,
+    });
+  }
+
   async getByNetworkForUser(
     network: string,
     user: User,

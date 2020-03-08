@@ -40,14 +40,19 @@ type PostImage {
 input PostInput {
   text: String!
   images: [ID!]!
-  networks: [String!]!
+  platformConnections: [ID!]!
 }
 
 type PostNetwork {
   post_id: ID!
-  network: String!
+}
+
+type PostPlatform {
+  post_id: ID!
+  platform_connection_id: ID!
 }
 
 type Query {
+  platformConnections: [PlatformConnection!]!
   post(id: ID!): Post!
 }

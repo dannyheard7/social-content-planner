@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Connection } from 'typeorm';
-import { Post } from './Post.entity';
-import { PostInput } from './PostInput';
-import { PostImage } from './PostImage.entity';
+import { Connection, Repository } from 'typeorm';
 import * as uuid from 'uuid/v4';
-import { PostNetwork } from './PostNetwork.entity';
+import { Post } from './Post.entity';
+import { PostImage } from './PostImage.entity';
+import { PostInput } from './PostInput';
+import { PostPlatform } from './PostPlatform.entity';
 
 @Injectable()
 export class PostService {
@@ -30,16 +30,16 @@ export class PostService {
       return postImage;
     });
 
-    const networks = postInput.networks.map(network => {
-      const postNetwork = new PostNetwork();
-      postNetwork.network = network;
-      postNetwork.post_id = post.id;
-      return postNetwork;
+    const platforms = postInput.platformConnections.map(pf => {
+      const postPlatform = new PostPlatform();
+      postPlatform.platform_connection_id = pf;
+      postPlatform.post_id = post.id;
+      return postPlatform;
     });
 
     const entities = await this.connection.manager.save([
       ...images,
-      ...networks,
+      ...platforms,
       post,
     ]);
 
