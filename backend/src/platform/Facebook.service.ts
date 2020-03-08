@@ -1,22 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { Post } from '../post/Post.entity';
 import { ConfigService } from '@nestjs/config';
 import fetch from 'node-fetch';
 import * as path from 'path';
-import { PlatformConnectionService } from './platformConnection.service';
+import { Post } from '../post/Post.entity';
+import { PlatformConnection } from './PlatformConnection.entity';
+import PlatformService from './PlatformService';
 
 @Injectable()
-export class PublisherService {
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly platformConnectionService: PlatformConnectionService,
-  ) {}
+export class FacebookService implements PlatformService {
+  constructor(private readonly configService: ConfigService) {}
 
-  async publishToFacebook(post: Post, user: User): Promise<string> {
-    const platformConnection = await this.platformConnectionService.getByNetworkForUser(
-      'facebook',
-      user,
-    );
+  async publishPost(
+    post: Post,
+    platformConnection: PlatformConnection,
+  ): Promise<string> {
     const fakeImagePath =
       'https://as.ftcdn.net/r/v1/pics/7b11b8176a3611dbfb25406156a6ef50cd3a5009/home/discover_collections/optimized/image-2019-10-11-11-36-27-681.jpg';
 
@@ -65,5 +62,38 @@ export class PublisherService {
       });
 
     return postData.id;
+  }
+
+  async getFacebookPageAccessToken(
+    userId: string,
+    userAccessToken: string,
+    pageId: string,
+  ): Promise<string> {
+    const clientId = this.configService.get<string | undefined>(
+      'FACEBOOK_APP_ID',
+    );
+    const clientSecret = this.configService.get<string | undefined>(
+      'FACEBOOK_APP_SECRET',
+    );
+
+    if (!clientId || !clientSecret)
+      throw new Error('Facebook app details not setup');
+
+    const data = await fetch(
+      `https://graph.facebook.com/v6.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${clientId}&client_secret=${clientSecret}&fb_exchange_token=${userAccessToken}`,
+    )
+      .then(response => response.json())
+      .catch(e => {
+        throw new Error(e.message);
+      });
+
+    const pages = await fetch(
+      `https://graph.facebook.com/v6.0/${userId}/accounts?access_token=${data.access_token}`,
+    )
+      .then(response => response.json())
+      .catch(e => {
+        throw new Error(e.message);
+      });
+    return pages.data.find(p => p.id === pageId).access_token;
   }
 }

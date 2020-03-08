@@ -5,7 +5,7 @@ import { PostInput } from './PostInput';
 import { GqlAuthGuard } from '../authz/auth.guard';
 import { PostService } from './post.service';
 import { Post } from './Post.entity';
-import { PublisherService } from '../platform/publisher.service';
+import { PublisherService } from '../platform/Publisher.service';
 import { CurrentUser } from '../authz/current.user.decorator';
 import { ID } from 'type-graphql';
 
@@ -14,7 +14,7 @@ export class PostResolver {
   constructor(
     private readonly postService: PostService,
     private readonly publisherService: PublisherService,
-  ) {}
+  ) { }
 
   @UseGuards(GqlAuthGuard)
   @Query(() => Post)
