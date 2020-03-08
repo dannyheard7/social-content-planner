@@ -3,10 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AuthzModule } from './authz/authz.module';
-import { SocialProviderModule } from './social-provider/social-provider.module';
+import { PlatformModule } from './platform/platform.module';
 import { PostModule } from './post/post.module';
 import { FileModule } from './file/file.module';
-import { PublisherModule } from './publisher/publisher.module';
 
 @Module({
   imports: [
@@ -35,10 +34,9 @@ import { PublisherModule } from './publisher/publisher.module';
       context: ({ req }) => ({ req }),
     }),
     AuthzModule,
-    SocialProviderModule,
+    PlatformModule,
     PostModule,
     FileModule,
-    PublisherModule,
   ],
   providers: [],
 })

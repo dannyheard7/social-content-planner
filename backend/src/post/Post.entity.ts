@@ -20,6 +20,10 @@ export class Post {
   @Field(type => String)
   text: string;
 
+  @Column({ nullable: false })
+  @Field(type => ID)
+  user_id: string;
+
   @OneToMany(
     type => PostImage,
     postImage => postImage.post,

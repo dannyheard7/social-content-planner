@@ -3,6 +3,11 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+input AddPlatformConnectionInput {
+  entityId: ID!
+  accessToken: String!
+}
+
 type File {
   id: ID!
   user_id: ID!
@@ -11,12 +16,20 @@ type File {
 }
 
 type Mutation {
+  addPlatformConnection(platformConnection: AddPlatformConnectionInput!): Boolean!
   createPost(post: PostInput!): Post!
+}
+
+type PlatformConnection {
+  userId: ID!
+  network: String!
+  entityId: ID!
 }
 
 type Post {
   id: ID!
   text: String!
+  user_id: ID!
 }
 
 type PostImage {
@@ -36,5 +49,5 @@ type PostNetwork {
 }
 
 type Query {
-  addSocialProvider: Boolean!
+  post(id: ID!): Post!
 }

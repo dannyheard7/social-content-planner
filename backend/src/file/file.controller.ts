@@ -16,6 +16,7 @@ import { diskStorage } from 'multer';
 import { basename, extname } from 'path';
 import { FileEntity } from './file.entity';
 import { FileService } from './file.service';
+import { CurrentUser } from '../authz/current.user.decorator';
 
 @Controller('files')
 export class FilesController {
@@ -46,12 +47,12 @@ export class FilesController {
   )
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
-    @Req() req: Request,
+    @CurrentUser() user: any,
   ) {
     const fileEntity = new FileEntity();
     fileEntity.ext = extname(file.filename);
     fileEntity.filename = basename(file.filename);
-    fileEntity.user_id = (req.user as any).sub;
+    fileEntity.user_id = user.sub;
     console.log(fileEntity);
     return await this.fileService.createOrUpdate(fileEntity);
   }
