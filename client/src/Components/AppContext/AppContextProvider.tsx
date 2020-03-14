@@ -1,14 +1,13 @@
 import React from "react";
 
 interface IAppContext {
-  fileUploadUrl: string | null;
+  fileUploadUrl?: string;
+  facebookAppId?: string;
 }
 
 export const AppContext = React.createContext<
   IAppContext
->({
-  fileUploadUrl: null
-});
+>({});
 
 export const AppContextProvider: React.FC = ({
   children,
@@ -16,7 +15,8 @@ export const AppContextProvider: React.FC = ({
   return (
     <AppContext.Provider
       value={{
-        fileUploadUrl: process.env.REACT_APP_FILE_UPLOAD_ENDPOINT!
+        fileUploadUrl: process.env.REACT_APP_FILE_UPLOAD_ENDPOINT,
+        facebookAppId: process.env.REACT_APP_FACEBOOK_APP_ID
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { Button, Checkbox, FormControlLabel, FormGroup, Grid, makeStyles, TextField, Typography } from '@material-ui/core';
 import classNames from 'classnames';
 import React, { useCallback, useState } from 'react';
@@ -8,6 +8,7 @@ import { useUploadFile } from '../../Common/FileUploadHook';
 import { resetOrientation } from '../../Common/Image';
 import { CREATE_POST_MUTATION, CreatePostMutationData, CreatePostMutationVars } from '../../GraphQL/Mutations/CreatePost';
 import styles from './CreatePost.styles';
+import { PlatformConnectionQueryData, PLATFORM_CONNECTIONS_QUERY } from '../../GraphQL/Queries/PlatformConnections';
 
 const useStyles = makeStyles(styles);
 
@@ -16,11 +17,23 @@ interface FileWithPreview extends File {
 }
 
 const CreatePost: React.FC = () => {
-  const { register, handleSubmit, errors } = useForm();
-  const [filePreviews, setFilePreviews] = useState<FileWithPreview[]>([]);
   const classes = useStyles();
-  const [createPost] = useMutation<CreatePostMutationData, CreatePostMutationVars>(CREATE_POST_MUTATION);
+  const { register, handleSubmit, errors } = useForm();
   const { uploadFile, files } = useUploadFile();
+  const [filePreviews, setFilePreviews] = useState<FileWithPreview[]>([]);
+  const { data, loading } = useQuery<PlatformConnectionQueryData>(PLATFORM_CONNECTIONS_QUERY);
+  const [createPost] = useMutation<CreatePostMutationData, CreatePostMutationVars>(CREATE_POST_MUTATION);
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    setFilePreviews(await Promise.all(
+      acceptedFiles.map(async (f) => {
+        if (!filePreviews.some(file => file.name === f.name)) uploadFile(f);
+        return await resetOrientation(f)
+      })
+    ));
+  }, [uploadFile, filePreviews]);
+
+  const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({ onDrop, accept: 'image/*' });
 
   const onSubmit = (values: Record<string, any>) => {
     createPost({
@@ -34,16 +47,8 @@ const CreatePost: React.FC = () => {
     })
   };
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    setFilePreviews(await Promise.all(
-      acceptedFiles.map(async (f) => {
-        if (!filePreviews.some(file => file.name === f.name)) uploadFile(f);
-        return await resetOrientation(f)
-      })
-    ));
-  }, [uploadFile, filePreviews]);
-
-  const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({ onDrop, accept: 'image/*' });
+  if (loading) return <p>Loading</p>;
+  if (!data) return <p>Error loading platforms</p>;
 
   return (
     <Grid container direction="column">
@@ -87,19 +92,22 @@ const CreatePost: React.FC = () => {
           <TextField multiline={true} aria-label="Text" placeholder="Text" name="text" inputRef={register({ required: true })} error={errors.text !== undefined} />
           <ErrorMessage name="text" message="Post text is required" errors={errors} />
         </FormGroup>
-
-        <Typography variant="h3" component="h3">Networks</Typography>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Checkbox
-                inputRef={register()}
-                name="facebook"
+        <Typography variant="h3" component="h3">Platforms</Typography>
+        {data.platformConnections.map(pc => {
+          return (
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    inputRef={register()}
+                    name={`${pc.platform}-${pc.entityName}`}
+                  />
+                }
+                label={`${pc.platform} - ${pc.entityName}`}
               />
-            }
-            label="Facebook"
-          />
-        </FormGroup>
+            </FormGroup>
+          )
+        })}
         <Button type="submit" variant="contained">Create Post</Button>
       </form>
     </Grid >

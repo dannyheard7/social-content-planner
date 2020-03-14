@@ -5,7 +5,8 @@ export const PLATFORM_CONNECTIONS_QUERY = gql`
   query PlatformConnections {
     platformConnections {
       platform,
-      entityId
+      entityId,
+      entityName
     }
   }
 `;

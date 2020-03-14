@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, Fragment, useContext } from "react";
 import FacebookLogin, { ReactFacebookLoginInfo } from "react-facebook-login";
 import AddPlatformConnectionInput from "../../GraphQL/Inputs/AddPlatformConnectionInput";
-import { Dialog, DialogTitle, List, ListItem, ListItemText } from "@material-ui/core";
+import { Dialog, DialogTitle, List, ListItem, ListItemText, Card, CardContent, CardActions, Typography, Button, Grid, DialogContent } from "@material-ui/core";
 import Platform from "../../Common/Enums/Platform";
 import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
+import { AppContext } from "../AppContext/AppContextProvider";
 
 interface Props {
     addPlatformConnection: (connection: AddPlatformConnectionInput) => void;
@@ -11,13 +12,16 @@ interface Props {
 }
 
 const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection, existingConnections }) => {
+    const { facebookAppId } = useContext(AppContext);
     const [accounts, setAccounts] = useState([]);
     const [userInfo, setUserInfo] = useState<ReactFacebookLoginInfo | null>(null);
     const [existingConnectionIds] = useState(existingConnections.map(pc => pc.entityId));
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const onFacebookLogin = (userInfo: ReactFacebookLoginInfo) => {
         setUserInfo(userInfo);
-        setAccounts((userInfo as any).accounts.data.filter((page: any) => !existingConnectionIds.includes(page.id)))
+        setAccounts((userInfo as any).accounts.data.filter((page: any) => !existingConnectionIds.includes(page.id)));
+        setDialogOpen(true)
     }
 
     const onFacebookPageLink = (page: any) => {
@@ -30,30 +34,59 @@ const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection, existi
         })
     }
 
-    if (accounts.length > 0) {
-        return (
-            <Dialog aria-labelledby="simple-dialog-title" open>
-                <DialogTitle id="simple-dialog-title">Link Facebook Page</DialogTitle>
-                <List>
-                    {accounts.map((account: any) => (
-                        <ListItem button onClick={() => onFacebookPageLink(account)} key={account.id}>
-                            <ListItemText primary={account.name} />
-                        </ListItem>
-                    ))}
-                </List>
-            </Dialog>
-        )
-    }
-
     return (
-        <p>
-            <p>You have currently linked {existingConnections.length} Facebook Pages</p>
-            <FacebookLogin
-                appId="2002136040088512"
-                fields="accounts"
-                callback={onFacebookLogin}
-            />
-        </p>
+        <Fragment>
+            <Grid container direction="column" spacing={2}>
+                <Grid item>
+                    <Typography>You have {existingConnections.length} linked Facebook Page {existingConnections.length !== 1 && 's'}</Typography>
+                </Grid>
+                <Grid container item>
+                    {existingConnections.map(pc => {
+                        return (
+                            <Grid item md={3}>
+                                <Card >
+                                    <CardContent>
+                                        <Typography >
+                                            {pc.entityName}
+                                        </Typography>
+                                    </CardContent>
+                                    <CardActions>
+                                        <Button size="small">Remove</Button>
+                                    </CardActions>
+                                </Card>
+                            </Grid>
+                        )
+                    })}
+                </Grid>
+                <Grid item>
+                    <FacebookLogin
+                        appId={facebookAppId!}
+                        fields="accounts"
+                        callback={onFacebookLogin}
+                        textButton={existingConnections.length > 0 ? "Link Another Page" : "Link Facebook Page"}
+                    />
+                </Grid>
+            </Grid>
+            {dialogOpen &&
+                <Dialog aria-labelledby="simple-dialog-title" open={dialogOpen} onClose={() => setDialogOpen(false)}>
+                    <DialogTitle id="simple-dialog-title">Link Facebook Page</DialogTitle>
+                    <DialogContent>
+                        <List>
+                            {accounts.map((account: any) => (
+                                <ListItem button onClick={() => onFacebookPageLink(account)} key={account.id}>
+                                    <ListItemText primary={account.name} />
+                                </ListItem>
+                            ))}
+                            {accounts.length === 0 &&
+                                existingConnections.length > 0 ?
+                                "You have already linked all the Facebook pages associated with your Facebook account" :
+                                "You don't seem to have any Facebook pages associated with your Facebook account"
+                            }
+                        </List>
+                    </DialogContent>
+                </Dialog>
+            }
+        </Fragment>
     );
 };
 
