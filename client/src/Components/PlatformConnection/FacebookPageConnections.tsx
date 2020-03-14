@@ -3,9 +3,11 @@ import FacebookLogin, { ReactFacebookLoginInfo } from "react-facebook-login";
 import AddPlatformConnectionInput from "../../GraphQL/Inputs/AddPlatformConnectionInput";
 import { Dialog, DialogTitle, List, ListItem, ListItemText } from "@material-ui/core";
 import Platform from "../../Common/Enums/Platform";
+import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
 
 interface Props {
     addPlatformConnection: (connection: AddPlatformConnectionInput) => void;
+    existingConnections: PlatformConnection[];
 }
 
 const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection }) => {
@@ -21,7 +23,7 @@ const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection }) => {
         addPlatformConnection({
             entityId: page.id,
             entityName: page.name,
-            platform: Platform.FACEBOOK,
+            platform: Platform[Platform.FACEBOOK],
             platformUserId: userInfo!.id,
             accessToken: userInfo!.accessToken
         })

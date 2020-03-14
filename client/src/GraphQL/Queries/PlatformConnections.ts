@@ -11,5 +11,5 @@ export const PLATFORM_CONNECTIONS_QUERY = gql`
 `;
 
 export interface PlatformConnectionQueryData {
-    platformConnection: PlatformConnection;
+    platformConnections: PlatformConnection[];
 }

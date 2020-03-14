@@ -3,7 +3,7 @@ import Platform from "../../Common/Enums/Platform";
 export default interface AddPlatformConnectionInput {
     entityId: string;
     entityName: string;
-    platform: Platform;
+    platform: string;
     platformUserId: string;
     accessToken: string;
 }

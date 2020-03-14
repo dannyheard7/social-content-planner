@@ -6,6 +6,8 @@ export class AddPlatformConnectionInput {
   @Field(type => ID)
   entityId: string;
   @Field(type => String)
+  entityName: string;
+  @Field(type => String)
   accessToken: string;
   @Field(type => Platform)
   platform: Platform;

@@ -38,17 +38,18 @@ export class PlatformConnectionService {
     ): Promise<PlatformConnection> {
         const platformConnection = new PlatformConnection();
         platformConnection.entityId = platformConnectionInput.entityId;
+        platformConnection.network = Platform[platformConnectionInput.platform];
+        platformConnection.entityName = platformConnectionInput.entityName;
+        platformConnection.userId = user.sub;
 
-        // TODO: FB has non-expiring tokens for pages, but this won't be the same for twitter etc. refresh mechanism
-        if (platformConnectionInput.platform === Platform.Facebook) {
+        if (platformConnectionInput.platform === Platform.FACEBOOK) {
+            //Facebook has non expiring tokens for pages
             platformConnection.accessToken = await this.facebookService.getFacebookPageAccessToken(
                 platformConnectionInput.platformUserId,
                 platformConnectionInput.accessToken,
                 platformConnectionInput.entityId,
             );
         } else platformConnection.accessToken = platformConnectionInput.accessToken;
-        platformConnection.userId = user.sub;
-        platformConnection.network = platformConnectionInput.platform;
 
         return await this.platformConnectionRepository.save(platformConnection);
     }

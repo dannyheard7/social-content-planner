@@ -1,7 +1,7 @@
 import { registerEnumType } from 'type-graphql';
 
 enum Platform {
-  Facebook = 'facebook',
+  FACEBOOK,
 }
 export default Platform;
 

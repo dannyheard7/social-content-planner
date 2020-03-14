@@ -5,6 +5,7 @@
 
 input AddPlatformConnectionInput {
   entityId: ID!
+  entityName: String!
   accessToken: String!
   platform: Platform!
   platformUserId: String
@@ -23,13 +24,14 @@ type Mutation {
 }
 
 enum Platform {
-  Facebook
+  FACEBOOK
 }
 
 type PlatformConnection {
   userId: ID!
   network: String!
   entityId: ID!
+  entityName: String!
 }
 
 type Post {

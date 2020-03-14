@@ -21,4 +21,8 @@ export class PlatformConnection {
   @Column()
   @Field(type => ID)
   entityId: string;
+
+  @Column()
+  @Field(type => String)
+  entityName: string;
 }
