@@ -13,6 +13,8 @@ const PlatformConnections: React.FC = () => {
   if (loading) return <p>Loading</p>;
   if (!data) return <p>"Error loading data"</p>;
 
+  const platformConnections = data.platformConnections.map(pc => ({ ...pc, platform: Platform[pc.platform] }));
+
   const addPlatformConnection = (platformConnection: AddPlatformConnectionInput) => {
     addPlatformMutation({
       variables: {
@@ -23,7 +25,7 @@ const PlatformConnections: React.FC = () => {
   return (
     <p>
       <FacebookPageConnection addPlatformConnection={addPlatformConnection}
-        existingConnections={data.platformConnections.filter(pc => pc.platform === Platform.FACEBOOK)} />
+        existingConnections={platformConnections.filter(pc => pc.platform === Platform.FACEBOOK)} />
     </p>
   );
 };

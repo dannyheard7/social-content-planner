@@ -10,13 +10,14 @@ interface Props {
     existingConnections: PlatformConnection[];
 }
 
-const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection }) => {
-    const [accounts, setAccounts] = useState();
+const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection, existingConnections }) => {
+    const [accounts, setAccounts] = useState([]);
     const [userInfo, setUserInfo] = useState<ReactFacebookLoginInfo | null>(null);
+    const [existingConnectionIds] = useState(existingConnections.map(pc => pc.entityId));
 
     const onFacebookLogin = (userInfo: ReactFacebookLoginInfo) => {
         setUserInfo(userInfo);
-        setAccounts((userInfo as any).accounts)
+        setAccounts((userInfo as any).accounts.data.filter((page: any) => !existingConnectionIds.includes(page.id)))
     }
 
     const onFacebookPageLink = (page: any) => {
@@ -29,12 +30,12 @@ const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection }) => {
         })
     }
 
-    if (accounts) {
+    if (accounts.length > 0) {
         return (
             <Dialog aria-labelledby="simple-dialog-title" open>
                 <DialogTitle id="simple-dialog-title">Link Facebook Page</DialogTitle>
                 <List>
-                    {accounts.data.map((account: any) => (
+                    {accounts.map((account: any) => (
                         <ListItem button onClick={() => onFacebookPageLink(account)} key={account.id}>
                             <ListItemText primary={account.name} />
                         </ListItem>
@@ -46,6 +47,7 @@ const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection }) => {
 
     return (
         <p>
+            <p>You have currently linked {existingConnections.length} Facebook Pages</p>
             <FacebookLogin
                 appId="2002136040088512"
                 fields="accounts"

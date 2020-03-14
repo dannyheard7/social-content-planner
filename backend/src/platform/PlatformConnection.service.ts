@@ -28,7 +28,7 @@ export class PlatformConnectionService {
     ): Promise<PlatformConnection> {
         return await this.platformConnectionRepository.findOne({
             userId: user.sub,
-            network,
+            platform: network,
         });
     }
 
@@ -38,7 +38,7 @@ export class PlatformConnectionService {
     ): Promise<PlatformConnection> {
         const platformConnection = new PlatformConnection();
         platformConnection.entityId = platformConnectionInput.entityId;
-        platformConnection.network = Platform[platformConnectionInput.platform];
+        platformConnection.platform = Platform[platformConnectionInput.platform];
         platformConnection.entityName = platformConnectionInput.entityName;
         platformConnection.userId = user.sub;
 

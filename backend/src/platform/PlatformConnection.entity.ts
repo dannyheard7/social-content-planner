@@ -13,7 +13,7 @@ export class PlatformConnection {
 
   @Column()
   @Field(type => String)
-  network: string;
+  platform: string;
 
   @Column()
   accessToken: string;
