@@ -6,7 +6,7 @@ import { useDropzone } from 'react-dropzone';
 import { ErrorMessage, useForm } from 'react-hook-form';
 import { useUploadFile } from '../../Common/FileUploadHook';
 import { resetOrientation } from '../../Common/Image';
-import { CREATE_POST_MUTATION } from '../../GraphQL/Mutations/CreatePost';
+import { CREATE_POST_MUTATION, CreatePostMutationData, CreatePostMutationVars } from '../../GraphQL/Mutations/CreatePost';
 import styles from './CreatePost.styles';
 
 const useStyles = makeStyles(styles);
@@ -19,7 +19,7 @@ const CreatePost: React.FC = () => {
   const { register, handleSubmit, errors } = useForm();
   const [filePreviews, setFilePreviews] = useState<FileWithPreview[]>([]);
   const classes = useStyles();
-  const [createPost] = useMutation(CREATE_POST_MUTATION);
+  const [createPost] = useMutation<CreatePostMutationData, CreatePostMutationVars>(CREATE_POST_MUTATION);
   const { uploadFile, files } = useUploadFile();
 
   const onSubmit = (values: Record<string, any>) => {

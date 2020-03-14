@@ -55,7 +55,7 @@ const AppMenu: React.FC = () => {
               <Drawer open={drawerOpen} onClose={() => { setDrawerOpen(false) }}>
                 <List>
                   <ListItem button>
-                    <Link to="/platforms">
+                    <Link to="/platforms" onClick={() => { setDrawerOpen(false) }}>
                       <ListItemText>Platforms</ListItemText>
                     </Link>
                   </ListItem>
