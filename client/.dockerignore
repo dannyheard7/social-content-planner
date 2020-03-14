@@ -1,0 +1,9 @@
+.git
+*Dockerfile*
+*docker-compose*
+node_modules
+backend/files
+backend/dist
+*.env
+.vscode
+README.md

@@ -1,0 +1,13 @@
+FROM node:12.14-alpine
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install --only=development
+
+COPY migrations migrations
+COPY ormconfig.js ormconfig.js
+COPY tsconfig* .
+
+CMD ["npm", "run", "migration:run"]
