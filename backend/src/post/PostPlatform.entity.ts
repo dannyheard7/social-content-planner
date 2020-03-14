@@ -19,7 +19,7 @@ export class PostPlatform {
     platformConnection => platformConnection.id,
   )
   @JoinColumn({ name: 'platform_connection_id' })
-  platformConnection: PlatformConnection;
+  platformConnection: Promise<PlatformConnection>;
 
   @ManyToOne(
     type => Post,

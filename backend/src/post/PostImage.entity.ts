@@ -19,7 +19,7 @@ export class PostImage {
     file => file.id,
   )
   @JoinColumn({ name: 'image_id' })
-  image: FileEntity;
+  image: Promise<FileEntity>;
 
   @ManyToOne(
     type => Post,

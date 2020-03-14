@@ -35,20 +35,21 @@ const CreatePost: React.FC = () => {
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({ onDrop, accept: 'image/*' });
 
+  if (loading) return <p>Loading</p>;
+  if (!data) return <p>Error loading platforms</p>;
+
   const onSubmit = (values: Record<string, any>) => {
+    const platformConnectionIds = data.platformConnections.map(pc => pc.id);
     createPost({
       variables: {
         post: {
           text: values.text,
           images: files.map(f => f.id),
-          networks: ["facebook"]
+          platformConnections: platformConnectionIds.filter(pcId => values[pcId] === true)
         }
       }
     })
   };
-
-  if (loading) return <p>Loading</p>;
-  if (!data) return <p>Error loading platforms</p>;
 
   return (
     <Grid container direction="column">
@@ -100,7 +101,7 @@ const CreatePost: React.FC = () => {
                 control={
                   <Checkbox
                     inputRef={register()}
-                    name={`${pc.platform}-${pc.entityName}`}
+                    name={pc.id}
                   />
                 }
                 label={`${pc.platform} - ${pc.entityName}`}

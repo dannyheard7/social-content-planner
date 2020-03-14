@@ -28,8 +28,9 @@ enum Platform {
 }
 
 type PlatformConnection {
+  id: ID!
   userId: ID!
-  platform: String!
+  platform: Platform!
   entityId: ID!
   entityName: String!
 }

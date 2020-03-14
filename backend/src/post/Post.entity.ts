@@ -36,5 +36,5 @@ export class Post {
     postNetwork => postNetwork.post,
   )
   @JoinTable()
-  networks: PostPlatform[];
+  platforms: Promise<PostPlatform[]>;
 }

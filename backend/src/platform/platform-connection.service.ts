@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
 import { PlatformConnection } from './PlatformConnection.entity';
 import Platform from './Platform';
-import { FacebookService } from './Facebook.service';
+import { FacebookService } from './facebook.service';
 
 @Injectable()
 export class PlatformConnectionService {
@@ -22,23 +22,13 @@ export class PlatformConnectionService {
         });
     }
 
-    async getByNetworkForUser(
-        network: string,
-        user: User,
-    ): Promise<PlatformConnection> {
-        return await this.platformConnectionRepository.findOne({
-            userId: user.sub,
-            platform: network,
-        });
-    }
-
     async create(
         platformConnectionInput: AddPlatformConnectionInput,
         user: User,
     ): Promise<PlatformConnection> {
         const platformConnection = new PlatformConnection();
         platformConnection.entityId = platformConnectionInput.entityId;
-        platformConnection.platform = Platform[platformConnectionInput.platform];
+        platformConnection.platform = platformConnectionInput.platform;
         platformConnection.entityName = platformConnectionInput.entityName;
         platformConnection.userId = user.sub;
 

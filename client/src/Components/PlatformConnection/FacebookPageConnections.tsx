@@ -38,7 +38,7 @@ const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection, existi
         <Fragment>
             <Grid container direction="column" spacing={2}>
                 <Grid item>
-                    <Typography>You have {existingConnections.length} linked Facebook Page {existingConnections.length !== 1 && 's'}</Typography>
+                    <Typography>You have {existingConnections.length} linked Facebook Page{existingConnections.length !== 1 && 's'}</Typography>
                 </Grid>
                 <Grid container item>
                     {existingConnections.map(pc => {
@@ -62,6 +62,7 @@ const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection, existi
                     <FacebookLogin
                         appId={facebookAppId!}
                         fields="accounts"
+                        scope="manage_pages,publish_pages"
                         callback={onFacebookLogin}
                         textButton={existingConnections.length > 0 ? "Link Another Page" : "Link Facebook Page"}
                     />
@@ -77,10 +78,11 @@ const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection, existi
                                     <ListItemText primary={account.name} />
                                 </ListItem>
                             ))}
-                            {accounts.length === 0 &&
+                            {accounts.length === 0 ?
                                 existingConnections.length > 0 ?
-                                "You have already linked all the Facebook pages associated with your Facebook account" :
-                                "You don't seem to have any Facebook pages associated with your Facebook account"
+                                    "You have already linked all the Facebook pages associated with your Facebook account" :
+                                    "You don't seem to have any Facebook pages associated with your Facebook account"
+                                : null
                             }
                         </List>
                     </DialogContent>

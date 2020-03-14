@@ -3,7 +3,7 @@ import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
 import { GqlAuthGuard } from '../authz/auth.guard';
 import { CurrentUser } from '../authz/current.user.decorator';
 import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
-import { PlatformConnectionService } from './PlatformConnection.service';
+import { PlatformConnectionService } from './platform-connection.service';
 import { PlatformConnection } from './PlatformConnection.entity';
 
 @Resolver()

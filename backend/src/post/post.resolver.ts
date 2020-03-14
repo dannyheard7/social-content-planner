@@ -5,7 +5,7 @@ import { PostInput } from './PostInput';
 import { GqlAuthGuard } from '../authz/auth.guard';
 import { PostService } from './post.service';
 import { Post } from './Post.entity';
-import { PublisherService } from '../platform/Publisher.service';
+import { PublisherService } from '../platform/publisher.service';
 import { CurrentUser } from '../authz/current.user.decorator';
 import { ID } from 'type-graphql';
 
@@ -31,8 +31,8 @@ export class PostResolver {
     @Args({ name: 'post', type: () => PostInput }) postInput: PostInput,
     @CurrentUser() user: User,
   ) {
-    const post = await this.postService.create(postInput);
-    await this.publisherService.publishToFacebook(post, user);
+    const post = await this.postService.create(postInput, user);
+    await this.publisherService.publishPost(post);
     return post;
   }
 }

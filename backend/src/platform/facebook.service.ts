@@ -2,30 +2,35 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import fetch from 'node-fetch';
 import * as path from 'path';
+import * as fs from 'fs';
+import * as FormData from 'form-data';
 import { Post } from '../post/Post.entity';
 import { PlatformConnection } from './PlatformConnection.entity';
 import PlatformService from './PlatformService';
 
 @Injectable()
 export class FacebookService implements PlatformService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) { }
 
   async publishPost(
     post: Post,
     platformConnection: PlatformConnection,
   ): Promise<string> {
-    const fakeImagePath =
-      'https://as.ftcdn.net/r/v1/pics/7b11b8176a3611dbfb25406156a6ef50cd3a5009/home/discover_collections/optimized/image-2019-10-11-11-36-27-681.jpg';
-
-    const host = this.configService.get<string | undefined>('HOST');
     let attachedMedia = [];
 
     if ((await post.images).length > 0) {
-      const imageUploadRequests = (await post.images).map(image => {
-        // Use fake images when running locally as fb cannot access local images
-        const imageUrl = host ? path.join(host, image.image_id) : fakeImagePath;
+      await Promise.all((await post.images).map(postImage => postImage.image));
+
+      const imageUploadRequests = (await post.images).map(async postImage => {
+        const image = await postImage.image;
+        const data = new FormData();
+
+        // TODO: move the file path into config service and make it relative etc
+        data.append('file', fs.createReadStream(path.join('./files', image.filename)));
+
         return fetch(
-          `https://graph.facebook.com/${platformConnection.entityId}/photos?url=${imageUrl}&published=false&access_token=${platformConnection.accessToken}`,
+          `https://graph.facebook.com/v6.0/${platformConnection.entityId}/photos?published=false&access_token=${platformConnection.accessToken}`,
+          { method: 'POST', body: data }
         )
           .then(response => response.json())
           .catch(e => {
@@ -34,7 +39,7 @@ export class FacebookService implements PlatformService {
       });
       const data = await Promise.all(imageUploadRequests);
       attachedMedia = data.map(d => ({
-        media_fbid: d.data[0].id,
+        media_fbid: d.id,
       }));
     }
 
@@ -88,7 +93,7 @@ export class FacebookService implements PlatformService {
       });
 
     const pages = await fetch(
-      `https://graph.facebook.com/v6.0/${userId}/accounts?access_token=${data.access_token}`,
+      `https://graph.facebook.com/v6.0/${userId}/accounts?access_token=${data.access_token}&fields=access_token`,
     )
       .then(response => response.json())
       .catch(e => {

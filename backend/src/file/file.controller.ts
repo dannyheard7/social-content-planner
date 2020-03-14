@@ -1,7 +1,7 @@
 import {
   Controller,
   Post,
-  Request as Req,
+  Request,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Request } from 'express';
 import { diskStorage } from 'multer';
 import { basename, extname } from 'path';
 import { FileEntity } from './file.entity';
@@ -20,7 +19,7 @@ import { CurrentUser } from '../authz/current.user.decorator';
 
 @Controller('files')
 export class FilesController {
-  constructor(private readonly fileService: FileService) {}
+  constructor(private readonly fileService: FileService) { }
 
   @Get(':imgId')
   async test(@Param('imgId') imgId, @Response() res) {
@@ -47,13 +46,12 @@ export class FilesController {
   )
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
-    @CurrentUser() user: any,
+    @Request() req
   ) {
     const fileEntity = new FileEntity();
     fileEntity.ext = extname(file.filename);
     fileEntity.filename = basename(file.filename);
-    fileEntity.user_id = user.sub;
-    console.log(fileEntity);
+    fileEntity.user_id = req.user.sub;
     return await this.fileService.createOrUpdate(fileEntity);
   }
 }

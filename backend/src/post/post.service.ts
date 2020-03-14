@@ -13,15 +13,16 @@ export class PostService {
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
     private readonly connection: Connection,
-  ) {}
+  ) { }
   findById(id: string): Promise<Post | undefined> {
     return this.postRepository.findOne(id);
   }
 
-  async create(postInput: PostInput): Promise<Post> {
+  async create(postInput: PostInput, user: User): Promise<Post> {
     const post = new Post();
     post.id = uuid();
     post.text = postInput.text;
+    post.user_id = user.sub;
 
     const images = postInput.images.map(image => {
       const postImage = new PostImage();
