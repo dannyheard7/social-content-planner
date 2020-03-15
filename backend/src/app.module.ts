@@ -10,7 +10,6 @@ import { FileModule } from './file/file.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
@@ -40,4 +39,4 @@ import { FileModule } from './file/file.module';
   ],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
