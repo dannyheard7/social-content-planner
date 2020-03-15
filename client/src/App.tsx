@@ -19,16 +19,19 @@ import AppState from "./Common/Interfaces/AppState";
 import CreatePost from "./Components/CreatePost/CreatePost";
 import { AppContextProvider } from "./Components/AppContext/AppContextProvider";
 import PlatformConnections from "./Components/PlatformConnection/PlatformConnections";
+import Loading from "./Components/Loading/Loading";
+import config from './config';
 
 const useStyles = makeStyles(styles);
 
 const Routes: React.FC = () => {
-  const { isAuthenticated, token } = useContext(AuthenticationContext);
+  const { isAuthenticated, token, loading } = useContext(AuthenticationContext);
+
+  if (loading) return <Loading />
 
   if (isAuthenticated) {
     const httpLink = createHttpLink({
-      uri: process.env.REACT_APP_GRAPHQL_HOST!,
-
+      uri: config.GRAPHQL_HOST
     });
 
     const authLink = setContext((_, { headers }) => {
@@ -58,7 +61,7 @@ const Routes: React.FC = () => {
             <CreatePost />
           </Route>
           <Route>
-            <Redirect to="/post/new" />
+            <Redirect to="/platforms" />
           </Route>
         </Switch>
       </ApolloProvider>
@@ -101,9 +104,9 @@ function App() {
   return (
     <AppContextProvider>
       <AuthenticationContextProvider
-        domain={process.env.REACT_APP_AUTH0_DOMAIN!}
-        clientId={process.env.REACT_APP_AUTH0_CLIENT_ID!}
-        redirectUri={`${window.location.protocol}//${process.env.REACT_APP_CLIENT_ADDRESS}/login-callback`}
+        domain={config.AUTH0_DOMAIN}
+        clientId={config.AUTH0_CLIENT_ID!}
+        redirectUri={`${window.location.protocol}//${config.CLIENT_ADDRESS}/login-callback`}
         onRedirectCallback={onRedirectCallback}
       >
         <BrowserRouter>

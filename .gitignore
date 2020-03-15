@@ -391,3 +391,4 @@ Temporary Items
 dist
 
 backend/files/
+client/public/config.js

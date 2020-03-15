@@ -59,6 +59,11 @@ const AppMenu: React.FC = () => {
                       <ListItemText>Platforms</ListItemText>
                     </Link>
                   </ListItem>
+                  <ListItem button>
+                    <Link to="/post/new" onClick={() => { setDrawerOpen(false) }}>
+                      <ListItemText>New Post</ListItemText>
+                    </Link>
+                  </ListItem>
                 </List>
               </Drawer>
               <IconButton

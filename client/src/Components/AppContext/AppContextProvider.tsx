@@ -1,4 +1,5 @@
 import React from "react";
+import config from '../../config';
 
 interface IAppContext {
   fileUploadUrl?: string;
@@ -15,8 +16,8 @@ export const AppContextProvider: React.FC = ({
   return (
     <AppContext.Provider
       value={{
-        fileUploadUrl: process.env.REACT_APP_FILE_UPLOAD_ENDPOINT,
-        facebookAppId: process.env.REACT_APP_FACEBOOK_APP_ID
+        fileUploadUrl: config.FILE_UPLOAD_ENDPOINT,
+        facebookAppId: config.FACEBOOK_APP_ID
       }}
     >
       {children}
