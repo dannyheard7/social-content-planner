@@ -23,20 +23,9 @@ services:
     depends_on:
       - postgres
 
-  api:
+  client:
     build:
-      context: ./backend
+      context: ./client
       dockerfile: Dockerfile
-    environment:
-      - TYPEORM_HOST=postgres
-      - TYPEORM_USERNAME=postgres
-      - TYPEORM_PASSWORD=
-      - TYPEORM_DATABASE=content_planner
-      - TYPEORM_PORT=5432
-      - PORT=7000
-      - AUTH0_DOMAIN=https://houseshare.eu.auth0.com/
-      - AUTH0_AUDIENCE=ttkXk8m9MzApQ2M7a0yRtXKYwfPCAoQh
-      - FACEBOOK_APP_ID=2002136040088512
-      - FACEBOOK_APP_SECRET=1cc20492fb1361de8bd65cb70a718b40
-    depends_on:
-      - postgres
+    volumes:
+      - ./client/public/config.js:/app/build/config.js
