@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-api:COMMIT_SHA
+          image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-api:BUILD_ID
           ports:
             - containerPort: 7000
           env:
@@ -58,31 +58,7 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: facebook-app-secret
-        - name: db-migration
-          image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-db-migration:COMMIT_SHA
-          restartPolicy: Never
-          env:
-            - name: TYPEORM_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: host
-            - name: TYPEORM_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: username
-            - name: TYPEORM_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: password
-            - name: TYPEORM_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: port
         - name: client
-          image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-client:COMMIT_SHA
+          image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-client:BUILD_ID
           ports:
             - containerPort: 80
