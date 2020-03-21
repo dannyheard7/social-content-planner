@@ -140,7 +140,7 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: backend-nodeport-service
+              serviceName: nodeport-service
               servicePort: 80
   tls:
     - hosts:
