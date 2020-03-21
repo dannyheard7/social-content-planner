@@ -70,31 +70,32 @@ metadata:
 spec:
   activeDeadlineSeconds: 60
   template:
-    containers:
-      - name: db-migrate
-        image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-db-migration:COMMIT_SHA
-        env:
-          - name: TYPEORM_HOST
-            valueFrom:
-              secretKeyRef:
-                name: db-secret
-                key: host
-          - name: TYPEORM_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: db-secret
-                key: username
-          - name: TYPEORM_DATABASE
-            valueFrom:
-              secretKeyRef:
-                name: db-secret
-                key: password
-          - name: TYPEORM_PORT
-            valueFrom:
-              secretKeyRef:
-                name: db-secret
-                key: port
-    restartPolicy: Never
+    spec:
+      containers:
+        - name: db-migrate
+          image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-db-migration:COMMIT_SHA
+          env:
+            - name: TYPEORM_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: host
+            - name: TYPEORM_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: TYPEORM_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+            - name: TYPEORM_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: port
+      restartPolicy: Never
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
