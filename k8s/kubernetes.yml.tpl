@@ -12,52 +12,33 @@ spec:
       labels:
         app: backend
     spec:
+      serviceAccountName: berglas-k8s@GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com
+      automountServiceAccountToken: false
       containers:
         - name: api
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-api:COMMIT_SHA
           ports:
             - containerPort: 7000
+          command: ["/bin/envserver"]
           env:
             - name: TYPEORM_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: host
+              value: berglas://smarketing-secrets/db/host
             - name: TYPEORM_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: username
+              value: berglas://smarketing-secrets/db/username
+            - name: TYPEORM_PASSWORD
+              value: berglas://smarketing-secrets/db/password
             - name: TYPEORM_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: password
+              value: berglas://smarketing-secrets/db/database
             - name: TYPEORM_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: port
+              value: berglas://smarketing-secrets/db/port
             - name: AUTH0_DOMAIN
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: auth0-domain
+              value: berglas://smarketing-secrets/app/auth0-domain
             - name: AUTH0_AUDIENCE
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: auth0-audience
+              value: berglas://smarketing-secrets/app/auth0-audience
             - name: FACEBOOK_APP_ID
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: facebook-app-id
+              value: berglas://smarketing-secrets/app/facebook-app-id
             - name: FACEBOOK_APP_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: facebook-app-secret
+              value: berglas://smarketing-secrets/app/facebook-app-secret
         - name: client
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-client:COMMIT_SHA
           ports:
@@ -71,30 +52,22 @@ spec:
   activeDeadlineSeconds: 60
   template:
     spec:
+      serviceAccountName: berglas-k8s@GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com
       containers:
         - name: db-migrate
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-db-migration:COMMIT_SHA
+          command: ["/bin/envserver"]
           env:
             - name: TYPEORM_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: host
+              value: berglas://smarketing-secrets/db/host
             - name: TYPEORM_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: username
+              value: berglas://smarketing-secrets/db/username
+            - name: TYPEORM_PASSWORD
+              value: berglas://smarketing-secrets/db/password
             - name: TYPEORM_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: password
+              value: berglas://smarketing-secrets/db/database
             - name: TYPEORM_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: port
+              value: berglas://smarketing-secrets/db/port
       restartPolicy: Never
 ---
 apiVersion: extensions/v1beta1
@@ -124,3 +97,21 @@ spec:
     - port: 80
       targetPort: 7000
       protocol: TCP
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: berglas-webhook
+  labels:
+    app: berglas-webhook
+    kind: mutator
+webhooks:
+  - name: berglas-webhook.cloud.google.com
+    clientConfig:
+      url: https://us-central1-GOOGLE_CLOUD_PROJECT.cloudfunctions.net/berglas-secrets-webhook
+      caBundle: ""
+    rules:
+      - operations: ["CREATE"]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
