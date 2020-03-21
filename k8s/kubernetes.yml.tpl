@@ -12,7 +12,6 @@ spec:
       labels:
         app: backend
     spec:
-      serviceAccountName: berglas-k8s@GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com
       automountServiceAccountToken: false
       containers:
         - name: api
@@ -52,7 +51,6 @@ spec:
   activeDeadlineSeconds: 60
   template:
     spec:
-      serviceAccountName: berglas-k8s@GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com
       containers:
         - name: db-migrate
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-db-migration:COMMIT_SHA
@@ -70,20 +68,45 @@ spec:
               value: berglas://smarketing-secrets/db/port
       restartPolicy: Never
 ---
-apiVersion: extensions/v1beta1
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    # You must replace this email address with your own.
+    # Let's Encrypt will use this to contact you about expiring
+    # certificates, and issues related to your account.
+    email: dannyheard7@gmail.com
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      # Secret resource used to store the account's private key.
+      name: letsencrypt-staging
+    # Add a single challenge solver, HTTP01 using nginx
+    solvers:
+      - http01:
+          ingress:
+            class: nginx
+---
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: basic-ingress
+  name: nginx-ingress
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: basic-ingress-ip
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-    - http:
+    - host: habite.site
+      http:
         paths:
-          - path: /*
-            backend:
+          - backend:
               serviceName: backend-nodeport-service
               servicePort: 80
+  tls:
+    - hosts:
+        - habite.site
+      secretName: habite-site
 ---
 apiVersion: v1
 kind: Service
@@ -97,21 +120,3 @@ spec:
     - port: 80
       targetPort: 7000
       protocol: TCP
----
-apiVersion: admissionregistration.k8s.io/v1beta1
-kind: MutatingWebhookConfiguration
-metadata:
-  name: berglas-webhook
-  labels:
-    app: berglas-webhook
-    kind: mutator
-webhooks:
-  - name: berglas-webhook.cloud.google.com
-    clientConfig:
-      url: https://us-central1-GOOGLE_CLOUD_PROJECT.cloudfunctions.net/berglas-secrets-webhook
-      caBundle: ""
-    rules:
-      - operations: ["CREATE"]
-        apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
