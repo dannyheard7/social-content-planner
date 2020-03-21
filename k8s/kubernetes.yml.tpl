@@ -70,7 +70,6 @@ metadata:
 spec:
   activeDeadlineSeconds: 60
   template:
-    restartPolicy: Never
     containers:
       - name: db-migrate
         image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-db-migration:COMMIT_SHA
@@ -95,6 +94,7 @@ spec:
               secretKeyRef:
                 name: db-secret
                 key: port
+    restartPolicy: Never
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
