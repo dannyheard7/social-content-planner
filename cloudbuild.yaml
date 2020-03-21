@@ -4,7 +4,7 @@ steps:
     args:
       - "build"
       - "-t"
-      - "gcr.io/$PROJECT_ID/smarketing-api:$BUILD_ID"
+      - "gcr.io/$PROJECT_ID/smarketing-api:$SHORT_SHA"
       - "."
     dir: "backend"
 
@@ -12,14 +12,14 @@ steps:
     id: Push Backend
     args:
       - "push"
-      - "gcr.io/$PROJECT_ID/smarketing-api:$BUILD_ID"
+      - "gcr.io/$PROJECT_ID/smarketing-api:$SHORT_SHA"
 
   - name: "gcr.io/cloud-builders/docker"
     id: Build DB Migration
     args:
       - "build"
       - "-t"
-      - "gcr.io/$PROJECT_ID/smarketing-db-migration:$BUILD_ID"
+      - "gcr.io/$PROJECT_ID/smarketing-db-migration:$SHORT_SHA"
       - "-f"
       - "DBDockerfile"
       - "."
@@ -29,14 +29,14 @@ steps:
     id: Push DB Migration
     args:
       - "push"
-      - "gcr.io/$PROJECT_ID/smarketing-db-migration:$BUILD_ID"
+      - "gcr.io/$PROJECT_ID/smarketing-db-migration:$SHORT_SHA"
 
   - name: "gcr.io/cloud-builders/docker"
     id: Build Client
     args:
       - "build"
       - "-t"
-      - "gcr.io/$PROJECT_ID/smarketing-client:$BUILD_ID"
+      - "gcr.io/$PROJECT_ID/smarketing-client:$SHORT_SHA"
       - "."
     dir: "client"
 
@@ -44,7 +44,7 @@ steps:
     id: Push Client
     args:
       - "push"
-      - "gcr.io/$PROJECT_ID/smarketing-client:$BUILD_ID"
+      - "gcr.io/$PROJECT_ID/smarketing-client:$SHORT_SHA"
 
   # Generate the new manifest
   - name: "gcr.io/cloud-builders/gcloud"
@@ -53,10 +53,10 @@ steps:
     args:
       - "-c"
       - |
-        sed -i -e "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/" k8s/deployment.yaml | \
-        sed -i -e 's/BUILD_ID/${BUILD_ID}/' k8s/deployment.yaml  | \
+        sed -i -e "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" k8s/deployment.yaml | \
+        sed -i -e 's/BUILD_ID/${SHORT_SHA}/g' k8s/deployment.yaml  | \
         sed -i -e "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/" k8s/db-migration-job.yaml | \
-        sed -i -e 's/BUILD_ID/${BUILD_ID}/' k8s/db-migration-job.yaml
+        sed -i -e 's/BUILD_ID/${SHORT_SHA}/g' k8s/db-migration-job.yaml
 
   - name: "gcr.io/cloud-builders/kubectl"
     id: Deploy
