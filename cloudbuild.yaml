@@ -53,17 +53,15 @@ steps:
     args:
       - "-c"
       - |
-        sed -i -e "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" k8s/deployment.yaml | \
-        sed -i -e 's/BUILD_ID/${SHORT_SHA}/g' k8s/deployment.yaml  | \
-        sed -i -e "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/" k8s/db-migration-job.yaml | \
-        sed -i -e 's/BUILD_ID/${SHORT_SHA}/g' k8s/db-migration-job.yaml
+        sed "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" k8s/kubernetes.yml.tpl | \
+        sed "s/COMMIT_SHA/${SHORT_SHA}/g" > k8s/kubernetes.yml
 
   - name: "gcr.io/cloud-builders/kubectl"
     id: Deploy
     args:
       - "apply"
       - "-f"
-      - "k8s/"
+      - "k8s/kubernetes.yml"
     env:
       - "CLOUDSDK_COMPUTE_ZONE=us-central1-c"
       - "CLOUDSDK_CONTAINER_CLUSTER=cluster-2"
