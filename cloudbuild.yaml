@@ -7,12 +7,14 @@ steps:
       - "gcr.io/$PROJECT_ID/smarketing-api:$SHORT_SHA"
       - "."
     dir: "backend"
+    waitFor: ["-"]
 
   - name: "gcr.io/cloud-builders/docker"
-    id: Push Backend
+    id: Push API
     args:
       - "push"
       - "gcr.io/$PROJECT_ID/smarketing-api:$SHORT_SHA"
+    waitFor: ["Build API"]
 
   - name: "gcr.io/cloud-builders/docker"
     id: Build DB Migration
@@ -24,12 +26,14 @@ steps:
       - "DBDockerfile"
       - "."
     dir: "backend"
+    waitFor: ["-"]
 
   - name: "gcr.io/cloud-builders/docker"
     id: Push DB Migration
     args:
       - "push"
       - "gcr.io/$PROJECT_ID/smarketing-db-migration:$SHORT_SHA"
+    waitFor: ["Build DB Migration"]
 
   - name: "gcr.io/cloud-builders/docker"
     id: Build Client
@@ -39,12 +43,14 @@ steps:
       - "gcr.io/$PROJECT_ID/smarketing-client:$SHORT_SHA"
       - "."
     dir: "client"
+    waitFor: ["-"]
 
   - name: "gcr.io/cloud-builders/docker"
     id: Push Client
     args:
       - "push"
       - "gcr.io/$PROJECT_ID/smarketing-client:$SHORT_SHA"
+    waitFor: ["Build Client"]
 
   # Generate the new manifest
   - name: "gcr.io/cloud-builders/gcloud"
@@ -55,6 +61,7 @@ steps:
       - |
         sed "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" k8s/kubernetes.yml.tpl | \
         sed "s/COMMIT_SHA/${SHORT_SHA}/g" > k8s/kubernetes.yml
+    waitFor: ["-"]
 
   - name: "gcr.io/cloud-builders/kubectl"
     id: Deploy
