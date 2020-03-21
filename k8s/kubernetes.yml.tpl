@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment
+  name: api-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: backend
+      app: api
   template:
     metadata:
       labels:
-        app: backend
+        app: api
     spec:
       containers:
         - name: api
@@ -65,14 +65,59 @@ spec:
                   key: facebook-app-secret
         - name: client
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-client:COMMIT_SHA
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-nodeport-service
+spec:
+  type: NodePort
+  selector:
+    app: api
+  ports:
+    - port: 80
+      targetPort: 7000
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-client:COMMIT_SHA
           ports:
             - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-nodeport-service
+spec:
+  type: NodePort
+  selector:
+    app: api
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: db-migrate-COMMIT_SHA
 spec:
+  ttlSecondsAfterFinished: 100
   activeDeadlineSeconds: 60
   template:
     spec:
@@ -140,22 +185,16 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: nodeport-service
+              serviceName: client-nodeport-service
+              servicePort: 80
+    - host: api.habite.site
+      http:
+        paths:
+          - backend:
+              serviceName: api-nodeport-service
               servicePort: 80
   tls:
     - hosts:
         - habite.site
+        - api.habite.site
       secretName: habite-site
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: nodeport-service
-spec:
-  type: NodePort
-  selector:
-    app: backend
-  ports:
-    - port: 80
-      targetPort: 7000
-      protocol: TCP
