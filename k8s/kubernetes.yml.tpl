@@ -110,7 +110,7 @@ spec:
 apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-staging
+  name: letsencrypt-production
 spec:
   acme:
     # You must replace this email address with your own.
@@ -120,7 +120,7 @@ spec:
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       # Secret resource used to store the account's private key.
-      name: letsencrypt-staging
+      name: letsencrypt-production
     # Add a single challenge solver, HTTP01 using nginx
     solvers:
       - http01:
@@ -132,7 +132,7 @@ kind: Ingress
 metadata:
   name: nginx-ingress
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/cluster-issuer: letsencrypt-production
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
