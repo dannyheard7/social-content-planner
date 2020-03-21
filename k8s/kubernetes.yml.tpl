@@ -67,38 +67,34 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: db-migrate
-  annotations:
-    "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-delete-policy": hook-succeeded
 spec:
   activeDeadlineSeconds: 60
   template:
-    spec:
-      restartPolicy: Never
-      containers:
-        - name: db-migrate
-          image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-db-migration:COMMIT_SHA
-          env:
-            - name: TYPEORM_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: host
-            - name: TYPEORM_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: username
-            - name: TYPEORM_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: password
-            - name: TYPEORM_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: port
+    restartPolicy: Never
+    containers:
+      - name: db-migrate
+        image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-db-migration:COMMIT_SHA
+        env:
+          - name: TYPEORM_HOST
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: host
+          - name: TYPEORM_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: username
+          - name: TYPEORM_DATABASE
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: password
+          - name: TYPEORM_PORT
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: port
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
