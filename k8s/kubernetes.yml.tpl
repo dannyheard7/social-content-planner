@@ -12,32 +12,57 @@ spec:
       labels:
         app: backend
     spec:
-      automountServiceAccountToken: false
       containers:
         - name: api
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-api:COMMIT_SHA
           ports:
             - containerPort: 7000
-          command: ["/bin/envserver"]
           env:
             - name: TYPEORM_HOST
-              value: berglas://smarketing-secrets/db/host
-            - name: TYPEORM_USERNAME
-              value: berglas://smarketing-secrets/db/username
-            - name: TYPEORM_PASSWORD
-              value: berglas://smarketing-secrets/db/password
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: host
             - name: TYPEORM_DATABASE
-              value: berglas://smarketing-secrets/db/database
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: database
+            - name: TYPEORM_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: username
+            - name: TYPEORM_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: password
             - name: TYPEORM_PORT
-              value: berglas://smarketing-secrets/db/port
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: port
             - name: AUTH0_DOMAIN
-              value: berglas://smarketing-secrets/app/auth0-domain
+              valueFrom:
+                secretKeyRef:
+                  name: app
+                  key: auth0-domain
             - name: AUTH0_AUDIENCE
-              value: berglas://smarketing-secrets/app/auth0-audience
+              valueFrom:
+                secretKeyRef:
+                  name: app
+                  key: auth0-audience
             - name: FACEBOOK_APP_ID
-              value: berglas://smarketing-secrets/app/facebook-app-id
+              valueFrom:
+                secretKeyRef:
+                  name: app
+                  key: facebook-app-id
             - name: FACEBOOK_APP_SECRET
-              value: berglas://smarketing-secrets/app/facebook-app-secret
+              valueFrom:
+                secretKeyRef:
+                  name: app
+                  key: facebook-app-secret
         - name: client
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-client:COMMIT_SHA
           ports:
@@ -54,18 +79,32 @@ spec:
       containers:
         - name: db-migrate
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-db-migration:COMMIT_SHA
-          command: ["/bin/envserver"]
           env:
             - name: TYPEORM_HOST
-              value: berglas://smarketing-secrets/db/host
-            - name: TYPEORM_USERNAME
-              value: berglas://smarketing-secrets/db/username
-            - name: TYPEORM_PASSWORD
-              value: berglas://smarketing-secrets/db/password
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: host
             - name: TYPEORM_DATABASE
-              value: berglas://smarketing-secrets/db/database
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: database
+            - name: TYPEORM_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: username
+            - name: TYPEORM_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: password
             - name: TYPEORM_PORT
-              value: berglas://smarketing-secrets/db/port
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: port
       restartPolicy: Never
 ---
 apiVersion: cert-manager.io/v1alpha2
