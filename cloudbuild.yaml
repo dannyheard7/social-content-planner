@@ -71,4 +71,4 @@ steps:
       - "k8s/kubernetes.yml"
     env:
       - "CLOUDSDK_COMPUTE_ZONE=us-central1-c"
-      - "CLOUDSDK_CONTAINER_CLUSTER=cluster-2"
+      - "CLOUDSDK_CONTAINER_CLUSTER=cluster-1"

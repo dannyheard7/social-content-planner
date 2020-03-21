@@ -69,8 +69,6 @@ metadata:
   name: db-migrate-COMMIT_SHA
 spec:
   activeDeadlineSeconds: 60
-  successfulJobsHistoryLimit: 0
-  failedJobsHistoryLimit: 0
   template:
     spec:
       containers:
