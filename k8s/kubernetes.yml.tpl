@@ -1,3 +1,17 @@
+apiVersion: v1
+data:
+  config.js: |
+    window.env = {}
+    window.env.AUTH0_DOMAIN="houseshare.eu.auth0.com"
+    window.env.AUTH0_CLIENT_ID="ttkXk8m9MzApQ2M7a0yRtXKYwfPCAoQh"
+    window.env.CLIENT_ADDRESS="habite.site"
+    window.env.GRAPHQL_HOST="https://api.habite.site/graphql"
+    window.env.FILE_UPLOAD_ENDPOINT="https://api.habite.site/files/upload"
+    window.env.FACEBOOK_APP_ID="200213604008851"
+kind: ConfigMap
+metadata:
+  name: react-app-config
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -63,8 +77,6 @@ spec:
                 secretKeyRef:
                   name: app
                   key: facebook-app-secret
-        - name: client
-          image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-client:COMMIT_SHA
 ---
 apiVersion: v1
 kind: Service
@@ -75,7 +87,7 @@ spec:
   selector:
     app: api
   ports:
-    - port: 80
+    - port: 81
       targetPort: 7000
       protocol: TCP
 ---
@@ -98,6 +110,15 @@ spec:
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-client:COMMIT_SHA
           ports:
             - containerPort: 80
+          volumeMounts:
+            - name: react-app-config-volume
+              mountPath: /usr/share/nginx/html/config.js
+              subPath: config.js
+              readOnly: true
+      volumes:
+        - name: react-app-config-volume
+          configMap:
+            name: react-app-config
 ---
 apiVersion: v1
 kind: Service
@@ -106,7 +127,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: api
+    app: client
   ports:
     - port: 80
       targetPort: 80
@@ -117,8 +138,7 @@ kind: Job
 metadata:
   name: db-migrate-COMMIT_SHA
 spec:
-  ttlSecondsAfterFinished: 100
-  activeDeadlineSeconds: 60
+  ttlSecondsAfterFinished: 0
   template:
     spec:
       containers:
@@ -193,7 +213,7 @@ spec:
         paths:
           - backend:
               serviceName: api-nodeport-service
-              servicePort: 80
+              servicePort: 81
   tls:
     - hosts:
         - habite.site

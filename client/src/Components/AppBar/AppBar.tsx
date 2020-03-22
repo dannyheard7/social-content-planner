@@ -1,19 +1,8 @@
-import {
-  IconButton,
-  makeStyles,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Typography,
-  AppBar,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-} from "@material-ui/core";
+import { AppBar, Drawer, IconButton, List, ListItem, ListItemText, makeStyles, Menu, MenuItem, Toolbar, Typography } from "@material-ui/core";
 import { AccountCircle, Menu as MenuIcon } from "@material-ui/icons";
-import React, { useState, Fragment } from "react";
+import React, { Fragment, useContext, useState } from "react";
 import { Link } from "react-router-dom";
+import { AuthenticationContext } from "../Authentication/AuthenticationContextProvider";
 
 const useStyles = makeStyles({
   root: {
@@ -29,11 +18,12 @@ const useStyles = makeStyles({
 
 const AppMenu: React.FC = () => {
   const classes = useStyles();
-  const [auth] = useState(true);
+  const { isAuthenticated, loginWithRedirect } = useContext(AuthenticationContext);
   const [anchorEl] = useState(null);
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
+  console.log(isAuthenticated);
   return (
     <div className={classes.root}>
       <AppBar position="fixed">
@@ -50,7 +40,7 @@ const AppMenu: React.FC = () => {
           <Typography variant="h6" className={classes.title}>
             Smarketing
           </Typography>
-          {auth && (
+          {isAuthenticated ? (
             <Fragment>
               <Drawer open={drawerOpen} onClose={() => { setDrawerOpen(false) }}>
                 <List>
@@ -97,7 +87,11 @@ const AppMenu: React.FC = () => {
                 </MenuItem>
               </Menu>
             </Fragment>
-          )}
+          ) :
+            <div style={{ marginLeft: 'auto', cursor: 'pointer' }}>
+              <ListItemText onClick={loginWithRedirect}>Login</ListItemText>
+            </div>
+          }
         </Toolbar>
       </AppBar>
     </div>
