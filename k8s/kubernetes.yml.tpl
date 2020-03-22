@@ -2,12 +2,12 @@ apiVersion: v1
 data:
   config.js: |
     window.env = {}
-    window.env.AUTH0_DOMAIN="houseshare.eu.auth0.com"
-    window.env.AUTH0_CLIENT_ID="ttkXk8m9MzApQ2M7a0yRtXKYwfPCAoQh"
+    window.env.AUTH0_DOMAIN="smarketing.eu.auth0.com"
+    window.env.AUTH0_CLIENT_ID="4IWpAYFnCEjhtVbxdaXaP0nzVltpmk7A"
     window.env.CLIENT_ADDRESS="habite.site"
     window.env.GRAPHQL_HOST="https://api.habite.site/graphql"
     window.env.FILE_UPLOAD_ENDPOINT="https://api.habite.site/files/upload"
-    window.env.FACEBOOK_APP_ID="200213604008851"
+    window.env.FACEBOOK_APP_ID="2002136040088512"
 kind: ConfigMap
 metadata:
   name: react-app-config
