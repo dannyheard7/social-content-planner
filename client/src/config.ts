@@ -11,6 +11,7 @@ const settings = {
   GRAPHQL_HOST: window.env.GRAPHQL_HOST,
   FILE_UPLOAD_ENDPOINT: window.env.FILE_UPLOAD_ENDPOINT,
   FACEBOOK_APP_ID: window.env.FACEBOOK_APP_ID,
+  TWITTER_API_KEY: window.env.TWITTER_API_KEY
 };
 
 export default settings;

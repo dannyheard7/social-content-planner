@@ -5,6 +5,7 @@ import AddPlatformConnectionInput from "../../GraphQL/Inputs/AddPlatformConnecti
 import { ADD_PLATFORM_CONNECTION_MUTATION, AddPlatformConnectionMutationData, AddPlatformConnectionMutationVars } from "../../GraphQL/Mutations/AddPlatformConnection";
 import { PLATFORM_CONNECTIONS_QUERY, PlatformConnectionQueryData } from "../../GraphQL/Queries/PlatformConnections";
 import Platform from "../../Common/Enums/Platform";
+import TwitterConnection from "./TwitterConnections";
 
 const PlatformConnections: React.FC = () => {
   const { data, loading } = useQuery<PlatformConnectionQueryData>(PLATFORM_CONNECTIONS_QUERY);
@@ -26,6 +27,7 @@ const PlatformConnections: React.FC = () => {
     <p>
       <FacebookPageConnection addPlatformConnection={addPlatformConnection}
         existingConnections={platformConnections.filter(pc => pc.platform === Platform.FACEBOOK)} />
+      <TwitterConnection addPlatformConnection={addPlatformConnection} existingConnections={[]} />
     </p>
   );
 };
