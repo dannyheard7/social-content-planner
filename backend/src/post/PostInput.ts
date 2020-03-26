@@ -1,4 +1,4 @@
-import { Field, InputType, ID } from 'type-graphql';
+import { Field, InputType, ID } from '@nestjs/graphql';
 
 @InputType()
 export class PostInput {

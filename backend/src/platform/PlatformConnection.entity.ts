@@ -1,9 +1,9 @@
-import { Field, ID, ObjectType } from 'type-graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import Platform from './Platform';
 
 @Entity('platformConnection')
-@ObjectType('PlatformConnection')
+@ObjectType()
 export class PlatformConnection {
   @PrimaryGeneratedColumn('uuid')
   @Field(type => ID)
@@ -14,7 +14,6 @@ export class PlatformConnection {
   userId: string;
 
   @Column({ type: "enum", enum: Platform })
-  @Field(type => Platform)
   platform: Platform;
 
   @Column()
@@ -25,6 +24,5 @@ export class PlatformConnection {
   entityId: string;
 
   @Column()
-  @Field(type => String)
   entityName: string;
 }

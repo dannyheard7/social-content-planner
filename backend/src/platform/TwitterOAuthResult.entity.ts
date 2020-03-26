@@ -1,14 +1,12 @@
-import { Field, ObjectType } from "type-graphql";
+import { ObjectType } from "@nestjs/graphql";
 
-@ObjectType('TwitterOAuthResult')
+@ObjectType()
 export class TwitterOAuthResult {
     constructor(oauthToken: string, oauthTokenSecret: string) {
         this.oauthToken = oauthToken;
         this.oauthTokenSecret = oauthTokenSecret;
     }
 
-    @Field(type => String)
     oauthToken: string;
-    @Field(type => String)
     oauthTokenSecret: string;
 }

@@ -1,4 +1,4 @@
-import { registerEnumType } from 'type-graphql';
+import { registerEnumType } from '@nestjs/graphql';
 
 enum Platform {
   FACEBOOK = "FACEBOOK",
