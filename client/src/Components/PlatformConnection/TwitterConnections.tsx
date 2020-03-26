@@ -1,8 +1,11 @@
 import { Button, Card, CardActions, CardContent, Grid, Typography } from "@material-ui/core";
-import React, { Fragment, useContext, useState } from "react";
+import React, { Fragment, useContext, useState, useEffect } from "react";
 import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
 import AddPlatformConnectionInput from "../../GraphQL/Inputs/AddPlatformConnectionInput";
 import { AppContext } from "../AppContext/AppContextProvider";
+import { CreatePlatformOAuthTokenMutationData, CreatePlatformOAuthTokenMutationVars, CREATE_PLATFORM_OAUTH_TOKEN } from "../../GraphQL/Mutations/CreatePlatformOAuthToken";
+import { useMutation } from "@apollo/react-hooks";
+import Platform from "../../Common/Enums/Platform";
 
 interface Props {
     addPlatformConnection: (connection: AddPlatformConnectionInput) => void;
@@ -10,16 +13,25 @@ interface Props {
 }
 
 const TwitterConnection: React.FC<Props> = ({ addPlatformConnection, existingConnections }) => {
-    const { clientAddress, twitterApiKey } = useContext(AppContext);
+    const { clientAddress } = useContext(AppContext);
     const [existingConnectionIds] = useState(existingConnections.map(pc => pc.entityId));
+
+    const [createOAuthToken, { data }] = useMutation<CreatePlatformOAuthTokenMutationData, CreatePlatformOAuthTokenMutationVars>(CREATE_PLATFORM_OAUTH_TOKEN);
+
+    useEffect(() => {
+        if (data) {
+            window.location.href = `https://api.twitter.com/oauth/authorize?oauth_token=${data.createPlatformOAuthToken.oauthToken}`;
+        }
+    }, [data])
 
 
     const onTwitterAuthenticate = async () => {
-        // TODO: this has to be done from a backend service
-        const res = await fetch(`https://api.twitter.com/oauth/request_token?oauth_callback="${clientAddress}/platforms"&oauth_consumer_key="${twitterApiKey}"`);
-        const { oauth_token, oauth_token_secret, oauth_callback_confirmed } = await res.json();
-
-        window.location.href = `https://api.twitter.com/oauth/authorize?oauth_token=${oauth_token}`;
+        createOAuthToken({
+            variables: {
+                platform: Platform.TWITTER,
+                callbackUrl: `${clientAddress}/platforms`
+            }
+        });
     }
 
     // const onFacebookPageLink = (page: any) => {

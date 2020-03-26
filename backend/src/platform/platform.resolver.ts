@@ -5,6 +5,8 @@ import { CurrentUser } from '../authz/current.user.decorator';
 import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
 import { PlatformConnectionService } from './platform-connection.service';
 import { PlatformConnection } from './PlatformConnection.entity';
+import Platform from './Platform';
+import { TwitterOAuthResult } from './TwitterOAuthResult.entity';
 
 @Resolver()
 export class PlatformResolver {
@@ -30,5 +32,22 @@ export class PlatformResolver {
   ): Promise<boolean> {
     await this.platformConnectionService.create(platformConnectionInput, user);
     return true;
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(of => TwitterOAuthResult)
+  async createPlatformOAuthToken(
+    @Args({
+      name: 'platform',
+      type: () => Platform,
+    })
+    platform: Platform,
+    @Args({
+      name: 'callbackUrl',
+      type: () => String,
+    })
+    callbackUrl: string
+  ): Promise<TwitterOAuthResult> {
+    return await this.platformConnectionService.getPlatformOAuthToken(platform, callbackUrl);
   }
 }

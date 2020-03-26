@@ -1,6 +1,7 @@
 enum Platform {
-    FACEBOOK = "FACEBOOK"
+    FACEBOOK = "FACEBOOK",
+    TWITTER = "TWITTER"
 }
-export type PlatformType = "FACEBOOK";
+export type PlatformType = "FACEBOOK" | "TWITTER";
 
 export default Platform;

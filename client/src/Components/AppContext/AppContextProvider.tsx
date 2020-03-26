@@ -20,7 +20,7 @@ export const AppContextProvider: React.FC = ({
       value={{
         fileUploadUrl: config.FILE_UPLOAD_ENDPOINT,
         facebookAppId: config.FACEBOOK_APP_ID,
-        clientAddress: config.CLIENT_ADDRESS,
+        clientAddress: `${window.location.protocol}//${config.CLIENT_ADDRESS}`,
         twitterApiKey: config.TWITTER_API_KEY
       }}
     >

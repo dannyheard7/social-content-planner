@@ -20,11 +20,13 @@ type File {
 
 type Mutation {
   addPlatformConnection(platformConnection: AddPlatformConnectionInput!): Boolean!
+  createPlatformOAuthToken(callbackUrl: String!, platform: Platform!): TwitterOAuthResult!
   createPost(post: PostInput!): Post!
 }
 
 enum Platform {
   FACEBOOK
+  TWITTER
 }
 
 type PlatformConnection {
@@ -64,4 +66,9 @@ type PostPlatform {
 type Query {
   platformConnections: [PlatformConnection!]!
   post(id: ID!): Post!
+}
+
+type TwitterOAuthResult {
+  oauthToken: String!
+  oauthTokenSecret: String!
 }
