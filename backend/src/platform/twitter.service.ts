@@ -63,13 +63,14 @@ export class TwitterService implements PlatformService {
         var consumer = this.createOAuthConsumer(null);
 
         return await new Promise<PlatformConnection>((resolve, reject) => {
-            consumer.get("http://twitter.com/account/verify_credentials", result.oauthToken, result.oauthTokenSecret, function (error, data, response) {
+            consumer.get("https://api.twitter.com/1.1/account/verify_credentials.json", result.oauthToken, result.oauthTokenSecret, function (error, data, response) {
                 if (error) reject(error);
                 else {
+                    const json = JSON.parse(data);
                     const platformConnection = new PlatformConnection();
-                    platformConnection.entityId = data.id;
+                    platformConnection.entityId = json.id;
                     platformConnection.platform = Platform.TWITTER;;
-                    platformConnection.entityName = data.screen_name;
+                    platformConnection.entityName = json.screen_name;
                     platformConnection.accessToken = result.oauthToken;
                     platformConnection.accessTokenSecret = result.oauthTokenSecret;
                     resolve(platformConnection);

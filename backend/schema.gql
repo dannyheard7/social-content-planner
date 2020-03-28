@@ -17,9 +17,16 @@ input AddPlatformConnectionInput {
   platformUserId: String!
 }
 
+type File {
+  id: ID!
+  user_id: ID!
+  filename: String!
+  ext: String!
+}
+
 type Mutation {
-  addPlatformConnection(platformConnection: AddPlatformConnectionInput!): Boolean!
-  addOAuthPlatformConnection(platformConnection: AddOAuthPlatformConnectionInput!): Boolean!
+  addPlatformConnection(platformConnection: AddPlatformConnectionInput!): PlatformConnection!
+  addOAuthPlatformConnection(platformConnection: AddOAuthPlatformConnectionInput!): PlatformConnection!
   createPost(post: PostInput!): Post!
 }
 
@@ -47,12 +54,28 @@ type Post {
   id: ID!
   text: String!
   user_id: ID!
+  images: [PostImage!]!
+  platforms: [PostPlatform!]!
+}
+
+type PostImage {
+  post_id: ID!
+  image_id: ID!
+  image: File!
+  post: Post!
 }
 
 input PostInput {
   text: String!
   images: [ID!]!
   platformConnections: [ID!]!
+}
+
+type PostPlatform {
+  post_id: ID!
+  platform_connection_id: ID!
+  platformConnection: PlatformConnection!
+  post: Post!
 }
 
 type Query {

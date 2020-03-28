@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/react-hooks";
-import { Button, Card, CardActions, CardContent, Dialog, DialogContent, DialogTitle, Grid, List, ListItem, ListItemText, Typography } from "@material-ui/core";
+import { Dialog, DialogContent, DialogTitle, Grid, List, ListItem, ListItemText } from "@material-ui/core";
 import React, { Fragment, useContext, useState } from "react";
 import FacebookLogin, { ReactFacebookLoginInfo } from "react-facebook-login";
 import Platform from "../../Common/Enums/Platform";
@@ -44,27 +44,6 @@ const FacebookPageConnection: React.FC<Props> = ({ existingConnections }) => {
     return (
         <Fragment>
             <Grid container direction="column" spacing={2}>
-                <Grid item>
-                    <Typography>You have {existingConnections.length} linked Facebook Page{existingConnections.length !== 1 && 's'}</Typography>
-                </Grid>
-                <Grid container item>
-                    {existingConnections.map(pc => {
-                        return (
-                            <Grid item md={3}>
-                                <Card >
-                                    <CardContent>
-                                        <Typography >
-                                            {pc.entityName}
-                                        </Typography>
-                                    </CardContent>
-                                    <CardActions>
-                                        <Button size="small">Remove</Button>
-                                    </CardActions>
-                                </Card>
-                            </Grid>
-                        )
-                    })}
-                </Grid>
                 <Grid item>
                     <FacebookLogin
                         appId={facebookAppId!}

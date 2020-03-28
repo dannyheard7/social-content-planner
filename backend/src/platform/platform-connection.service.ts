@@ -45,12 +45,13 @@ export class PlatformConnectionService {
 
     async create(
         user: User,
+        platform: Platform,
         platformConnectionInput?: AddPlatformConnectionInput,
         oauthTokenResult?: OAuthTokenResult
     ): Promise<PlatformConnection> {
         var platformConnection: PlatformConnection;
 
-        switch (platformConnectionInput.platform) {
+        switch (platform) {
             case Platform.FACEBOOK:
                 platformConnection = await this.facebookService.createPlatformConnection(platformConnectionInput!);
                 break;
@@ -60,8 +61,14 @@ export class PlatformConnectionService {
             default:
                 throw new Error("Platform not currently supported");
         }
-
         platformConnection.userId = user.sub;
+
+        if (await this.platformConnectionRepository.findOne({
+            userId: platformConnection.userId,
+            entityId: platformConnection.entityId,
+            platform: platformConnection.platform
+        })) throw new Error("This platform connection already exists");
+
         return await this.platformConnectionRepository.save(platformConnection);
     }
 }

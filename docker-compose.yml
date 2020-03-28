@@ -1,5 +1,7 @@
 version: "3.7"
 
+volumes:
+  pgadmin: {}
 services:
   postgres:
     image: postgres:alpine
@@ -22,3 +24,14 @@ services:
       - TYPEORM_PORT=5432
     depends_on:
       - postgres
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin:/root/.pgadmin
+    ports:
+      - "5050:80"

@@ -1,10 +1,11 @@
 import { useQuery } from "@apollo/react-hooks";
-import React from "react";
+import React, { Fragment } from "react";
 import FacebookPageConnection from "./FacebookPageConnections";
 
 import { PLATFORM_CONNECTIONS_QUERY, PlatformConnectionQueryData } from "../../GraphQL/Queries/PlatformConnections";
 import Platform from "../../Common/Enums/Platform";
 import TwitterConnection from "./TwitterConnections";
+import ExistingConnections from "./ExistingConnections";
 
 const PlatformConnections: React.FC = () => {
   const { data, loading } = useQuery<PlatformConnectionQueryData>(PLATFORM_CONNECTIONS_QUERY);
@@ -15,11 +16,12 @@ const PlatformConnections: React.FC = () => {
   const platformConnections = data.platformConnections.map(pc => ({ ...pc, platform: Platform[pc.platform] }));
 
   return (
-    <p>
+    <Fragment>
+      <ExistingConnections existingConnections={platformConnections} />
       <FacebookPageConnection
         existingConnections={platformConnections.filter(pc => pc.platform === Platform.FACEBOOK)} />
-      <TwitterConnection existingConnections={[]} />
-    </p>
+      <TwitterConnection />
+    </Fragment>
   );
 };
 
