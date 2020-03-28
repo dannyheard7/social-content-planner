@@ -2,18 +2,30 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AddOAuthPlatformConnectionInput {
+  oauthToken: String!
+  oauthTokenSecret: String!
+  oauthVerifier: String!
+  platform: Platform!
+}
+
 input AddPlatformConnectionInput {
   entityId: ID!
   entityName: String!
   accessToken: String!
   platform: Platform!
-  platformUserId: String
+  platformUserId: String!
 }
 
 type Mutation {
   addPlatformConnection(platformConnection: AddPlatformConnectionInput!): Boolean!
-  createPlatformOAuthToken(callbackUrl: String!, platform: Platform!): TwitterOAuthResult!
+  addOAuthPlatformConnection(platformConnection: AddOAuthPlatformConnectionInput!): Boolean!
   createPost(post: PostInput!): Post!
+}
+
+type OAuthTokenResult {
+  oauthToken: String!
+  oauthTokenSecret: String!
 }
 
 enum Platform {
@@ -24,9 +36,10 @@ enum Platform {
 type PlatformConnection {
   id: ID!
   userId: ID!
-  entityId: ID!
   platform: Platform!
   accessToken: String!
+  accessTokenSecret: String
+  entityId: String!
   entityName: String!
 }
 
@@ -44,10 +57,6 @@ input PostInput {
 
 type Query {
   platformConnections: [PlatformConnection!]!
+  getPlatformOAuthRequestToken(callbackUrl: String!, platform: Platform!): OAuthTokenResult!
   post(id: ID!): Post!
-}
-
-type TwitterOAuthResult {
-  oauthToken: String!
-  oauthTokenSecret: String!
 }

@@ -5,6 +5,7 @@ import { PlatformConnection } from './PlatformConnection.entity';
 import { PublisherService } from './publisher.service';
 import { PlatformConnectionService } from './platform-connection.service';
 import { FacebookService } from './facebook.service';
+import { TwitterService } from './twitter.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([PlatformConnection])],
@@ -13,6 +14,7 @@ import { FacebookService } from './facebook.service';
     PublisherService,
     PlatformConnectionService,
     FacebookService,
+    TwitterService
   ],
   exports: [PublisherService],
 })

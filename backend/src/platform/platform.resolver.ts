@@ -6,7 +6,8 @@ import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
 import { PlatformConnectionService } from './platform-connection.service';
 import { PlatformConnection } from './PlatformConnection.entity';
 import Platform from './Platform';
-import { TwitterOAuthResult } from './TwitterOAuthResult.entity';
+import { OAuthTokenResult } from './OAuthTokenResult.entity';
+import { AddOAuthPlatformConnectionInput } from './AddOAuthPlatformConnectionInput';
 
 @Resolver()
 export class PlatformResolver {
@@ -21,22 +22,8 @@ export class PlatformResolver {
   }
 
   @UseGuards(GqlAuthGuard)
-  @Mutation(of => Boolean)
-  async addPlatformConnection(
-    @Args({
-      name: 'platformConnection',
-      type: () => AddPlatformConnectionInput,
-    })
-    platformConnectionInput: AddPlatformConnectionInput,
-    @CurrentUser() user: User,
-  ): Promise<boolean> {
-    await this.platformConnectionService.create(platformConnectionInput, user);
-    return true;
-  }
-
-  @UseGuards(GqlAuthGuard)
-  @Mutation(of => TwitterOAuthResult)
-  async createPlatformOAuthToken(
+  @Query(of => OAuthTokenResult)
+  async getPlatformOAuthRequestToken(
     @Args({
       name: 'platform',
       type: () => Platform,
@@ -47,7 +34,39 @@ export class PlatformResolver {
       type: () => String,
     })
     callbackUrl: string
-  ): Promise<TwitterOAuthResult> {
-    return await this.platformConnectionService.getPlatformOAuthToken(platform, callbackUrl);
+  ): Promise<OAuthTokenResult> {
+    return await this.platformConnectionService.getOAuthRequestToken(platform, callbackUrl);
   }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(of => Boolean)
+  async addPlatformConnection(
+    @Args({
+      name: 'platformConnection',
+      type: () => AddPlatformConnectionInput,
+    })
+    platformConnectionInput: AddPlatformConnectionInput,
+    @CurrentUser() user: User,
+  ): Promise<boolean> {
+    await this.platformConnectionService.create(user, platformConnectionInput);
+    return true;
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(of => Boolean)
+  async addOAuthPlatformConnection(
+    @Args({
+      name: 'platformConnection',
+      type: () => AddOAuthPlatformConnectionInput,
+    })
+    input: AddOAuthPlatformConnectionInput,
+    @CurrentUser() user: User,
+  ): Promise<boolean> {
+    const oauthAccessToken = await this.platformConnectionService.getOAuthAccessToken(
+      input.platform, input.oauthToken, input.oauthTokenSecret, input.oauthVerifier);
+    await this.platformConnectionService.create(user, undefined, oauthAccessToken);
+    return true;
+  }
+
+
 }

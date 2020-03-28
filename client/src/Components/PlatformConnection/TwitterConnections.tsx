@@ -1,32 +1,37 @@
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { Button, Card, CardActions, CardContent, Grid, Typography } from "@material-ui/core";
-import React, { Fragment, useContext, useState, useEffect } from "react";
-import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
-import AddPlatformConnectionInput from "../../GraphQL/Inputs/AddPlatformConnectionInput";
-import { AppContext } from "../AppContext/AppContextProvider";
-import { CreatePlatformOAuthTokenMutationData, CreatePlatformOAuthTokenMutationVars, CREATE_PLATFORM_OAUTH_TOKEN } from "../../GraphQL/Mutations/CreatePlatformOAuthToken";
-import { useMutation } from "@apollo/react-hooks";
+import React, { Fragment, useContext, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Platform from "../../Common/Enums/Platform";
+import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
+import { AddOauthPlatformConnectionMutationData, AddOauthPlatformConnectionMutationVars, ADD_OAUTH_PLATFORM_CONNECTION_MUTATION } from "../../GraphQL/Mutations/AddOAuthPlatformConnection";
+import { GetPlatformOAuthRequestTokenQueryData, GetPlatformOAuthRequestTokenQueryVars, GET_PLATFORM_OAUTH_REQUEST_TOKEN } from "../../GraphQL/Queries/GetPlatformOAuthRequestToken";
+import { AppContext } from "../AppContext/AppContextProvider";
 
 interface Props {
-    addPlatformConnection: (connection: AddPlatformConnectionInput) => void;
     existingConnections: PlatformConnection[];
 }
 
-const TwitterConnection: React.FC<Props> = ({ addPlatformConnection, existingConnections }) => {
+const TwitterConnection: React.FC<Props> = ({ existingConnections }) => {
     const { clientAddress } = useContext(AppContext);
     const [existingConnectionIds] = useState(existingConnections.map(pc => pc.entityId));
+    const { search } = useLocation();
+    const queryParams = new URLSearchParams(search);
 
-    const [createOAuthToken, { data }] = useMutation<CreatePlatformOAuthTokenMutationData, CreatePlatformOAuthTokenMutationVars>(CREATE_PLATFORM_OAUTH_TOKEN);
+    const [getOauthToken, { data }] = useLazyQuery<GetPlatformOAuthRequestTokenQueryData, GetPlatformOAuthRequestTokenQueryVars>(GET_PLATFORM_OAUTH_REQUEST_TOKEN);
 
     useEffect(() => {
         if (data) {
-            window.location.href = `https://api.twitter.com/oauth/authorize?oauth_token=${data.createPlatformOAuthToken.oauthToken}`;
+            window.location.href = `https://api.twitter.com/oauth/authorize?oauth_token=${data.getPlatformOAuthRequestToken.oauthToken}`;
         }
-    }, [data])
+    }, [data]);
+
+    const [addPlatformMutation] = useMutation<AddOauthPlatformConnectionMutationData, AddOauthPlatformConnectionMutationVars>(
+        ADD_OAUTH_PLATFORM_CONNECTION_MUTATION);
 
 
     const onTwitterAuthenticate = async () => {
-        createOAuthToken({
+        getOauthToken({
             variables: {
                 platform: Platform.TWITTER,
                 callbackUrl: `${clientAddress}/platforms`
@@ -34,15 +39,19 @@ const TwitterConnection: React.FC<Props> = ({ addPlatformConnection, existingCon
         });
     }
 
-    // const onFacebookPageLink = (page: any) => {
-    //     addPlatformConnection({
-    //         entityId: page.id,
-    //         entityName: page.name,
-    //         platform: Platform[Platform.FACEBOOK],
-    //         platformUserId: userInfo!.id,
-    //         accessToken: userInfo!.accessToken
-    //     })
-    // }
+    if (queryParams.get("oauth_token") && queryParams.get("oauth_verifier")) {
+        addPlatformMutation({
+            variables:
+            {
+                platformConnection: {
+                    oauthToken: queryParams.get("oauth_token")!,
+                    oauthTokenSecret: queryParams.get("oauth_token")!,
+                    oauthVerifier: queryParams.get("oauth_verifier")!,
+                    platform: Platform[Platform.TWITTER]
+                }
+            }
+        });
+    }
 
     return (
         <Fragment>

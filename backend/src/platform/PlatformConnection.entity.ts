@@ -9,7 +9,7 @@ export class PlatformConnection {
   @Field(type => ID)
   id: string;
 
-  @Column({ nullable: false })
+  @Column()
   @Field(type => ID)
   userId: string;
 
@@ -19,8 +19,10 @@ export class PlatformConnection {
   @Column()
   accessToken: string;
 
+  @Column({ nullable: true })
+  accessTokenSecret?: string;
+
   @Column()
-  @Field(type => ID)
   entityId: string;
 
   @Column()

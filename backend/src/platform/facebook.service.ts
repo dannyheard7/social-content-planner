@@ -7,98 +7,114 @@ import * as FormData from 'form-data';
 import { Post } from '../post/Post.entity';
 import { PlatformConnection } from './PlatformConnection.entity';
 import PlatformService from './PlatformService';
+import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
+import Platform from './Platform';
 
 @Injectable()
 export class FacebookService implements PlatformService {
-  constructor(private readonly configService: ConfigService) { }
+    constructor(private readonly configService: ConfigService) { }
 
-  async publishPost(
-    post: Post,
-    platformConnection: PlatformConnection,
-  ): Promise<string> {
-    let attachedMedia = [];
+    async publishPost(
+        post: Post,
+        platformConnection: PlatformConnection,
+    ): Promise<string> {
+        let attachedMedia = [];
 
-    if ((await post.images).length > 0) {
-      await Promise.all((await post.images).map(postImage => postImage.image));
+        if ((await post.images).length > 0) {
+            await Promise.all((await post.images).map(postImage => postImage.image));
 
-      const imageUploadRequests = (await post.images).map(async postImage => {
-        const image = await postImage.image;
-        const data = new FormData();
+            const imageUploadRequests = (await post.images).map(async postImage => {
+                const image = await postImage.image;
+                const data = new FormData();
 
-        // TODO: move the file path into config service and make it relative etc
-        data.append('file', fs.createReadStream(path.join('./files', image.filename)));
+                // TODO: move the file path into config service and make it relative etc
+                data.append('file', fs.createReadStream(path.join('./files', image.filename)));
 
-        return fetch(
-          `https://graph.facebook.com/v6.0/${platformConnection.entityId}/photos?published=false&access_token=${platformConnection.accessToken}`,
-          { method: 'POST', body: data }
+                return fetch(
+                    `https://graph.facebook.com/v6.0/${platformConnection.entityId}/photos?published=false&access_token=${platformConnection.accessToken}`,
+                    { method: 'POST', body: data }
+                )
+                    .then(response => response.json())
+                    .catch(e => {
+                        throw new Error(e.message);
+                    });
+            });
+            const data = await Promise.all(imageUploadRequests);
+            attachedMedia = data.map(d => ({
+                media_fbid: d.id,
+            }));
+        }
+
+        const body = {
+            access_token: platformConnection.accessToken,
+            message: post.text,
+            published: true,
+            attached_media: attachedMedia,
+        };
+
+        const postData = await fetch(
+            `https://graph.facebook.com/v6.0/${platformConnection.entityId}/feed`,
+            {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+            },
         )
-          .then(response => response.json())
-          .catch(e => {
-            throw new Error(e.message);
-          });
-      });
-      const data = await Promise.all(imageUploadRequests);
-      attachedMedia = data.map(d => ({
-        media_fbid: d.id,
-      }));
+            .then(res => res.json())
+            .catch(e => {
+                throw new Error(e.message);
+            });
+
+        return postData.id;
     }
 
-    const body = {
-      access_token: platformConnection.accessToken,
-      message: post.text,
-      published: true,
-      attached_media: attachedMedia,
-    };
+    private async getFacebookPageAccessToken(
+        userId: string,
+        userAccessToken: string,
+        pageId: string,
+    ): Promise<string> {
+        const clientId = this.configService.get<string | undefined>(
+            'FACEBOOK_APP_ID',
+        );
+        const clientSecret = this.configService.get<string | undefined>(
+            'FACEBOOK_APP_SECRET',
+        );
 
-    const postData = await fetch(
-      `https://graph.facebook.com/v6.0/${platformConnection.entityId}/feed`,
-      {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      },
-    )
-      .then(res => res.json())
-      .catch(e => {
-        throw new Error(e.message);
-      });
+        if (!clientId || !clientSecret)
+            throw new Error('Facebook app details not setup');
 
-    return postData.id;
-  }
+        const data = await fetch(
+            `https://graph.facebook.com/v6.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${clientId}&client_secret=${clientSecret}&fb_exchange_token=${userAccessToken}`,
+        )
+            .then(response => response.json())
+            .catch(e => {
+                throw new Error(e.message);
+            });
 
-  async getFacebookPageAccessToken(
-    userId: string,
-    userAccessToken: string,
-    pageId: string,
-  ): Promise<string> {
-    const clientId = this.configService.get<string | undefined>(
-      'FACEBOOK_APP_ID',
-    );
-    const clientSecret = this.configService.get<string | undefined>(
-      'FACEBOOK_APP_SECRET',
-    );
+        const pages = await fetch(
+            `https://graph.facebook.com/v6.0/${userId}/accounts?access_token=${data.access_token}&fields=access_token`,
+        )
+            .then(response => response.json())
+            .catch(e => {
+                throw new Error(e.message);
+            });
+        return pages.data.find(p => p.id === pageId).access_token;
+    }
 
-    if (!clientId || !clientSecret)
-      throw new Error('Facebook app details not setup');
+    async createPlatformConnection(platformConnectionInput: AddPlatformConnectionInput): Promise<PlatformConnection> {
+        const platformConnection = new PlatformConnection();
+        platformConnection.entityId = platformConnectionInput.entityId;
+        platformConnection.platform = Platform.FACEBOOK;
+        platformConnection.entityName = platformConnectionInput.entityName;
+        platformConnection.accessToken = await this.getFacebookPageAccessToken(
+            platformConnectionInput.platformUserId,
+            platformConnectionInput.accessToken,
+            platformConnectionInput.entityId,
+        );
 
-    const data = await fetch(
-      `https://graph.facebook.com/v6.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${clientId}&client_secret=${clientSecret}&fb_exchange_token=${userAccessToken}`,
-    )
-      .then(response => response.json())
-      .catch(e => {
-        throw new Error(e.message);
-      });
-
-    const pages = await fetch(
-      `https://graph.facebook.com/v6.0/${userId}/accounts?access_token=${data.access_token}&fields=access_token`,
-    )
-      .then(response => response.json())
-      .catch(e => {
-        throw new Error(e.message);
-      });
-    return pages.data.find(p => p.id === pageId).access_token;
-  }
+        return platformConnection;
+    }
 }
