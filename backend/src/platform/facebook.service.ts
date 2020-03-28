@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import fetch from 'node-fetch';
 import * as path from 'path';
@@ -9,10 +9,15 @@ import { PlatformConnection } from './PlatformConnection.entity';
 import PlatformService from './PlatformService';
 import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
 import Platform from './Platform';
+import { PostService } from '../post/post.service';
 
 @Injectable()
 export class FacebookService implements PlatformService {
-    constructor(private readonly configService: ConfigService) { }
+    constructor(
+        private readonly configService: ConfigService,
+        @Inject(forwardRef(() => PostService))
+        private readonly postService: PostService
+    ) { }
 
     async publishPost(
         post: Post,
@@ -20,15 +25,12 @@ export class FacebookService implements PlatformService {
     ): Promise<string> {
         let attachedMedia = [];
 
-        if ((await post.images).length > 0) {
-            await Promise.all((await post.images).map(postImage => postImage.image));
+        const imageFiles = await this.postService.getPostImageFiles(post);
 
-            const imageUploadRequests = (await post.images).map(async postImage => {
-                const image = await postImage.image;
+        if (imageFiles.length > 0) {
+            const imageUploadRequests = imageFiles.map(async imageFile => {
                 const data = new FormData();
-
-                // TODO: move the file path into config service and make it relative etc
-                data.append('file', fs.createReadStream(path.join('./files', image.filename)));
+                data.append('file', fs.createReadStream(path.join(this.configService.get("FILE_DIR"), imageFile.filename)));
 
                 return fetch(
                     `https://graph.facebook.com/v6.0/${platformConnection.entityId}/photos?published=false&access_token=${platformConnection.accessToken}`,

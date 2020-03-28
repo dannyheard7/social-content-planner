@@ -8,7 +8,7 @@ export class FileService {
   constructor(
     @InjectRepository(FileEntity)
     private readonly fileRepository: Repository<FileEntity>,
-  ) {}
+  ) { }
   findById(id: string): Promise<FileEntity | undefined> {
     return this.fileRepository.findOne(id);
   }

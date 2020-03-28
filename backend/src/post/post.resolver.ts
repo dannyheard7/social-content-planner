@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, forwardRef, Inject } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { PostInput } from './PostInput';
 
@@ -13,6 +13,7 @@ import { ID } from '@nestjs/graphql';
 export class PostResolver {
   constructor(
     private readonly postService: PostService,
+    @Inject(forwardRef(() => PublisherService))
     private readonly publisherService: PublisherService,
   ) { }
 

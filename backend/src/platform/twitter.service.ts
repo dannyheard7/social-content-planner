@@ -1,22 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as oauth from 'oauth';
+import fetch from 'node-fetch';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as FormData from 'form-data';
 import { Post } from '../post/Post.entity';
 import { PlatformConnection } from './PlatformConnection.entity';
 import PlatformService from './PlatformService';
 import { OAuthTokenResult } from './OAuthTokenResult.entity';
 import Platform from './Platform';
+import { PostService } from '../post/post.service';
 
 @Injectable()
 export class TwitterService implements PlatformService {
-    constructor(private readonly configService: ConfigService) { }
-
-    async publishPost(
-        post: Post,
-        platformConnection: PlatformConnection,
-    ): Promise<string> {
-        return "";
-    }
+    constructor(
+        private readonly configService: ConfigService,
+        @Inject(forwardRef(() => PostService))
+        private readonly postService: PostService
+    ) { }
 
     private createOAuthConsumer(callbackUrl?: string) {
         return new oauth.OAuth(
@@ -27,6 +29,54 @@ export class TwitterService implements PlatformService {
             "1.0A",
             callbackUrl,
             "HMAC-SHA1");
+    }
+
+    async publishPost(
+        post: Post,
+        platformConnection: PlatformConnection,
+    ): Promise<string> {
+        let attachedMedia = [];
+        const imageFiles = await this.postService.getPostImageFiles(post);
+        const consumer = this.createOAuthConsumer();
+
+        if (imageFiles.length > 0) {
+            var authorization = consumer.authHeader(
+                'https://api.twitter.com/1.1/media/upload.json?media_category=tweet_image',
+                platformConnection.accessToken, platformConnection.accessTokenSecret, 'POST');
+
+            var headers = {
+                'Authorization': authorization,
+            };
+
+            const imageUploadRequests = imageFiles.map(async imageFile => {
+                const data = new FormData();
+                data.append('file', fs.createReadStream(path.join(this.configService.get("FILE_DIR"), imageFile.filename)));
+
+                return fetch(
+                    'https://api.twitter.com/1.1/media/upload.json?media_category=tweet_image',
+                    { method: 'POST', body: data, headers }
+                )
+                    .then(response => response.json())
+                    .catch(e => {
+                        throw new Error(e.message);
+                    });
+            });
+            attachedMedia = await Promise.all(imageUploadRequests);
+        }
+
+
+        const mediaIds = attachedMedia.join(",");
+
+        return await new Promise<string>((resolve, reject) => {
+            consumer.post(`https://api.twitter.com/1.1/statuses/update.json?media_ids=${mediaIds}&status=${post.text}`,
+                platformConnection.accessToken, platformConnection.accessTokenSecret, function (error, data, response) {
+                    if (error) reject(error);
+                    else {
+                        const json = JSON.parse(data);
+                        resolve(json.id);
+                    }
+                });
+        });
     }
 
     async getOAuthRequestToken(callbackUrl: string): Promise<OAuthTokenResult> {
