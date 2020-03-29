@@ -77,6 +77,21 @@ spec:
                 secretKeyRef:
                   name: app
                   key: facebook-app-secret
+            - name: TWITTER_CONSUMER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app
+                  key: twitter-consumer-key
+            - name: TWITTER_CONSUMER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app
+                  key: twitter-consumer-secret
+            - name: FILE_DIR
+              valueFrom:
+                secretKeyRef:
+                  name: app
+                  key: file-dir
 ---
 apiVersion: v1
 kind: Service
