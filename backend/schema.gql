@@ -53,7 +53,7 @@ type PlatformConnection {
 type Post {
   id: ID!
   text: String!
-  user_id: ID!
+  userId: ID!
   media: [PostMedia!]!
   platforms: [PostPlatform!]!
 }
@@ -84,4 +84,5 @@ type Query {
   platformConnections: [PlatformConnection!]!
   getPlatformOAuthRequestToken(callbackUrl: String!, platform: Platform!): OAuthTokenResult!
   post(id: ID!): Post!
+  posts: [Post!]!
 }

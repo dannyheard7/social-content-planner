@@ -21,6 +21,7 @@ import { AppContextProvider } from "./Components/AppContext/AppContextProvider";
 import PlatformConnections from "./Components/PlatformConnection/PlatformConnections";
 import Loading from "./Components/Loading/Loading";
 import config from './config';
+import PostList from "./Components/PostList/PostList";
 
 const useStyles = makeStyles(styles);
 
@@ -53,6 +54,9 @@ const Routes: React.FC = () => {
         <Switch>
           <Route exact path="/dashboard">
             <Dashboard />
+          </Route>
+          <Route exact path="/posts">
+            <PostList />
           </Route>
           <Route exact path="/platforms">
             <PlatformConnections />

@@ -1,13 +1,12 @@
-import { UseGuards, forwardRef, Inject } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
-import { PostInput } from './PostInput';
-
+import { UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthGuard } from '../authz/auth.guard';
-import { PostService } from './post.service';
-import { Post } from './Post.entity';
-import { PublisherService } from './publisher.service';
 import { CurrentUser } from '../authz/current.user.decorator';
-import { ID } from '@nestjs/graphql';
+import { Post } from './Post.entity';
+import { PostService } from './post.service';
+import { PostInput } from './PostInput';
+import { PublisherService } from './publisher.service';
+
 
 @Resolver()
 export class PostResolver {
@@ -22,7 +21,18 @@ export class PostResolver {
     @Args({ name: 'id', type: () => ID }) postId: string,
     @CurrentUser() user: User,
   ) {
-    return await this.postService.findById(postId);
+    const post = await this.postService.findById(postId);
+    if (post.userId === user.sub) throw new UnauthorizedException("You cannot access this post");
+    return post;
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Query(() => [Post])
+  async posts(
+    @CurrentUser() user: User,
+  ) {
+    // TODO: make this a connection
+    return await this.postService.getAllForUser(user);
   }
 
   @UseGuards(GqlAuthGuard)
@@ -32,7 +42,7 @@ export class PostResolver {
     @CurrentUser() user: User,
   ) {
     const post = await this.postService.create(postInput, user);
-    const postPlatforms = await this.publisherService.publishPost(post);
+    await this.publisherService.publishPost(post);
 
     return post;
   }

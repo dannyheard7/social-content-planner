@@ -17,15 +17,22 @@ export class PostService {
         private readonly postPlatformRepository: Repository<PostPlatform>,
         private readonly connection: Connection,
     ) { }
+
     findById(id: string): Promise<Post | undefined> {
         return this.postRepository.findOne(id);
+    }
+
+    async getAllForUser(user: User): Promise<Post[]> {
+        return await this.postRepository.find({
+            userId: user.sub,
+        });
     }
 
     async create(postInput: PostInput, user: User): Promise<Post> {
         const post = new Post();
         post.id = uuid();
         post.text = postInput.text;
-        post.user_id = user.sub;
+        post.userId = user.sub;
 
         const images = postInput.images.map(image => {
             const postImage = new PostMedia();

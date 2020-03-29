@@ -20,9 +20,9 @@ export class Post {
   @Field(type => String)
   text: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, name: "user_id" })
   @Field(type => ID)
-  user_id: string;
+  userId: string;
 
   @OneToMany(
     type => PostMedia,
