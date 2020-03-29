@@ -6,14 +6,17 @@ export class AddPlatformConnectionTable1582345554731
 
   public async up(queryRunner: QueryRunner): Promise<any> {
     await queryRunner.query(
+      `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`
+    )
+    await queryRunner.query(
       `CREATE TYPE platform AS ENUM ('FACEBOOK');`
     )
     await queryRunner.query(
-      `CREATE TABLE "platformConnection" ("id" uuid NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY, "userId" TEXT NOT NULL, "platform" platform NOT NULL, "accessToken" TEXT NOT NULL, "entityId" TEXT NOT NULL, "entityName" TEXT NOT NULL)`,
+      `CREATE TABLE platform_connection ("id" uuid NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY, "userId" TEXT NOT NULL, "platform" platform NOT NULL, "accessToken" TEXT NOT NULL, "entityId" TEXT NOT NULL, "entityName" TEXT NOT NULL)`,
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {
-    await queryRunner.query(`DROP TABLE "platformConnection"`);
+    await queryRunner.query(`DROP TABLE platform_connection`);
   }
 }

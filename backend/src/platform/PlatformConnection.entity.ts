@@ -2,7 +2,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import Platform from './Platform';
 
-@Entity('platformConnection')
+@Entity('platform_connection')
 @ObjectType()
 export class PlatformConnection {
   @PrimaryGeneratedColumn('uuid')

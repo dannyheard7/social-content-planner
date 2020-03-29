@@ -11,7 +11,7 @@ export class AddPostTable1582453655659 implements MigrationInterface {
       `CREATE TABLE "post_image" ("post_id" uuid NOT NULL REFERENCES post(id), "image_id" uuid NOT NULL REFERENCES file(id),  PRIMARY KEY ("post_id", "image_id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "post_platform_connection" ("post_id" uuid NOT NULL REFERENCES "post"("id"), "platform_connection_id" uuid NOT NULL REFERENCES "platformConnection"("id"), PRIMARY KEY ("post_id", "platform_connection_id"))`,
+      `CREATE TABLE "post_platform_connection" ("post_id" uuid NOT NULL REFERENCES "post"("id"), "platform_connection_id" uuid NOT NULL REFERENCES platform_connection("id"), PRIMARY KEY ("post_id", "platform_connection_id"))`,
     );
   }
 
