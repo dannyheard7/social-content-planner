@@ -3,6 +3,24 @@ version: "3.7"
 volumes:
   pgadmin: {}
 services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      TYPEORM_HOST: postgres
+      TYPEORM_DATABASE: content_planner
+      TYPEORM_USERNAME: postgres
+      TYPEORM_PORT: 5432
+      AUTH0_DOMAIN: https://smarketing.eu.auth0.com/
+      AUTH0_AUDIENCE: 4IWpAYFnCEjhtVbxdaXaP0nzVltpmk7A
+      FACEBOOK_APP_ID: 2002136040088512
+      FACEBOOK_APP_SECRET: 1cc20492fb1361de8bd65cb70a718b40
+      TWITTER_CONSUMER_KEY: 0FUfd55TBCepUErv001kUHA89
+      TWITTER_CONSUMER_SECRET: pYEmjimbbhDncBGqbxTpFKurcG9SoPzXR8wibKdQOQMZIRwCHC
+      FILE_DIR: ./files
+    depends_on: ["postgres"]
+
   postgres:
     image: postgres:alpine
     environment:
