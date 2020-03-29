@@ -54,21 +54,21 @@ type Post {
   id: ID!
   text: String!
   user_id: ID!
-  images: [PostImage!]!
+  media: [PostMedia!]!
   platforms: [PostPlatform!]!
-}
-
-type PostImage {
-  post_id: ID!
-  image_id: ID!
-  image: File!
-  post: Post!
 }
 
 input PostInput {
   text: String!
   images: [ID!]!
   platformConnections: [ID!]!
+}
+
+type PostMedia {
+  post_id: ID!
+  file_id: ID!
+  image: File!
+  post: Post!
 }
 
 type PostPlatform {
