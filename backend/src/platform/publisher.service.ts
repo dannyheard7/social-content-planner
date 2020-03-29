@@ -15,6 +15,7 @@ export class PublisherService {
         const postPlatforms = await post.platforms;
         const platformConnections = await Promise.all(postPlatforms.map(postPlatform => postPlatform.platformConnection));
 
+        // this is stopping error, we need to catch and handle
         // TODO: get all post ids and relevant info and insert them into the db for future uses
         await Promise.all(platformConnections.map(platformConnection => {
             switch (platformConnection.platform) {

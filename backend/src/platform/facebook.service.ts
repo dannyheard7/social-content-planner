@@ -19,16 +19,11 @@ export class FacebookService implements PlatformService {
         private readonly postService: PostService
     ) { }
 
-    async publishPost(
-        post: Post,
-        platformConnection: PlatformConnection,
-    ): Promise<string> {
-        let attachedMedia = [];
-
+    private async uploadMedia(post: Post, platformConnection: PlatformConnection) {
         const imageFiles = await this.postService.getPostImageFiles(post);
 
         if (imageFiles.length > 0) {
-            const imageUploadRequests = imageFiles.map(async imageFile => {
+            const imageUploadRequests = imageFiles.map(imageFile => {
                 const data = new FormData();
                 data.append('file', fs.createReadStream(path.join(this.configService.get("FILE_DIR"), imageFile.filename)));
 
@@ -42,10 +37,16 @@ export class FacebookService implements PlatformService {
                     });
             });
             const data = await Promise.all(imageUploadRequests);
-            attachedMedia = data.map(d => ({
-                media_fbid: d.id,
-            }));
+            return data.map(d => ({ media_fbid: d.id }));
         }
+        return [];
+    }
+
+    async publishPost(
+        post: Post,
+        platformConnection: PlatformConnection,
+    ): Promise<string> {
+        const attachedMedia = await this.uploadMedia(post, platformConnection);
 
         const body = {
             access_token: platformConnection.accessToken,
