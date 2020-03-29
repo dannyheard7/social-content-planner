@@ -1,9 +1,10 @@
-import { Post } from '../post/Post.entity';
 import { PostPlatform } from '../post/PostPlatform.entity';
+import { FileEntity } from '../file/file.entity';
 
 export default interface PlatformService {
     publishPost(
-        post: Post,
+        text: string,
+        media: FileEntity[],
         postPlatform: PostPlatform
     ): Promise<PostPlatform>;
 }

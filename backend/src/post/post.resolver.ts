@@ -5,7 +5,7 @@ import { PostInput } from './PostInput';
 import { GqlAuthGuard } from '../authz/auth.guard';
 import { PostService } from './post.service';
 import { Post } from './Post.entity';
-import { PublisherService } from '../platform/publisher.service';
+import { PublisherService } from './publisher.service';
 import { CurrentUser } from '../authz/current.user.decorator';
 import { ID } from '@nestjs/graphql';
 
@@ -13,7 +13,6 @@ import { ID } from '@nestjs/graphql';
 export class PostResolver {
   constructor(
     private readonly postService: PostService,
-    @Inject(forwardRef(() => PublisherService))
     private readonly publisherService: PublisherService,
   ) { }
 
@@ -33,7 +32,8 @@ export class PostResolver {
     @CurrentUser() user: User,
   ) {
     const post = await this.postService.create(postInput, user);
-    await this.publisherService.publishPost(post);
+    const postPlatforms = await this.publisherService.publishPost(post);
+
     return post;
   }
 }

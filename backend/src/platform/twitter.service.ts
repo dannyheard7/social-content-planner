@@ -1,24 +1,21 @@
-import { Injectable, forwardRef, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as oauth from 'oauth';
-import fetch from 'node-fetch';
-import * as path from 'path';
-import * as fs from 'fs';
 import * as FormData from 'form-data';
-import { Post } from '../post/Post.entity';
-import { PlatformConnection } from './PlatformConnection.entity';
-import PlatformService from './PlatformService';
+import * as fs from 'fs';
+import fetch from 'node-fetch';
+import * as oauth from 'oauth';
+import * as path from 'path';
+import { FileEntity } from '../file/file.entity';
+import { PostPlatform } from '../post/PostPlatform.entity';
 import { OAuthTokenResult } from './OAuthTokenResult.entity';
 import Platform from './Platform';
-import { PostService } from '../post/post.service';
-import { PostPlatform } from '../post/PostPlatform.entity';
+import { PlatformConnection } from './PlatformConnection.entity';
+import PlatformService from './PlatformService';
 
 @Injectable()
 export class TwitterService implements PlatformService {
     constructor(
-        private readonly configService: ConfigService,
-        @Inject(forwardRef(() => PostService))
-        private readonly postService: PostService
+        private readonly configService: ConfigService
     ) { }
 
     private createOAuthConsumer(callbackUrl?: string) {
@@ -62,15 +59,14 @@ export class TwitterService implements PlatformService {
         await Promise.all(waitForMedia);
     }
 
-    private async uploadMedia(post: Post, platformConnection: PlatformConnection) {
-        const imageFiles = await this.postService.getPostImageFiles(post);
+    private async uploadMedia(media: FileEntity[], platformConnection: PlatformConnection) {
         const consumer = this.createOAuthConsumer();
 
-        if (imageFiles.length > 0) {
+        if (media.length > 0) {
             const url = 'https://upload.twitter.com/1.1/media/upload.json';
             const authorization = consumer.authHeader(url, platformConnection.accessToken, platformConnection.accessTokenSecret, 'POST');
 
-            const imageUploadRequests = imageFiles.map(imageFile => {
+            const imageUploadRequests = media.map(imageFile => {
                 const data = new FormData();
                 data.append('media', fs.createReadStream(path.join(this.configService.get("FILE_DIR"), imageFile.filename)));
 
@@ -95,14 +91,15 @@ export class TwitterService implements PlatformService {
     }
 
     async publishPost(
-        post: Post,
+        postText: string,
+        postMedia: FileEntity[],
         postPlatform: PostPlatform,
     ): Promise<PostPlatform> {
         const platformConnection = await postPlatform.platformConnection;
         const consumer = this.createOAuthConsumer();
-        const mediaIds = (await this.uploadMedia(post, platformConnection)).join(",");
+        const mediaIds = (await this.uploadMedia(postMedia, platformConnection)).join(",");
 
-        const url = `https://api.twitter.com/1.1/statuses/update.json?media_ids=${mediaIds}&status=${encodeURI(post.text)}`;
+        const url = `https://api.twitter.com/1.1/statuses/update.json?media_ids=${mediaIds}&status=${encodeURI(postText)}`;
         const res = await fetch(
             url,
             {

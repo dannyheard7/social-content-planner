@@ -1,30 +1,25 @@
-import { Injectable, forwardRef, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as FormData from 'form-data';
+import * as fs from 'fs';
 import fetch from 'node-fetch';
 import * as path from 'path';
-import * as fs from 'fs';
-import * as FormData from 'form-data';
-import { Post } from '../post/Post.entity';
-import { PlatformConnection } from './PlatformConnection.entity';
-import PlatformService from './PlatformService';
+import { FileEntity } from '../file/file.entity';
+import { PostPlatform } from '../post/PostPlatform.entity';
 import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
 import Platform from './Platform';
-import { PostService } from '../post/post.service';
-import { PostPlatform } from '../post/PostPlatform.entity';
+import { PlatformConnection } from './PlatformConnection.entity';
+import PlatformService from './PlatformService';
 
 @Injectable()
 export class FacebookService implements PlatformService {
     constructor(
-        private readonly configService: ConfigService,
-        @Inject(forwardRef(() => PostService))
-        private readonly postService: PostService
+        private readonly configService: ConfigService
     ) { }
 
-    private async uploadMedia(post: Post, platformConnection: PlatformConnection) {
-        const imageFiles = await this.postService.getPostImageFiles(post);
-
-        if (imageFiles.length > 0) {
-            const imageUploadRequests = imageFiles.map(imageFile => {
+    private async uploadMedia(media: FileEntity[], platformConnection: PlatformConnection) {
+        if (media.length > 0) {
+            const imageUploadRequests = media.map(imageFile => {
                 const data = new FormData();
                 data.append('file', fs.createReadStream(path.join(this.configService.get("FILE_DIR"), imageFile.filename)));
 
@@ -44,15 +39,16 @@ export class FacebookService implements PlatformService {
     }
 
     async publishPost(
-        post: Post,
+        text: string,
+        media: FileEntity[],
         postPlatform: PostPlatform,
     ): Promise<PostPlatform> {
         const platformConnection = await postPlatform.platformConnection;
-        const attachedMedia = await this.uploadMedia(post, platformConnection);
+        const attachedMedia = await this.uploadMedia(media, platformConnection);
 
         const body = {
             access_token: platformConnection.accessToken,
-            message: post.text,
+            message: text,
             published: true,
             attached_media: attachedMedia,
         };

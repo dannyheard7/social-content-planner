@@ -1,21 +1,21 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { Post } from '../post/Post.entity';
-import { PostService } from '../post/post.service';
-import { PostPlatform } from '../post/PostPlatform.entity';
-import { FacebookService } from './facebook.service';
-import Platform from './Platform';
-import { TwitterService } from './twitter.service';
+import { Inject, Injectable } from '@nestjs/common';
+import { FacebookService } from '../platform/facebook.service';
+import Platform from '../platform/Platform';
+import { TwitterService } from '../platform/twitter.service';
+import { Post } from './Post.entity';
+import { PostService } from './post.service';
+import { PostPlatform } from './PostPlatform.entity';
 
 @Injectable()
 export class PublisherService {
     constructor(
-        @Inject(forwardRef(() => PostService))
         private readonly postService: PostService,
         private readonly facebookService: FacebookService,
         private readonly twitterService: TwitterService,
     ) { }
 
     async publishPost(post: Post): Promise<PostPlatform[]> {
+        const postMedia = await this.postService.getPostImageFiles(post);
         const postPlatforms = await post.platforms;
         const platformConnections = await Promise.all(postPlatforms.map(postPlatform => postPlatform.platformConnection));
 
@@ -25,9 +25,9 @@ export class PublisherService {
 
             switch (platformConnection.platform) {
                 case Platform.FACEBOOK:
-                    return this.facebookService.publishPost(post, postPlatform);
+                    return this.facebookService.publishPost(post.text, postMedia, postPlatform);
                 case Platform.TWITTER:
-                    return this.twitterService.publishPost(post, postPlatform);
+                    return this.twitterService.publishPost(post.text, postMedia, postPlatform);
                 default:
                     throw new Error("Platform not currently supported");
             }
