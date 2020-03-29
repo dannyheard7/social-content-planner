@@ -5,7 +5,7 @@ export class PlatformConnectionAccessTokenSecret1585387680880 implements Migrati
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            `ALTER TYPE platform ADD VALUE 'TWITTER';`
+            `ALTER TYPE platform ADD VALUE 'TWITTER' AFTER 'FACEBOOK';`
         );
         await queryRunner.query(`ALTER TABLE "platformConnection" ADD "accessTokenSecret" text`);
     }
