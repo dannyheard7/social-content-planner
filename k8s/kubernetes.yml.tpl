@@ -154,37 +154,40 @@ metadata:
   name: db-migrate-COMMIT_SHA
 spec:
   ttlSecondsAfterFinished: 0
+  backoffLimit: 1
   template:
     spec:
       containers:
         - name: db-migrate
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-db-migration:COMMIT_SHA
           env:
-            - name: TYPEORM_HOST
+            - name: DB_HOST
               valueFrom:
                 secretKeyRef:
                   name: db
                   key: host
-            - name: TYPEORM_DATABASE
+            - name: DB_NAME
               valueFrom:
                 secretKeyRef:
                   name: db
                   key: database
-            - name: TYPEORM_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: db
-                  key: username
-            - name: TYPEORM_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: db
-                  key: password
-            - name: TYPEORM_PORT
+            - name: DB_PORT
               valueFrom:
                 secretKeyRef:
                   name: db
                   key: port
+            - name: FLYWAY_URL
+              value: jdbc:postgresql://$(DB_HOST):$(DB_PORT)/$(DB_NAME)
+            - name: FLYWAY_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: username
+            - name: FLYWAY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: password
       restartPolicy: Never
 ---
 apiVersion: cert-manager.io/v1alpha2

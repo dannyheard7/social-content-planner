@@ -12,18 +12,17 @@ services:
     ports:
       - "5432:5432"
 
-  db-migration:
+  flyway:
     build:
-      context: ./backend
-      dockerfile: DBDockerfile
+      context: ./migrations
+      dockerfile: Dockerfile
+    volumes:
+      - ./migrations/sql:/flyway/sql
     environment:
-      - TYPEORM_HOST=postgres
-      - TYPEORM_USERNAME=postgres
-      - TYPEORM_PASSWORD=
-      - TYPEORM_DATABASE=content_planner
-      - TYPEORM_PORT=5432
-    depends_on:
-      - postgres
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/content_planner
+      FLYWAY_USER: postgres
+    command: migrate
+    depends_on: ["postgres"]
 
   pgadmin:
     container_name: pgadmin

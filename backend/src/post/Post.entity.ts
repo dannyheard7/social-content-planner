@@ -6,7 +6,7 @@ import {
   OneToMany,
   JoinTable,
 } from 'typeorm';
-import { PostImage } from './PostImage.entity';
+import { PostMedia } from './PostImage.entity';
 import { PostPlatform } from './PostPlatform.entity';
 
 @Entity('post')
@@ -25,11 +25,11 @@ export class Post {
   user_id: string;
 
   @OneToMany(
-    type => PostImage,
+    type => PostMedia,
     postImage => postImage.post,
   )
   @JoinTable()
-  images: Promise<PostImage[]>;
+  media: Promise<PostMedia[]>;
 
   @OneToMany(
     type => PostPlatform,

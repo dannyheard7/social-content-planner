@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import * as uuid from 'uuid/v4';
 import { Post } from './Post.entity';
-import { PostImage } from './PostImage.entity';
+import { PostMedia } from './PostImage.entity';
 import { PostInput } from './PostInput';
 import { PostPlatform } from './PostPlatform.entity';
 import { FileEntity } from '../file/file.entity';
@@ -26,8 +26,8 @@ export class PostService {
         post.user_id = user.sub;
 
         const images = postInput.images.map(image => {
-            const postImage = new PostImage();
-            postImage.image_id = image;
+            const postImage = new PostMedia();
+            postImage.file_id = image;
             postImage.post_id = post.id;
             return postImage;
         });
@@ -49,8 +49,8 @@ export class PostService {
     }
 
     async getPostImageFiles(post: Post): Promise<FileEntity[]> {
-        if ((await post.images).length > 0)
-            return await Promise.all((await post.images).map(postImage => postImage.image));
+        if ((await post.media).length > 0)
+            return await Promise.all((await post.media).map(postImage => postImage.image));
 
         return [];
     }

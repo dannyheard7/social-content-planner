@@ -3,22 +3,22 @@ import { Entity, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { FileEntity } from '../file/file.entity';
 import { Post } from './Post.entity';
 
-@Entity('post_image')
-@ObjectType('PostImage')
-export class PostImage {
+@Entity('post_media')
+@ObjectType('PostMedia')
+export class PostMedia {
   @PrimaryColumn({ nullable: false })
   @Field(type => ID)
   post_id: string;
 
   @PrimaryColumn({ nullable: false })
   @Field(type => ID)
-  image_id: string;
+  file_id: string;
 
   @ManyToOne(
     type => FileEntity,
     file => file.id,
   )
-  @JoinColumn({ name: 'image_id' })
+  @JoinColumn({ name: 'file_id' })
   image: Promise<FileEntity>;
 
   @ManyToOne(

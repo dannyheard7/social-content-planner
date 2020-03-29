@@ -15,9 +15,9 @@ steps:
       - "-t"
       - "gcr.io/$PROJECT_ID/smarketing-db-migration:$SHORT_SHA"
       - "-f"
-      - "DBDockerfile"
+      - "Dockerfile"
       - "."
-    dir: "backend"
+    dir: "migrations"
 
   - name: "gcr.io/cloud-builders/docker"
     id: Build Client
