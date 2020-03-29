@@ -72,8 +72,10 @@ type PostMedia {
 }
 
 type PostPlatform {
-  post_id: ID!
-  platform_connection_id: ID!
+  postId: ID!
+  platformConnectionId: ID!
+  platformEntityId: String
+  platformEntityUrl: String
   platformConnection: PlatformConnection!
   post: Post!
 }

@@ -10,6 +10,7 @@ import PlatformService from './PlatformService';
 import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
 import Platform from './Platform';
 import { PostService } from '../post/post.service';
+import { PostPlatform } from '../post/PostPlatform.entity';
 
 @Injectable()
 export class FacebookService implements PlatformService {
@@ -44,8 +45,9 @@ export class FacebookService implements PlatformService {
 
     async publishPost(
         post: Post,
-        platformConnection: PlatformConnection,
-    ): Promise<string> {
+        postPlatform: PostPlatform,
+    ): Promise<PostPlatform> {
+        const platformConnection = await postPlatform.platformConnection;
         const attachedMedia = await this.uploadMedia(post, platformConnection);
 
         const body = {
@@ -71,7 +73,10 @@ export class FacebookService implements PlatformService {
                 throw new Error(e.message);
             });
 
-        return postData.id;
+        postPlatform.platformEntityId = postData.id;
+        postPlatform.platformEntityUrl = `https://facebook.com/permalink.php?story_fbid=${postPlatform.platformEntityId.split("_")[1]}&id=${platformConnection.entityId}`;
+
+        return postPlatform;
     }
 
     private async getFacebookPageAccessToken(

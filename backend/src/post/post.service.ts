@@ -13,6 +13,8 @@ export class PostService {
     constructor(
         @InjectRepository(Post)
         private readonly postRepository: Repository<Post>,
+        @InjectRepository(PostPlatform)
+        private readonly postPlatformRepository: Repository<PostPlatform>,
         private readonly connection: Connection,
     ) { }
     findById(id: string): Promise<Post | undefined> {
@@ -34,8 +36,8 @@ export class PostService {
 
         const platforms = postInput.platformConnections.map(pf => {
             const postPlatform = new PostPlatform();
-            postPlatform.platform_connection_id = pf;
-            postPlatform.post_id = post.id;
+            postPlatform.platformConnectionId = pf;
+            postPlatform.postId = post.id;
             return postPlatform;
         });
 
@@ -46,6 +48,10 @@ export class PostService {
         ]);
 
         return entities.find(e => e instanceof Post) as Post;
+    }
+
+    async updatePostPlatforms(postPlatforms: PostPlatform[]): Promise<PostPlatform[]> {
+        return await this.postPlatformRepository.save(postPlatforms);
     }
 
     async getPostImageFiles(post: Post): Promise<FileEntity[]> {

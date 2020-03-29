@@ -11,6 +11,7 @@ import PlatformService from './PlatformService';
 import { OAuthTokenResult } from './OAuthTokenResult.entity';
 import Platform from './Platform';
 import { PostService } from '../post/post.service';
+import { PostPlatform } from '../post/PostPlatform.entity';
 
 @Injectable()
 export class TwitterService implements PlatformService {
@@ -95,8 +96,9 @@ export class TwitterService implements PlatformService {
 
     async publishPost(
         post: Post,
-        platformConnection: PlatformConnection,
-    ): Promise<string> {
+        postPlatform: PostPlatform,
+    ): Promise<PostPlatform> {
+        const platformConnection = await postPlatform.platformConnection;
         const consumer = this.createOAuthConsumer();
         const mediaIds = (await this.uploadMedia(post, platformConnection)).join(",");
 
@@ -115,7 +117,10 @@ export class TwitterService implements PlatformService {
                 throw new Error(e.message);
             });
 
-        return res;
+        postPlatform.platformEntityId = res.id;
+        postPlatform.platformEntityUrl = `https://twitter.com/${res.user.screen_name}/status/${res.id_str}`;
+
+        return postPlatform;
     }
 
     async getOAuthRequestToken(callbackUrl: string): Promise<OAuthTokenResult> {
