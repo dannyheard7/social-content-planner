@@ -30,7 +30,7 @@ spec:
         - name: api
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-api:COMMIT_SHA
           ports:
-            - containerPort: 7000
+            - containerPort: 7000    
           env:
             - name: TYPEORM_HOST
               valueFrom:

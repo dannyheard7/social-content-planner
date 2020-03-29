@@ -39,7 +39,6 @@ services:
     environment:
       FLYWAY_URL: jdbc:postgresql://postgres:5432/content_planner
       FLYWAY_USER: postgres
-    command: migrate
     depends_on: ["postgres"]
 
   pgadmin:

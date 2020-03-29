@@ -2,7 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE post ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), text TEXT, "user_id" TEXT NOT NULL, PRIMARY KEY ("id"));
 
-CREATE TYPE platform AS ENUM ('FACEBOOK', ' TWITTER');
+CREATE TYPE platform AS ENUM ('FACEBOOK', 'TWITTER');
 CREATE TABLE platform_connection ("id" uuid NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY, "userId" TEXT NOT NULL, "platform" platform NOT NULL, "accessToken" TEXT NOT NULL, "accessTokenSecret" TEXT, "entityId" TEXT NOT NULL, "entityName" TEXT NOT NULL);
 
 CREATE TABLE post_platform_connection ("post_id" uuid NOT NULL REFERENCES "post"("id"), "platform_connection_id" uuid NOT NULL REFERENCES platform_connection("id"), PRIMARY KEY ("post_id", "platform_connection_id"));
