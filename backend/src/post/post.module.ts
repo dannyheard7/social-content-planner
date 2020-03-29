@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PostResolver } from './post.resolver';
 import { PostService } from './post.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,8 +10,9 @@ import { PlatformModule } from '../platform/platform.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Post, PostPlatform, PostImage]),
-    PlatformModule,
+    forwardRef(() => PlatformModule),
   ],
   providers: [PostResolver, PostService],
+  exports: [PostService]
 })
-export class PostModule {}
+export class PostModule { }

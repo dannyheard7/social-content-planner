@@ -8,4 +8,4 @@ import { GqlAuthGuard } from './auth.guard';
   providers: [JwtStrategy, GqlAuthGuard],
   exports: [PassportModule],
 })
-export class AuthzModule {}
+export class AuthzModule { }

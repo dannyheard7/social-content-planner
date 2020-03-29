@@ -1,16 +1,15 @@
 import { Field, InputType, ID } from '@nestjs/graphql';
 import Platform from './Platform';
 
+
 @InputType()
-export class AddPlatformConnectionInput {
-  @Field(type => ID)
-  entityId: string;
+export class AddOAuthPlatformConnectionInput {
   @Field(type => String)
-  entityName: string;
+  oauthToken: string;
   @Field(type => String)
-  accessToken: string;
+  oauthTokenSecret: string;
+  @Field(type => String)
+  oauthVerifier: string;
   @Field(type => Platform)
   platform: Platform;
-  @Field(type => String)
-  platformUserId?: string;
 }

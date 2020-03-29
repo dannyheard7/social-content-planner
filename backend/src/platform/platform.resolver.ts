@@ -5,30 +5,64 @@ import { CurrentUser } from '../authz/current.user.decorator';
 import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
 import { PlatformConnectionService } from './platform-connection.service';
 import { PlatformConnection } from './PlatformConnection.entity';
+import Platform from './Platform';
+import { OAuthTokenResult } from './OAuthTokenResult.entity';
+import { AddOAuthPlatformConnectionInput } from './AddOAuthPlatformConnectionInput';
 
 @Resolver()
 export class PlatformResolver {
-  constructor(
-    private readonly platformConnectionService: PlatformConnectionService,
-  ) { }
+    constructor(
+        private readonly platformConnectionService: PlatformConnectionService,
+    ) { }
 
-  @UseGuards(GqlAuthGuard)
-  @Query(() => [PlatformConnection])
-  async platformConnections(@CurrentUser() user: User) {
-    return await this.platformConnectionService.getAllForUser(user);
-  }
+    @UseGuards(GqlAuthGuard)
+    @Query(() => [PlatformConnection])
+    async platformConnections(@CurrentUser() user: User) {
+        return await this.platformConnectionService.getAllForUser(user);
+    }
 
-  @UseGuards(GqlAuthGuard)
-  @Mutation(of => Boolean)
-  async addPlatformConnection(
-    @Args({
-      name: 'platformConnection',
-      type: () => AddPlatformConnectionInput,
-    })
-    platformConnectionInput: AddPlatformConnectionInput,
-    @CurrentUser() user: User,
-  ): Promise<boolean> {
-    await this.platformConnectionService.create(platformConnectionInput, user);
-    return true;
-  }
+    @UseGuards(GqlAuthGuard)
+    @Query(of => OAuthTokenResult)
+    async getPlatformOAuthRequestToken(
+        @Args({
+            name: 'platform',
+            type: () => Platform,
+        })
+        platform: Platform,
+        @Args({
+            name: 'callbackUrl',
+            type: () => String,
+        })
+        callbackUrl: string
+    ): Promise<OAuthTokenResult> {
+        return await this.platformConnectionService.getOAuthRequestToken(platform, callbackUrl);
+    }
+
+    @UseGuards(GqlAuthGuard)
+    @Mutation(of => PlatformConnection)
+    async addPlatformConnection(
+        @Args({
+            name: 'platformConnection',
+            type: () => AddPlatformConnectionInput,
+        })
+        platformConnectionInput: AddPlatformConnectionInput,
+        @CurrentUser() user: User,
+    ): Promise<PlatformConnection> {
+        return await this.platformConnectionService.create(user, platformConnectionInput.platform, platformConnectionInput);
+    }
+
+    @UseGuards(GqlAuthGuard)
+    @Mutation(of => PlatformConnection)
+    async addOAuthPlatformConnection(
+        @Args({
+            name: 'platformConnection',
+            type: () => AddOAuthPlatformConnectionInput,
+        })
+        input: AddOAuthPlatformConnectionInput,
+        @CurrentUser() user: User,
+    ): Promise<PlatformConnection> {
+        const oauthAccessToken = await this.platformConnectionService.getOAuthAccessToken(
+            input.platform, input.oauthToken, input.oauthTokenSecret, input.oauthVerifier);
+        return await this.platformConnectionService.create(user, input.platform, undefined, oauthAccessToken);
+    }
 }

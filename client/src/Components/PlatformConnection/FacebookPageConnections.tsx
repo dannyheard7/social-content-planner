@@ -1,22 +1,24 @@
-import React, { useState, Fragment, useContext } from "react";
+import { useMutation } from "@apollo/react-hooks";
+import { Dialog, DialogContent, DialogTitle, Grid, List, ListItem, ListItemText } from "@material-ui/core";
+import React, { Fragment, useContext, useState } from "react";
 import FacebookLogin, { ReactFacebookLoginInfo } from "react-facebook-login";
-import AddPlatformConnectionInput from "../../GraphQL/Inputs/AddPlatformConnectionInput";
-import { Dialog, DialogTitle, List, ListItem, ListItemText, Card, CardContent, CardActions, Typography, Button, Grid, DialogContent } from "@material-ui/core";
 import Platform from "../../Common/Enums/Platform";
 import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
+import { AddPlatformConnectionMutationData, AddPlatformConnectionMutationVars, ADD_PLATFORM_CONNECTION_MUTATION } from "../../GraphQL/Mutations/AddPlatformConnection";
 import { AppContext } from "../AppContext/AppContextProvider";
 
 interface Props {
-    addPlatformConnection: (connection: AddPlatformConnectionInput) => void;
     existingConnections: PlatformConnection[];
 }
 
-const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection, existingConnections }) => {
+const FacebookPageConnection: React.FC<Props> = ({ existingConnections }) => {
     const { facebookAppId } = useContext(AppContext);
     const [accounts, setAccounts] = useState([]);
     const [userInfo, setUserInfo] = useState<ReactFacebookLoginInfo | null>(null);
     const [existingConnectionIds] = useState(existingConnections.map(pc => pc.entityId));
     const [dialogOpen, setDialogOpen] = useState(false);
+
+    const [addPlatformMutation] = useMutation<AddPlatformConnectionMutationData, AddPlatformConnectionMutationVars>(ADD_PLATFORM_CONNECTION_MUTATION);
 
     const onFacebookLogin = (userInfo: ReactFacebookLoginInfo) => {
         setUserInfo(userInfo);
@@ -25,39 +27,23 @@ const FacebookPageConnection: React.FC<Props> = ({ addPlatformConnection, existi
     }
 
     const onFacebookPageLink = (page: any) => {
-        addPlatformConnection({
-            entityId: page.id,
-            entityName: page.name,
-            platform: Platform[Platform.FACEBOOK],
-            platformUserId: userInfo!.id,
-            accessToken: userInfo!.accessToken
-        })
+        addPlatformMutation({
+            variables:
+            {
+                platformConnection: {
+                    entityId: page.id,
+                    entityName: page.name,
+                    platform: Platform[Platform.FACEBOOK],
+                    platformUserId: userInfo!.id,
+                    accessToken: userInfo!.accessToken
+                }
+            }
+        });
     }
 
     return (
         <Fragment>
             <Grid container direction="column" spacing={2}>
-                <Grid item>
-                    <Typography>You have {existingConnections.length} linked Facebook Page{existingConnections.length !== 1 && 's'}</Typography>
-                </Grid>
-                <Grid container item>
-                    {existingConnections.map(pc => {
-                        return (
-                            <Grid item md={3}>
-                                <Card >
-                                    <CardContent>
-                                        <Typography >
-                                            {pc.entityName}
-                                        </Typography>
-                                    </CardContent>
-                                    <CardActions>
-                                        <Button size="small">Remove</Button>
-                                    </CardActions>
-                                </Card>
-                            </Grid>
-                        )
-                    })}
-                </Grid>
                 <Grid item>
                     <FacebookLogin
                         appId={facebookAppId!}

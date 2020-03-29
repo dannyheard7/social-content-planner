@@ -1,5 +1,7 @@
 version: "3.7"
 
+volumes:
+  pgadmin: {}
 services:
   postgres:
     image: postgres:alpine
@@ -23,9 +25,13 @@ services:
     depends_on:
       - postgres
 
-  client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
     volumes:
-      - ./client/public/config.js:/app/build/config.js
+      - pgadmin:/root/.pgadmin
+    ports:
+      - "5050:80"

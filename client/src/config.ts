@@ -10,7 +10,7 @@ const settings = {
   CLIENT_ADDRESS: window.env.CLIENT_ADDRESS,
   GRAPHQL_HOST: window.env.GRAPHQL_HOST,
   FILE_UPLOAD_ENDPOINT: window.env.FILE_UPLOAD_ENDPOINT,
-  FACEBOOK_APP_ID: window.env.FACEBOOK_APP_ID,
+  FACEBOOK_APP_ID: window.env.FACEBOOK_APP_ID
 };
 
 export default settings;

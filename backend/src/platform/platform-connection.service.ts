@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
-import { PlatformConnection } from './PlatformConnection.entity';
-import Platform from './Platform';
 import { FacebookService } from './facebook.service';
+import Platform from './Platform';
+import { PlatformConnection } from './PlatformConnection.entity';
+import { OAuthTokenResult } from './OAuthTokenResult.entity';
+import { TwitterService } from './twitter.service';
 
 @Injectable()
 export class PlatformConnectionService {
@@ -14,6 +16,7 @@ export class PlatformConnectionService {
             PlatformConnection
         >,
         private readonly facebookService: FacebookService,
+        private readonly twitterService: TwitterService
     ) { }
 
     async getAllForUser(user: User): Promise<PlatformConnection[]> {
@@ -22,24 +25,49 @@ export class PlatformConnectionService {
         });
     }
 
+    async getOAuthRequestToken(platform: Platform, callbackUrl: string): Promise<OAuthTokenResult> {
+        switch (platform) {
+            case Platform.TWITTER:
+                return this.twitterService.getOAuthRequestToken(callbackUrl);
+            default:
+                throw new Error("Platform not currently supported");
+        }
+    }
+
+    async getOAuthAccessToken(platform: Platform, oauthToken: string, oauthTokenSecret: string, oauthVerifier: string): Promise<OAuthTokenResult> {
+        switch (platform) {
+            case Platform.TWITTER:
+                return this.twitterService.getOAuthAccessToken(oauthToken, oauthTokenSecret, oauthVerifier);
+            default:
+                throw new Error("Platform not currently supported");
+        }
+    }
+
     async create(
-        platformConnectionInput: AddPlatformConnectionInput,
         user: User,
+        platform: Platform,
+        platformConnectionInput?: AddPlatformConnectionInput,
+        oauthTokenResult?: OAuthTokenResult
     ): Promise<PlatformConnection> {
-        const platformConnection = new PlatformConnection();
-        platformConnection.entityId = platformConnectionInput.entityId;
-        platformConnection.platform = platformConnectionInput.platform;
-        platformConnection.entityName = platformConnectionInput.entityName;
+        var platformConnection: PlatformConnection;
+
+        switch (platform) {
+            case Platform.FACEBOOK:
+                platformConnection = await this.facebookService.createPlatformConnection(platformConnectionInput!);
+                break;
+            case Platform.TWITTER:
+                platformConnection = await this.twitterService.createPlatformConnection(oauthTokenResult!);
+                break;
+            default:
+                throw new Error("Platform not currently supported");
+        }
         platformConnection.userId = user.sub;
 
-        if (platformConnectionInput.platform === Platform.FACEBOOK) {
-            //Facebook has non expiring tokens for pages
-            platformConnection.accessToken = await this.facebookService.getFacebookPageAccessToken(
-                platformConnectionInput.platformUserId,
-                platformConnectionInput.accessToken,
-                platformConnectionInput.entityId,
-            );
-        } else platformConnection.accessToken = platformConnectionInput.accessToken;
+        if (await this.platformConnectionRepository.findOne({
+            userId: platformConnection.userId,
+            entityId: platformConnection.entityId,
+            platform: platformConnection.platform
+        })) throw new Error("This platform connection already exists");
 
         return await this.platformConnectionRepository.save(platformConnection);
     }

@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, forwardRef, Inject } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { PostInput } from './PostInput';
 
@@ -7,12 +7,13 @@ import { PostService } from './post.service';
 import { Post } from './Post.entity';
 import { PublisherService } from '../platform/publisher.service';
 import { CurrentUser } from '../authz/current.user.decorator';
-import { ID } from 'type-graphql';
+import { ID } from '@nestjs/graphql';
 
 @Resolver()
 export class PostResolver {
   constructor(
     private readonly postService: PostService,
+    @Inject(forwardRef(() => PublisherService))
     private readonly publisherService: PublisherService,
   ) { }
 

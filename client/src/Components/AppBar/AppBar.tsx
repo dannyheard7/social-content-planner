@@ -23,7 +23,6 @@ const AppMenu: React.FC = () => {
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
-  console.log(isAuthenticated);
   return (
     <div className={classes.root}>
       <AppBar position="fixed">
