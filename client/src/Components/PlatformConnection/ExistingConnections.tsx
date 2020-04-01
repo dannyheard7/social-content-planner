@@ -1,8 +1,9 @@
 import { Button, Card, CardActions, CardContent, Grid, Typography, Icon } from "@material-ui/core";
-import { Twitter as TwitterIcon, Facebook as FacebookIcon } from '@material-ui/icons';
+
 import React, { Fragment, useState } from "react";
 import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
 import Platform from "../../Common/Enums/Platform";
+import PlatformIcon from "../Platform/PlatformIcon";
 
 interface Props {
     existingConnections: PlatformConnection[];
@@ -24,7 +25,7 @@ const ExistingConnections: React.FC<Props> = ({ existingConnections }) => {
                                 <Card >
                                     <CardContent>
                                         <Icon>
-                                            {pc.platform === Platform.TWITTER ? <TwitterIcon /> : <FacebookIcon />}
+                                            <PlatformIcon platform={pc.platform} />
                                         </Icon>
                                         <Typography >
                                             {pc.entityName}

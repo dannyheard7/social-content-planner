@@ -2,7 +2,7 @@ import React from "react";
 import config from '../../config';
 
 interface IAppContext {
-  fileUploadUrl?: string;
+  filesEndpoint?: string;
   facebookAppId?: string;
   clientAddress?: string
 }
@@ -17,7 +17,7 @@ export const AppContextProvider: React.FC = ({
   return (
     <AppContext.Provider
       value={{
-        fileUploadUrl: config.FILE_UPLOAD_ENDPOINT,
+        filesEndpoint: config.FILES_ENDPOINT,
         facebookAppId: config.FACEBOOK_APP_ID,
         clientAddress: `${window.location.protocol}//${config.CLIENT_ADDRESS}`
       }}

@@ -1,6 +1,6 @@
 import { AppBar, Drawer, IconButton, List, ListItem, ListItemText, makeStyles, Menu, MenuItem, Toolbar, Typography } from "@material-ui/core";
 import { AccountCircle, Menu as MenuIcon } from "@material-ui/icons";
-import React, { Fragment, useContext, useState } from "react";
+import React, { Fragment, useContext, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AuthenticationContext } from "../Authentication/AuthenticationContextProvider";
 
@@ -18,8 +18,8 @@ const useStyles = makeStyles({
 
 const AppMenu: React.FC = () => {
   const classes = useStyles();
-  const { isAuthenticated, loginWithRedirect } = useContext(AuthenticationContext);
-  const [anchorEl] = useState(null);
+  const { isAuthenticated, loginWithRedirect, logout } = useContext(AuthenticationContext);
+  const anchorEl = useRef(null);
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
@@ -44,6 +44,11 @@ const AppMenu: React.FC = () => {
               <Drawer open={drawerOpen} onClose={() => { setDrawerOpen(false) }}>
                 <List>
                   <ListItem button>
+                    <Link to="/posts" onClick={() => { setDrawerOpen(false) }}>
+                      <ListItemText>Posts</ListItemText>
+                    </Link>
+                  </ListItem>
+                  <ListItem button>
                     <Link to="/platforms" onClick={() => { setDrawerOpen(false) }}>
                       <ListItemText>Platforms</ListItemText>
                     </Link>
@@ -67,23 +72,11 @@ const AppMenu: React.FC = () => {
               </IconButton>
               <Menu
                 id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
+                anchorEl={anchorEl.current}
                 open={userMenuOpen}
                 onClose={() => setUserMenuOpen(false)}
               >
-                <MenuItem onClick={() => setUserMenuOpen(false)}>Profile</MenuItem>
-                <MenuItem onClick={() => setUserMenuOpen(false)}>
-                  My account
-                </MenuItem>
+                <MenuItem onClick={() => { logout({}); setUserMenuOpen(false); }}>Logout</MenuItem>
               </Menu>
             </Fragment>
           ) :

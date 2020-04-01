@@ -1,22 +1,22 @@
-import { Module, forwardRef } from '@nestjs/common';
-import { PlatformResolver } from './platform.resolver';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PlatformConnection } from './PlatformConnection.entity';
-import { PublisherService } from './publisher.service';
-import { PlatformConnectionService } from './platform-connection.service';
 import { FacebookService } from './facebook.service';
+import { PlatformConnectionService } from './platform-connection.service';
+import { PlatformResolver } from './platform.resolver';
+import { PlatformConnection } from './PlatformConnection.entity';
 import { TwitterService } from './twitter.service';
-import { PostModule } from '../post/post.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PlatformConnection]), forwardRef(() => PostModule)],
+  imports: [TypeOrmModule.forFeature([PlatformConnection])],
   providers: [
     PlatformResolver,
-    PublisherService,
     PlatformConnectionService,
     FacebookService,
     TwitterService
   ],
-  exports: [PublisherService],
+  exports: [
+    FacebookService,
+    TwitterService
+  ],
 })
 export class PlatformModule { }

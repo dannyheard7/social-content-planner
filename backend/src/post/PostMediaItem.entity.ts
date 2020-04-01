@@ -5,14 +5,14 @@ import { Post } from './Post.entity';
 
 @Entity('post_media')
 @ObjectType('PostMedia')
-export class PostMedia {
-  @PrimaryColumn({ nullable: false })
+export class PostMediaItem {
+  @PrimaryColumn({ nullable: false, name: "post_id" })
   @Field(type => ID)
-  post_id: string;
+  postId: string;
 
-  @PrimaryColumn({ nullable: false })
+  @PrimaryColumn({ nullable: false, name: "file_id" })
   @Field(type => ID)
-  file_id: string;
+  fileId: string;
 
   @ManyToOne(
     type => FileEntity,

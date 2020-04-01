@@ -6,7 +6,7 @@ import {
   OneToMany,
   JoinTable,
 } from 'typeorm';
-import { PostMedia } from './PostImage.entity';
+import { PostMediaItem } from './PostMediaItem.entity';
 import { PostPlatform } from './PostPlatform.entity';
 
 @Entity('post')
@@ -20,16 +20,24 @@ export class Post {
   @Field(type => String)
   text: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, name: "user_id" })
   @Field(type => ID)
-  user_id: string;
+  userId: string;
+
+  @Column({ nullable: false, name: "created_at" })
+  @Field(type => Date)
+  createdAt?: Date;
+
+  @Column({ nullable: false, name: "updated_at" })
+  @Field(type => Date)
+  updatedAt: Date;
 
   @OneToMany(
-    type => PostMedia,
+    type => PostMediaItem,
     postImage => postImage.post,
   )
   @JoinTable()
-  media: Promise<PostMedia[]>;
+  media: Promise<PostMediaItem[]>;
 
   @OneToMany(
     type => PostPlatform,

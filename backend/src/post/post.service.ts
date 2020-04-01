@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import * as uuid from 'uuid/v4';
 import { Post } from './Post.entity';
-import { PostMedia } from './PostImage.entity';
+import { PostMediaItem } from './PostMediaItem.entity';
 import { PostInput } from './PostInput';
 import { PostPlatform } from './PostPlatform.entity';
 import { FileEntity } from '../file/file.entity';
@@ -13,29 +13,38 @@ export class PostService {
     constructor(
         @InjectRepository(Post)
         private readonly postRepository: Repository<Post>,
+        @InjectRepository(PostPlatform)
+        private readonly postPlatformRepository: Repository<PostPlatform>,
         private readonly connection: Connection,
     ) { }
-    findById(id: string): Promise<Post | undefined> {
-        return this.postRepository.findOne(id);
+
+    findById(id: string, user: User): Promise<Post | undefined> {
+        return this.postRepository.findOne({ id, userId: user.sub });
+    }
+
+    async getAllForUser(user: User): Promise<Post[]> {
+        return await this.postRepository.find({
+            userId: user.sub,
+        });
     }
 
     async create(postInput: PostInput, user: User): Promise<Post> {
         const post = new Post();
         post.id = uuid();
         post.text = postInput.text;
-        post.user_id = user.sub;
+        post.userId = user.sub;
 
         const images = postInput.images.map(image => {
-            const postImage = new PostMedia();
-            postImage.file_id = image;
-            postImage.post_id = post.id;
+            const postImage = new PostMediaItem();
+            postImage.fileId = image;
+            postImage.postId = post.id;
             return postImage;
         });
 
         const platforms = postInput.platformConnections.map(pf => {
             const postPlatform = new PostPlatform();
-            postPlatform.platform_connection_id = pf;
-            postPlatform.post_id = post.id;
+            postPlatform.platformConnectionId = pf;
+            postPlatform.postId = post.id;
             return postPlatform;
         });
 
@@ -46,6 +55,10 @@ export class PostService {
         ]);
 
         return entities.find(e => e instanceof Post) as Post;
+    }
+
+    async updatePostPlatforms(postPlatforms: PostPlatform[]): Promise<PostPlatform[]> {
+        return await this.postPlatformRepository.save(postPlatforms);
     }
 
     async getPostImageFiles(post: Post): Promise<FileEntity[]> {

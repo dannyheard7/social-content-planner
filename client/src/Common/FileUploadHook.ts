@@ -5,15 +5,15 @@ import { UploadedFile } from './Interfaces/UploadedFile';
 
 export const useUploadFile = () => {
   const { token } = useContext(AuthenticationContext);
-  const { fileUploadUrl } = useContext(AppContext);
+  const { filesEndpoint } = useContext(AppContext);
   const [files, setFiles] = useState<UploadedFile[]>([]);
 
   const uploadFile = async (file: File) => {
     const data = new FormData();
     data.append('file', file);
 
-    const response = await fetch(fileUploadUrl!, {
-      method: 'post',
+    const response = await fetch(filesEndpoint!, {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
       },
