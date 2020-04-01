@@ -9,44 +9,57 @@ import { Link as RouterLink } from 'react-router-dom';
 const PostList: React.FC = () => {
     const { data, loading } = useQuery<PostsQueryData>(POSTS_QUERY);
 
+    const dateFormatter = new Intl.DateTimeFormat('default', {
+        year: 'numeric', month: 'long', day: 'numeric', weekday: 'short', hour: 'numeric', minute: 'numeric'
+    });
+
     if (loading) return <Loading />;
-    if (!data) return <p>There was an error loading your posts</p>;
-
-    if (data.posts.length === 0) return <p>You have no posts</p>;
-
     return (
-        <List>
-            {data!.posts.map(post => (
-                <Fragment>
-                    <Link to={`posts/${post.id}`} component={RouterLink}>
-                        <ListItem alignItems="flex-start">
-                            <ListItemText
-                                primary={new Date(post.createdAt).toLocaleString()}
-                                secondary={
-                                    <Grid container>
-                                        <Grid item>
-                                            <Typography
-                                                component="span"
-                                                variant="body2"
-                                                color="textPrimary"
-                                            >
-                                                {post.text}
-                                            </Typography>
-                                        </Grid>
-                                        {post.platforms.map(platform => (
-                                            <Grid item>
-                                                <PlatformIcon platform={platform.platformConnection.platform} />
-                                            </Grid>
-                                        ))}
-                                    </Grid>
-                                }
-                            />
-                        </ListItem>
-                    </Link>
-                    <Divider variant="inset" component="li" />
-                </Fragment>
-            ))}
-        </List>
+        <Grid container direction="column">
+            <Grid item>
+                <Typography component="h1" variant="h3">Posts</Typography>
+            </Grid>
+            <Grid item>
+                {!data ?
+                    <Typography>There was an error loading your posts</Typography> :
+                    <Fragment>
+                        {data.posts.length === 0 && <Typography>You have no posts</Typography>}
+                        <List>
+                            {data!.posts.map(post => (
+                                <Fragment>
+                                    <Link to={`posts/${post.id}`} component={RouterLink}>
+                                        <ListItem alignItems="flex-start">
+                                            <ListItemText
+                                                primary={dateFormatter.format(new Date(post.createdAt))}
+                                                secondary={
+                                                    <Grid container spacing={2}>
+                                                        <Grid item>
+                                                            <Typography
+                                                                component="span"
+                                                                variant="body2"
+                                                                color="textPrimary"
+                                                            >
+                                                                {post.text}
+                                                            </Typography>
+                                                        </Grid>
+                                                        {post.platforms.map(platform => (
+                                                            <Grid item>
+                                                                <PlatformIcon platform={platform.platformConnection.platform} />
+                                                            </Grid>
+                                                        ))}
+                                                    </Grid>
+                                                }
+                                            />
+                                        </ListItem>
+                                    </Link>
+                                    <Divider component="li" />
+                                </Fragment>
+                            ))}
+                        </List>
+                    </Fragment>
+                }
+            </Grid>
+        </Grid>
     );
 };
 

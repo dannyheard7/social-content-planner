@@ -4,6 +4,9 @@ export default (theme: Theme) => ({
   toolbar: theme.mixins.toolbar,
   main: {
     maxWidth: '960px',
-    margin: '1rem auto'
+    margin: '1rem auto',
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(1)
+    },
   }
 });

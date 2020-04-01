@@ -16,13 +16,18 @@ const Post: React.FC = () => {
     }
   });
 
+
   if (loading) return <Loading />;
+
+  const dateFormatter = new Intl.DateTimeFormat('default', {
+    year: 'numeric', month: 'long', day: 'numeric', weekday: 'short', hour: 'numeric', minute: 'numeric'
+  });
 
   const post = data!.post;
 
   return (
     <Grid container direction="column" spacing={2}>
-      <Grid item><Typography>{new Date(post.createdAt).toLocaleString()}</Typography></Grid>
+      <Grid item><Typography variant="h4" component="h4">{dateFormatter.format(new Date(post.createdAt))}</Typography></Grid>
       <Grid item><Typography>{post.text}</Typography></Grid>
       <Grid container>
         {post.media.map(({ fileId }) => (
