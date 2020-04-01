@@ -17,10 +17,14 @@ input AddPlatformConnectionInput {
   platformUserId: String!
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type File {
   id: ID!
-  user_id: ID!
-  filename: String!
+  userId: ID!
   ext: String!
 }
 
@@ -54,6 +58,8 @@ type Post {
   id: ID!
   text: String!
   userId: ID!
+  createdAt: DateTime
+  updatedAt: DateTime!
   media: [PostMedia!]!
   platforms: [PostPlatform!]!
 }
@@ -65,8 +71,8 @@ input PostInput {
 }
 
 type PostMedia {
-  post_id: ID!
-  file_id: ID!
+  postId: ID!
+  fileId: ID!
   image: File!
   post: Post!
 }

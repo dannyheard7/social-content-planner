@@ -21,9 +21,7 @@ export class PostResolver {
     @Args({ name: 'id', type: () => ID }) postId: string,
     @CurrentUser() user: User,
   ) {
-    const post = await this.postService.findById(postId);
-    if (post.userId === user.sub) throw new UnauthorizedException("You cannot access this post");
-    return post;
+    return await this.postService.findById(postId, user);
   }
 
   @UseGuards(GqlAuthGuard)

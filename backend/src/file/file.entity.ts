@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType, HideField } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('file')
@@ -8,12 +8,12 @@ export class FileEntity {
   @Field(type => ID)
   id: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, name: "user_id" })
   @Field(type => ID)
-  user_id: string;
+  userId: string;
 
   @Column({ length: 50, nullable: false })
-  @Field(type => String)
+  @HideField()
   filename: string;
 
   @Column({ length: 10, nullable: false })

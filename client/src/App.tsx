@@ -22,6 +22,7 @@ import PlatformConnections from "./Components/PlatformConnection/PlatformConnect
 import Loading from "./Components/Loading/Loading";
 import config from './config';
 import PostList from "./Components/PostList/PostList";
+import Post from "./Components/Post/Post";
 
 const useStyles = makeStyles(styles);
 
@@ -58,6 +59,9 @@ const Routes: React.FC = () => {
           <Route exact path="/posts">
             <PostList />
           </Route>
+          <Route exact path="/posts/:id">
+            <Post />
+          </Route>
           <Route exact path="/platforms">
             <PlatformConnections />
           </Route>
@@ -65,7 +69,7 @@ const Routes: React.FC = () => {
             <CreatePost />
           </Route>
           <Route>
-            <Redirect to="/platforms" />
+            <Redirect to="/posts" />
           </Route>
         </Switch>
       </ApolloProvider>
@@ -94,7 +98,9 @@ const Layout: React.FC = ({ children }) => {
     <React.Fragment>
       <AppBar />
       <div className={classes.toolbar} />
-      {children}
+      <div className={classes.main}>
+        {children}
+      </div>
     </React.Fragment>
   );
 };

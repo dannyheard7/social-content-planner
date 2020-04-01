@@ -29,7 +29,7 @@ export class FilesController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Post('upload')
+  @Post()
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -51,7 +51,7 @@ export class FilesController {
     const fileEntity = new FileEntity();
     fileEntity.ext = extname(file.filename);
     fileEntity.filename = basename(file.filename);
-    fileEntity.user_id = req.user.sub;
+    fileEntity.userId = req.user.sub;
     return await this.fileService.createOrUpdate(fileEntity);
   }
 }

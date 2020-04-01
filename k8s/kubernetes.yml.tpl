@@ -6,7 +6,7 @@ data:
     window.env.AUTH0_CLIENT_ID="4IWpAYFnCEjhtVbxdaXaP0nzVltpmk7A"
     window.env.CLIENT_ADDRESS="habite.site"
     window.env.GRAPHQL_HOST="https://api.habite.site/graphql"
-    window.env.FILE_UPLOAD_ENDPOINT="https://api.habite.site/files/upload"
+    window.env.FILES_ENDPOINT="https://api.habite.site/files"
     window.env.FACEBOOK_APP_ID="2002136040088512"
 kind: ConfigMap
 metadata:

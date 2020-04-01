@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import * as uuid from 'uuid/v4';
 import { Post } from './Post.entity';
-import { PostMedia } from './PostImage.entity';
+import { PostMediaItem } from './PostMediaItem.entity';
 import { PostInput } from './PostInput';
 import { PostPlatform } from './PostPlatform.entity';
 import { FileEntity } from '../file/file.entity';
@@ -18,8 +18,8 @@ export class PostService {
         private readonly connection: Connection,
     ) { }
 
-    findById(id: string): Promise<Post | undefined> {
-        return this.postRepository.findOne(id);
+    findById(id: string, user: User): Promise<Post | undefined> {
+        return this.postRepository.findOne({ id, userId: user.sub });
     }
 
     async getAllForUser(user: User): Promise<Post[]> {
@@ -35,9 +35,9 @@ export class PostService {
         post.userId = user.sub;
 
         const images = postInput.images.map(image => {
-            const postImage = new PostMedia();
-            postImage.file_id = image;
-            postImage.post_id = post.id;
+            const postImage = new PostMediaItem();
+            postImage.fileId = image;
+            postImage.postId = post.id;
             return postImage;
         });
 
