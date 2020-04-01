@@ -24,7 +24,10 @@ export class PostService {
 
     async getAllForUser(user: User): Promise<Post[]> {
         return await this.postRepository.find({
-            userId: user.sub,
+            where: { userId: user.sub },
+            order: {
+                createdAt: "DESC"
+            }
         });
     }
 

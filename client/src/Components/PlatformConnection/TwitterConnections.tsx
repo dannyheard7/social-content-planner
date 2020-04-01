@@ -28,7 +28,6 @@ const TwitterConnection: React.FC = () => {
 
     useEffect(() => {
         if (queryParams.get("oauth_token") && queryParams.get("oauth_verifier") && sessionStorage.getItem("oauthSecret")) {
-            console.log(sessionStorage.getItem("oauthSecret"));
             addPlatformMutation({
                 variables:
                 {
