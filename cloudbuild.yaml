@@ -54,7 +54,7 @@ steps:
       - "-c"
       - |
         sed "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" k8s/kubernetes.yml.tpl | \
-        sed "s/COMMIT_SHA/${SHORT_SHA}/g" > k8s/kubernetes.yml
+        sed "s/COMMIT_SHA/${SHORT_SHA}/g" > k8s/kubernetes.yml # Generate the new manifest
 
   - name: "gcr.io/cloud-builders/kubectl"
     id: Deploy

@@ -12,6 +12,17 @@ kind: ConfigMap
 metadata:
   name: react-app-config
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: api-files-storage-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,11 +37,18 @@ spec:
       labels:
         app: api
     spec:
+      volumes:
+      - name: api-files-storage
+        persistentVolumeClaim:
+          claimName: api-files-storage-claim
       containers:
         - name: api
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-api:COMMIT_SHA
           ports:
             - containerPort: 7000    
+          volumeMounts:
+          - mountPath: "/data/files"
+            name: api-files-storage
           env:
             - name: TYPEORM_HOST
               valueFrom:
