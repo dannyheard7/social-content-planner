@@ -9,6 +9,7 @@ export const POSTS_QUERY = gql`
       createdAt
       platforms {
         platformConnection {
+          id
           platform
         }
       }

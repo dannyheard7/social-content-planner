@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { PostQueryData, POST_QUERY } from '../../GraphQL/Queries/PostQuery';
 import Loading from '../Loading/Loading';
 import PlatformIcon from '../Platform/PlatformIcon';
-import { IconButton, Link, Grid } from '@material-ui/core';
+import { IconButton, Link, Grid, Typography } from '@material-ui/core';
 import { AppContext } from '../AppContext/AppContextProvider';
 
 const Post: React.FC = () => {
@@ -21,9 +21,9 @@ const Post: React.FC = () => {
   const post = data!.post;
 
   return (
-    <Grid container direction="column">
-      <Grid item>{new Date(post.createdAt).toLocaleString()}</Grid>
-      <Grid item> {post.text}</Grid>
+    <Grid container direction="column" spacing={2}>
+      <Grid item><Typography>{new Date(post.createdAt).toLocaleString()}</Typography></Grid>
+      <Grid item><Typography>{post.text}</Typography></Grid>
       <Grid container>
         {post.media.map(({ fileId }) => (
           <Grid item md={3} xs={4} key={fileId}>

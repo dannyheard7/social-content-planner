@@ -11,7 +11,7 @@ const PlatformConnections: React.FC = () => {
   const { data, loading } = useQuery<PlatformConnectionQueryData>(PLATFORM_CONNECTIONS_QUERY);
 
   if (loading) return <p>Loading</p>;
-  if (!data) return <p>"Error loading data"</p>;
+  if (!data) return <p>Error loading data</p>;
 
   const platformConnections = data.platformConnections.map(pc => ({ ...pc, platform: Platform[pc.platform] }));
 

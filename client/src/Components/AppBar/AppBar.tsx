@@ -1,23 +1,17 @@
-import { AppBar, Drawer, IconButton, List, ListItem, ListItemText, makeStyles, Menu, MenuItem, Toolbar, Typography } from "@material-ui/core";
-import { AccountCircle, Menu as MenuIcon } from "@material-ui/icons";
+import { AppBar, Drawer, IconButton, List, ListItem, ListItemText, makeStyles, Menu, MenuItem, Toolbar, Typography, useTheme, Divider, Link } from "@material-ui/core";
+import { AccountCircle, Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon } from "@material-ui/icons";
 import React, { Fragment, useContext, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import classNames from 'classnames';
 import { AuthenticationContext } from "../Authentication/AuthenticationContextProvider";
+import config from '../../config';
+import styles from './AppBar.styles';
+import { Link as RouterLink } from "react-router-dom";
 
-const useStyles = makeStyles({
-  root: {
-    flexGrow: 1
-  },
-  menuButton: {
-    marginRight: 1
-  },
-  title: {
-    flexGrow: 1
-  }
-});
+const useStyles = makeStyles(styles);
 
 const AppMenu: React.FC = () => {
   const classes = useStyles();
+  const theme = useTheme();
   const { isAuthenticated, loginWithRedirect, logout } = useContext(AuthenticationContext);
   const anchorEl = useRef(null);
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
@@ -25,11 +19,16 @@ const AppMenu: React.FC = () => {
 
   return (
     <div className={classes.root}>
-      <AppBar position="fixed">
+      <AppBar
+        position="fixed"
+        className={classNames(classes.appBar, {
+          [classes.appBarShift]: drawerOpen,
+        })}
+      >
         <Toolbar>
           <IconButton
             edge="start"
-            className={classes.menuButton}
+            className={classNames(classes.menuButton, drawerOpen && classes.hide)}
             color="inherit"
             aria-label="menu"
             onClick={() => setDrawerOpen(true)}
@@ -41,23 +40,37 @@ const AppMenu: React.FC = () => {
           </Typography>
           {isAuthenticated ? (
             <Fragment>
-              <Drawer open={drawerOpen} onClose={() => { setDrawerOpen(false) }}>
+              <Drawer
+                className={classes.drawer}
+                open={drawerOpen}
+                onClose={() => { setDrawerOpen(false) }}
+                variant="persistent"
+                classes={{
+                  paper: classes.drawerPaper,
+                }}
+              >
+                <div className={classes.drawerHeader}>
+                  <IconButton onClick={() => { setDrawerOpen(false) }}>
+                    {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                  </IconButton>
+                </div>
+                <Divider />
                 <List>
-                  <ListItem button>
-                    <Link to="/posts" onClick={() => { setDrawerOpen(false) }}>
+                  <Link to="/posts" component={RouterLink} onClick={() => { setDrawerOpen(false) }}>
+                    <ListItem button>
                       <ListItemText>Posts</ListItemText>
-                    </Link>
-                  </ListItem>
-                  <ListItem button>
-                    <Link to="/platforms" onClick={() => { setDrawerOpen(false) }}>
-                      <ListItemText>Platforms</ListItemText>
-                    </Link>
-                  </ListItem>
-                  <ListItem button>
-                    <Link to="/post/new" onClick={() => { setDrawerOpen(false) }}>
+                    </ListItem>
+                  </Link>
+                  <Link to="/post/new" component={RouterLink} onClick={() => { setDrawerOpen(false) }}>
+                    <ListItem button>
                       <ListItemText>New Post</ListItemText>
-                    </Link>
-                  </ListItem>
+                    </ListItem>
+                  </Link>
+                  <Link to="/platforms" component={RouterLink} onClick={() => { setDrawerOpen(false) }}>
+                    <ListItem button>
+                      <ListItemText>Platforms</ListItemText>
+                    </ListItem>
+                  </Link>
                 </List>
               </Drawer>
               <IconButton
@@ -76,7 +89,12 @@ const AppMenu: React.FC = () => {
                 open={userMenuOpen}
                 onClose={() => setUserMenuOpen(false)}
               >
-                <MenuItem onClick={() => { logout({}); setUserMenuOpen(false); }}>Logout</MenuItem>
+                <MenuItem onClick={() => {
+                  logout({
+                    client_id: config.AUTH0_CLIENT_ID!,
+                    returnTo: `${window.location.protocol}//${config.CLIENT_ADDRESS}/login`
+                  }); setUserMenuOpen(false);
+                }}>Logout</MenuItem>
               </Menu>
             </Fragment>
           ) :

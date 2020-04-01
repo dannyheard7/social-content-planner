@@ -1,9 +1,10 @@
 import { useQuery } from '@apollo/react-hooks';
-import { Divider, List, ListItem, ListItemText, Link, Typography, Grid } from '@material-ui/core';
+import { Divider, List, ListItem, ListItemText, Typography, Grid, Link } from '@material-ui/core';
 import React, { Fragment } from 'react';
 import { PostsQueryData, POSTS_QUERY } from '../../GraphQL/Queries/PostsQuery';
 import Loading from '../Loading/Loading';
 import PlatformIcon from '../Platform/PlatformIcon';
+import { Link as RouterLink } from 'react-router-dom';
 
 const PostList: React.FC = () => {
     const { data, loading } = useQuery<PostsQueryData>(POSTS_QUERY);
@@ -17,7 +18,7 @@ const PostList: React.FC = () => {
         <List>
             {data!.posts.map(post => (
                 <Fragment>
-                    <Link href={`posts/${post.id}`}>
+                    <Link to={`posts/${post.id}`} component={RouterLink}>
                         <ListItem alignItems="flex-start">
                             <ListItemText
                                 primary={new Date(post.createdAt).toLocaleString()}

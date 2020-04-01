@@ -1,6 +1,7 @@
 import { useMutation } from "@apollo/react-hooks";
 import { Dialog, DialogContent, DialogTitle, Grid, List, ListItem, ListItemText } from "@material-ui/core";
-import React, { Fragment, useContext, useState } from "react";
+import { Facebook as FacebookIcon } from "@material-ui/icons";
+import React, { Fragment, useContext, useState, useEffect } from "react";
 import FacebookLogin, { ReactFacebookLoginInfo } from "react-facebook-login";
 import Platform from "../../Common/Enums/Platform";
 import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
@@ -18,7 +19,11 @@ const FacebookPageConnection: React.FC<Props> = ({ existingConnections }) => {
     const [existingConnectionIds] = useState(existingConnections.map(pc => pc.entityId));
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    const [addPlatformMutation] = useMutation<AddPlatformConnectionMutationData, AddPlatformConnectionMutationVars>(ADD_PLATFORM_CONNECTION_MUTATION);
+    const [addPlatformMutation, { data }] = useMutation<AddPlatformConnectionMutationData, AddPlatformConnectionMutationVars>(ADD_PLATFORM_CONNECTION_MUTATION);
+
+    useEffect(() => {
+        if (data) setDialogOpen(false);
+    }, [data])
 
     const onFacebookLogin = (userInfo: ReactFacebookLoginInfo) => {
         setUserInfo(userInfo);
@@ -50,7 +55,8 @@ const FacebookPageConnection: React.FC<Props> = ({ existingConnections }) => {
                         fields="accounts"
                         scope="manage_pages,publish_pages"
                         callback={onFacebookLogin}
-                        textButton={existingConnections.length > 0 ? "Link Another Page" : "Link Facebook Page"}
+                        textButton={existingConnections.length > 0 ? "Link Another Page" : "Link Page"}
+                        icon={<FacebookIcon style={{ margin: 0, marginRight: '0.5rem', padding: 0 }} />}
                     />
                 </Grid>
             </Grid>

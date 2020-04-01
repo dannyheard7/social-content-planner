@@ -1,5 +1,6 @@
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { Button, Grid } from "@material-ui/core";
+import { Twitter as TwitterIcon } from "@material-ui/icons";
 import React, { Fragment, useContext, useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import Platform from "../../Common/Enums/Platform";
@@ -59,7 +60,10 @@ const TwitterConnection: React.FC = () => {
         <Fragment>
             <Grid container direction="column" spacing={2}>
                 <Grid item>
-                    <Button onClick={(e) => onTwitterAuthenticate()}>Link Twitter</Button>
+                    <Button variant="contained" color="primary" onClick={(e) => onTwitterAuthenticate()}>
+                        <TwitterIcon style={{ marginRight: '0.5rem' }} />
+                        Link Twitter
+                    </Button>
                 </Grid>
             </Grid>
         </Fragment>
