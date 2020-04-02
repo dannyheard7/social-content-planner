@@ -6,7 +6,6 @@ import { setContext } from "apollo-link-context";
 import { createHttpLink } from "apollo-link-http";
 import React, { useContext } from "react";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
-import Analytics from 'react-router-ga';
 import styles from "./App.styles";
 import AppState from "./Common/Interfaces/AppState";
 import AppBar from "./Components/AppBar/AppBar";
@@ -14,6 +13,7 @@ import { AppContextProvider } from "./Components/AppContext/AppContextProvider";
 import { AuthenticationContext, AuthenticationContextProvider } from "./Components/Authentication/AuthenticationContextProvider";
 import CreatePost from "./Components/CreatePost/CreatePost";
 import Dashboard from "./Components/Dashboard/Dashboard";
+import GoogleAnalytics from "./Components/GoogleAnalytics/GoogleAnalytics";
 import Loading from "./Components/Loading/Loading";
 import Login from "./Components/Login/Login";
 import LoginCallback from "./Components/Login/LoginCallback";
@@ -118,11 +118,10 @@ function App() {
         onRedirectCallback={onRedirectCallback}
       >
         <BrowserRouter>
-          <Analytics id={config.GA_TRACKING_ID}>
-            <Layout>
-              <Routes />
-            </Layout>
-          </Analytics>
+          <GoogleAnalytics />
+          <Layout>
+            <Routes />
+          </Layout>
         </BrowserRouter>
       </AuthenticationContextProvider>
     </AppContextProvider>
