@@ -8,6 +8,7 @@ data:
     window.env.GRAPHQL_HOST="https://api.habite.site/graphql"
     window.env.FILES_ENDPOINT="https://api.habite.site/files"
     window.env.FACEBOOK_APP_ID="2002136040088512"
+    window.env.GA_TRACKING_ID="UA-162565362-1"
 kind: ConfigMap
 metadata:
   name: react-app-config

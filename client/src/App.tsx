@@ -1,28 +1,26 @@
-import React, { useContext } from "react";
-import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
-import AppBar from "./Components/AppBar/AppBar";
-import {
-  AuthenticationContextProvider,
-  AuthenticationContext
-} from "./Components/Authentication/AuthenticationContextProvider";
-import Login from "./Components/Login/Login";
-import styles from "./App.styles";
-import { makeStyles } from "@material-ui/core";
-import LoginCallback from "./Components/Login/LoginCallback";
-import Dashboard from "./Components/Dashboard/Dashboard";
 import { ApolloProvider } from "@apollo/react-hooks";
-import { ApolloClient } from "apollo-client";
-import { createHttpLink } from "apollo-link-http";
-import { setContext } from "apollo-link-context";
+import { makeStyles } from "@material-ui/core";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import { ApolloClient } from "apollo-client";
+import { setContext } from "apollo-link-context";
+import { createHttpLink } from "apollo-link-http";
+import React, { useContext } from "react";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import Analytics from 'react-router-ga';
+import styles from "./App.styles";
 import AppState from "./Common/Interfaces/AppState";
-import CreatePost from "./Components/CreatePost/CreatePost";
+import AppBar from "./Components/AppBar/AppBar";
 import { AppContextProvider } from "./Components/AppContext/AppContextProvider";
-import PlatformConnections from "./Components/PlatformConnection/PlatformConnections";
+import { AuthenticationContext, AuthenticationContextProvider } from "./Components/Authentication/AuthenticationContextProvider";
+import CreatePost from "./Components/CreatePost/CreatePost";
+import Dashboard from "./Components/Dashboard/Dashboard";
 import Loading from "./Components/Loading/Loading";
-import config from './config';
-import PostList from "./Components/PostList/PostList";
+import Login from "./Components/Login/Login";
+import LoginCallback from "./Components/Login/LoginCallback";
+import PlatformConnections from "./Components/PlatformConnection/PlatformConnections";
 import Post from "./Components/Post/Post";
+import PostList from "./Components/PostList/PostList";
+import config from './config';
 
 const useStyles = makeStyles(styles);
 
@@ -120,9 +118,11 @@ function App() {
         onRedirectCallback={onRedirectCallback}
       >
         <BrowserRouter>
-          <Layout>
-            <Routes />
-          </Layout>
+          <Analytics id={config.GA_TRACKING_ID}>
+            <Layout>
+              <Routes />
+            </Layout>
+          </Analytics>
         </BrowserRouter>
       </AuthenticationContextProvider>
     </AppContextProvider>
