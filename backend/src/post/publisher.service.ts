@@ -35,21 +35,4 @@ export class PublisherService {
 
         return await this.postService.updatePostPlatforms(updatedPostPlatforms);
     }
-
-    async getPublishedPostStats(post: Post): Promise<any[]> {
-        const postPlatforms = await post.platforms;
-        const platformConnections = await Promise.all(postPlatforms.map(postPlatform => postPlatform.platformConnection));
-
-        // this is stopping error, we need to catch and handle
-        return await Promise.all(platformConnections.map(platformConnection => {
-            const postPlatform = postPlatforms.find(x => x.platformConnectionId === platformConnection.id);
-
-            switch (platformConnection.platform) {
-                case Platform.FACEBOOK:
-                    return this.facebookService.getPostStatus(postPlatform)
-                default:
-                    throw new Error("Platform not currently supported");
-            }
-        }));
-    }
 }

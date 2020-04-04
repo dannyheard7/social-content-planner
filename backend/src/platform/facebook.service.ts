@@ -10,6 +10,7 @@ import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
 import Platform from './Platform';
 import { PlatformConnection } from './PlatformConnection.entity';
 import PlatformService from './PlatformService';
+import { PostPlatformStatus } from '../post/status/PostPlatformStatus.entity';
 
 @Injectable()
 export class FacebookService implements PlatformService {
@@ -124,7 +125,7 @@ export class FacebookService implements PlatformService {
 
     async getPostStatus(
         postPlatform: PostPlatform,
-    ): Promise<any> {
+    ): Promise<PostPlatformStatus> {
         const platformConnection = await postPlatform.platformConnection;
 
         const postData = await fetch(
