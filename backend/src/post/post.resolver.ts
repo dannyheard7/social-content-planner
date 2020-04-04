@@ -21,7 +21,9 @@ export class PostResolver {
     @Args({ name: 'id', type: () => ID }) postId: string,
     @CurrentUser() user: User,
   ) {
-    return await this.postService.findById(postId, user);
+    const post = await this.postService.findById(postId, user);
+    console.log(await this.publisherService.getPublishedPostStats(post));
+    return post;
   }
 
   @UseGuards(GqlAuthGuard)

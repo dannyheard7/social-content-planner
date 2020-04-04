@@ -121,4 +121,21 @@ export class FacebookService implements PlatformService {
 
         return platformConnection;
     }
+
+    async getPostStatus(
+        postPlatform: PostPlatform,
+    ): Promise<any> {
+        const platformConnection = await postPlatform.platformConnection;
+
+        const postData = await fetch(
+            `https://graph.facebook.com/v6.0/${postPlatform.platformEntityId}?fields=shares,likes.limit(1).summary(true),comments.limit(1).summary(true),insights&access_token=${platformConnection.accessToken}`,
+
+        )
+            .then(res => res.json())
+            .catch(e => {
+                throw new Error(e.message);
+            });
+
+        return postData;
+    }
 }
