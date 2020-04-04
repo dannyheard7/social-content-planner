@@ -6,11 +6,15 @@ import { PlatformConnection } from '../platform/PlatformConnection.entity';
 @Entity('post_platform_connection')
 @ObjectType('PostPlatform')
 export class PostPlatform {
-  @PrimaryColumn({ nullable: false, name: "post_id" })
+  @PrimaryColumn({ nullable: false })
+  @Field(type => ID)
+  id: string;
+
+  @Column({ nullable: false, name: "post_id" })
   @Field(type => ID)
   postId: string;
 
-  @PrimaryColumn({ nullable: false, name: "platform_connection_id" })
+  @Column({ nullable: false, name: "platform_connection_id" })
   @Field(type => ID)
   platformConnectionId: string;
 
