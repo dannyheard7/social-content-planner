@@ -1,0 +1,1 @@
+export const POST_STATUS_POLLER_QUEUE_NAME = 'poll-status-queue'; 

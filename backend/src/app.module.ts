@@ -1,12 +1,13 @@
+import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthzModule } from './authz/authz.module';
+import { FileModule } from './file/file.module';
 import { PlatformModule } from './platform/platform.module';
 import { PostModule } from './post/post.module';
-import { FileModule } from './file/file.module';
-import { ScheduleModule } from '@nestjs/schedule';
+import { POST_STATUS_POLLER_QUEUE_NAME } from './constants';
 
 @Module({
   imports: [
@@ -33,7 +34,6 @@ import { ScheduleModule } from '@nestjs/schedule';
       uploads: true,
       context: ({ req }) => ({ req }),
     }),
-    ScheduleModule.forRoot(),
     AuthzModule,
     PlatformModule,
     PostModule,

@@ -18,7 +18,11 @@ export class PostService {
         private readonly connection: Connection,
     ) { }
 
-    findById(id: string, user: User): Promise<Post | undefined> {
+    findById(id: string): Promise<Post | undefined> {
+        return this.postRepository.findOne({ id });
+    }
+
+    findByIdAndUser(id: string, user: User): Promise<Post | undefined> {
         return this.postRepository.findOne({ id, userId: user.sub });
     }
 
