@@ -1,4 +1,3 @@
-import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -7,7 +6,6 @@ import { AuthzModule } from './authz/authz.module';
 import { FileModule } from './file/file.module';
 import { PlatformModule } from './platform/platform.module';
 import { PostModule } from './post/post.module';
-import { POST_STATUS_POLLER_QUEUE_NAME } from './constants';
 
 @Module({
   imports: [

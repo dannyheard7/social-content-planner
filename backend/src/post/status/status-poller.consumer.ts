@@ -1,23 +1,17 @@
 import { Process, Processor } from '@nestjs/bull';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from 'bull';
-import { Repository } from 'typeorm';
 import { POST_STATUS_POLLER_QUEUE_NAME } from '../../constants';
 import { FacebookService } from '../../platform/facebook.service';
 import Platform from '../../platform/Platform';
 import { TwitterService } from '../../platform/twitter.service';
-import { PostPlatformStatus } from './PostPlatformStatus.entity';
-import { Post } from '../Post.entity';
-import { PostStatusService } from './status-poller.service';
 import { PostService } from '../post.service';
+import { PostStatusService } from './post-status.service';
 
 @Processor(POST_STATUS_POLLER_QUEUE_NAME)
 export class StatusPollerConsumer {
     constructor(
-        @InjectRepository(PostPlatformStatus)
-        private readonly postStatusRepository: Repository<PostPlatformStatus>,
         private readonly postService: PostService,
-        private readonly statusPollerService: PostStatusService,
+        private readonly postStatusService: PostStatusService,
         private readonly facebookService: FacebookService,
         private readonly twitterService: TwitterService
     ) { }
@@ -41,9 +35,11 @@ export class StatusPollerConsumer {
             }
         }));
 
+        const latestUpdate = await this.postStatusService.getLatestPostStatusUpdateTime(post);
+
         await Promise.all([
-            this.postStatusRepository.save(statuses),
-            this.statusPollerService.schedulePostStatusPolling(post)
+            this.postStatusService.saveStatuses(statuses),
+            this.postStatusService.schedulePostStatusPolling(post, latestUpdate ?? post.createdAt)
         ]);
     }
 }

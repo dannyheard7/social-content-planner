@@ -9,7 +9,7 @@ import { PostMediaItem } from './PostMediaItem.entity';
 import { PostPlatform } from './PostPlatform.entity';
 import { PublisherService } from './publisher.service';
 import { PostPlatformStatus } from './status/PostPlatformStatus.entity';
-import { PostStatusService } from './status/status-poller.service';
+import { PostStatusService } from './status/post-status.service';
 import { POST_STATUS_POLLER_QUEUE_NAME } from '../constants';
 import { StatusPollerConsumer } from './status/status-poller.consumer';
 import { ConfigService, ConfigModule } from '@nestjs/config';
@@ -19,8 +19,8 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
     TypeOrmModule.forFeature([Post, PostMediaItem, PostPlatform, PostPlatformStatus]),
     PlatformModule,
     BullModule.registerQueueAsync({
+      name: POST_STATUS_POLLER_QUEUE_NAME,
       useFactory: (configService: ConfigService) => ({
-        name: POST_STATUS_POLLER_QUEUE_NAME,
         redis: {
           host: configService.get<string>('REDIS_HOST'),
           port: parseInt(configService.get<string>('REDIS_PORT')),

@@ -33,6 +33,6 @@ export class PublisherService {
             }
         }));
 
-        return await this.postService.updatePostPlatforms(updatedPostPlatforms);
+        return await this.postService.savePostPlatforms(updatedPostPlatforms);
     }
 }

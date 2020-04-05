@@ -18,16 +18,11 @@ export class PostService {
         private readonly connection: Connection,
     ) { }
 
-    findById(id: string): Promise<Post | undefined> {
-        return this.postRepository.findOne({ id });
-    }
+    findById = (id: string) => this.postRepository.findOne({ id });
+    findByIdAndUser = (id: string, user: User) => this.postRepository.findOne({ id, userId: user.sub });
 
-    findByIdAndUser(id: string, user: User): Promise<Post | undefined> {
-        return this.postRepository.findOne({ id, userId: user.sub });
-    }
-
-    async getAllForUser(user: User): Promise<Post[]> {
-        return await this.postRepository.find({
+    getAllForUser(user: User) {
+        return this.postRepository.find({
             where: { userId: user.sub },
             order: {
                 createdAt: "DESC"
@@ -64,11 +59,9 @@ export class PostService {
         return entities.find(e => e instanceof Post) as Post;
     }
 
-    async updatePostPlatforms(postPlatforms: PostPlatform[]): Promise<PostPlatform[]> {
-        return await this.postPlatformRepository.save(postPlatforms);
-    }
+    savePostPlatforms = (postPlatforms: PostPlatform[]) => this.postPlatformRepository.save(postPlatforms);
 
-    async getPostImageFiles(post: Post): Promise<FileEntity[]> {
+    async getPostImageFiles(post: Post) {
         if ((await post.media).length > 0)
             return await Promise.all((await post.media).map(postImage => postImage.image));
 

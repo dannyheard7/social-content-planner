@@ -6,7 +6,7 @@ import { Post } from './Post.entity';
 import { PostService } from './post.service';
 import { PostInput } from './PostInput';
 import { PublisherService } from './publisher.service';
-import { PostStatusService } from './status/status-poller.service';
+import { PostStatusService } from './status/post-status.service';
 
 
 @Resolver()
