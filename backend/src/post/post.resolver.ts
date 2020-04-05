@@ -6,6 +6,7 @@ import { Post } from './Post.entity';
 import { PostService } from './post.service';
 import { PostInput } from './PostInput';
 import { PublisherService } from './publisher.service';
+import { StatusPollerService } from './status/status-poller.service';
 
 
 @Resolver()
@@ -13,6 +14,7 @@ export class PostResolver {
   constructor(
     private readonly postService: PostService,
     private readonly publisherService: PublisherService,
+    private readonly statusPollerService: StatusPollerService
   ) { }
 
   @UseGuards(GqlAuthGuard)
@@ -21,9 +23,7 @@ export class PostResolver {
     @Args({ name: 'id', type: () => ID }) postId: string,
     @CurrentUser() user: User,
   ) {
-    const post = await this.postService.findById(postId, user);
-    console.log(await this.publisherService.getPublishedPostStats(post));
-    return post;
+    return await this.postService.findById(postId, user);
   }
 
   @UseGuards(GqlAuthGuard)
@@ -42,7 +42,11 @@ export class PostResolver {
     @CurrentUser() user: User,
   ) {
     const post = await this.postService.create(postInput, user);
-    await this.publisherService.publishPost(post);
+
+    await Promise.all([
+      this.publisherService.publishPost(post),
+      this.statusPollerService.schedulePostStatusPolling(post)
+    ]);
 
     return post;
   }

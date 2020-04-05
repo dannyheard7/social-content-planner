@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { FacebookService } from '../platform/facebook.service';
 import Platform from '../platform/Platform';
 import { TwitterService } from '../platform/twitter.service';

@@ -1,19 +1,21 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PlatformModule } from '../platform/platform.module';
+import { Post } from './Post.entity';
 import { PostResolver } from './post.resolver';
 import { PostService } from './post.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostMediaItem } from './PostMediaItem.entity';
-import { Post } from './Post.entity';
 import { PostPlatform } from './PostPlatform.entity';
-import { PlatformModule } from '../platform/platform.module';
 import { PublisherService } from './publisher.service';
+import { StatusPollerService } from './status/status-poller.service';
+import { PostPlatformStatus } from './status/PostPlatformStatus.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Post, PostPlatform, PostMediaItem]),
-    PlatformModule,
+    TypeOrmModule.forFeature([Post, PostMediaItem, PostPlatform, PostPlatformStatus]),
+    PlatformModule
   ],
-  providers: [PostResolver, PostService, PublisherService],
-  exports: [PostService]
+  providers: [PostResolver, PostService, PublisherService, StatusPollerService],
+  exports: [PostService, StatusPollerService]
 })
 export class PostModule { }

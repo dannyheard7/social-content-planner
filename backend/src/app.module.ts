@@ -6,6 +6,7 @@ import { AuthzModule } from './authz/authz.module';
 import { PlatformModule } from './platform/platform.module';
 import { PostModule } from './post/post.module';
 import { FileModule } from './file/file.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { FileModule } from './file/file.module';
       uploads: true,
       context: ({ req }) => ({ req }),
     }),
+    ScheduleModule.forRoot(),
     AuthzModule,
     PlatformModule,
     PostModule,

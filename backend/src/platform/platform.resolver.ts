@@ -1,18 +1,18 @@
 import { UseGuards } from '@nestjs/common';
-import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthGuard } from '../authz/auth.guard';
 import { CurrentUser } from '../authz/current.user.decorator';
+import { AddOAuthPlatformConnectionInput } from './AddOAuthPlatformConnectionInput';
 import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
+import { OAuthTokenResult } from './OAuthTokenResult.entity';
+import Platform from './Platform';
 import { PlatformConnectionService } from './platform-connection.service';
 import { PlatformConnection } from './PlatformConnection.entity';
-import Platform from './Platform';
-import { OAuthTokenResult } from './OAuthTokenResult.entity';
-import { AddOAuthPlatformConnectionInput } from './AddOAuthPlatformConnectionInput';
 
 @Resolver()
 export class PlatformResolver {
     constructor(
-        private readonly platformConnectionService: PlatformConnectionService,
+        private readonly platformConnectionService: PlatformConnectionService
     ) { }
 
     @UseGuards(GqlAuthGuard)

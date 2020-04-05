@@ -3,6 +3,13 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { PostPlatform } from '../PostPlatform.entity';
 import { Post } from '../Post.entity';
 
+export interface CustomStatusData {
+    name: string;
+    description: string;
+    value: string;
+    datatype: "integer"
+}
+
 @Entity('post_platform_status')
 @ObjectType('PostPlatformStatus')
 export class PostPlatformStatus {
@@ -42,10 +49,10 @@ export class PostPlatformStatus {
         type: 'jsonb',
         array: false,
         default: () => "'[]'",
-        nullable: false,
+        nullable: true,
         name: "custom_data"
     })
-    public customData!: Array<{ name: string, value: string, datatype: string }>;
+    customData?: CustomStatusData[];
 
     @ManyToOne(
         type => PostPlatform,

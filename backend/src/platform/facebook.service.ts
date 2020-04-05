@@ -10,7 +10,7 @@ import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
 import Platform from './Platform';
 import { PlatformConnection } from './PlatformConnection.entity';
 import PlatformService from './PlatformService';
-import { PostPlatformStatus } from '../post/status/PostPlatformStatus.entity';
+import { PostPlatformStatus, CustomStatusData } from '../post/status/PostPlatformStatus.entity';
 
 @Injectable()
 export class FacebookService implements PlatformService {
@@ -128,8 +128,11 @@ export class FacebookService implements PlatformService {
     ): Promise<PostPlatformStatus> {
         const platformConnection = await postPlatform.platformConnection;
 
+        const metrics = ["post_impressions_unique", "post_impressions_fan"];
+        const fields = ["shares", "reactions.summary(true)", "comments.limit(1).summary(true)", `insights.metric(${metrics.join(",")})`];
+
         const postData = await fetch(
-            `https://graph.facebook.com/v6.0/${postPlatform.platformEntityId}?fields=shares,likes.limit(1).summary(true),comments.limit(1).summary(true),insights&access_token=${platformConnection.accessToken}`,
+            `https://graph.facebook.com/v6.0/${postPlatform.platformEntityId}?fields=${fields.join(",")}&access_token=${platformConnection.accessToken}`,
 
         )
             .then(res => res.json())
@@ -137,6 +140,40 @@ export class FacebookService implements PlatformService {
                 throw new Error(e.message);
             });
 
-        return postData;
+        const reactions = postData.reactions.data.reduce(({ positive, negative }, reaction) => {
+            switch (reaction.type) {
+                case "LIKE":
+                case "LOVE":
+                case "HAHA":
+                case "WOW":
+                    return { positive: positive + 1, negative };
+                case "SAD":
+                case "ANGRY":
+                    return { positive, negative: negative + 1 };
+                default:
+                    return { positive, negative };
+            }
+        }, { positive: 0, negative: 0 });
+
+        const status = new PostPlatformStatus();
+        status.postId = postPlatform.postId;
+        status.postPlatformId = postPlatform.id;
+        status.positiveReactionsCount = reactions.positive;
+        status.negativeReactionsCount = reactions.negative;
+        status.commentsCount = postData.comments.summary.total_count;
+        status.sharesCount = postData.shares?.count || 0;
+
+        status.customData = postData.insights.data.reduce(
+            (acc: CustomStatusData[], { name, description, values }): CustomStatusData[] => (
+                [...acc,
+                {
+                    name,
+                    description,
+                    value: values[0].value,
+                    datatype: "integer"
+                }]
+            ), []);
+
+        return status;
     }
 }

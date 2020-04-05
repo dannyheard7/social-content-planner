@@ -11,6 +11,7 @@ import { OAuthTokenResult } from './OAuthTokenResult.entity';
 import Platform from './Platform';
 import { PlatformConnection } from './PlatformConnection.entity';
 import PlatformService from './PlatformService';
+import { PostPlatformStatus } from '../post/status/PostPlatformStatus.entity';
 
 @Injectable()
 export class TwitterService implements PlatformService {
@@ -168,5 +169,10 @@ export class TwitterService implements PlatformService {
                 }
             });
         });
+    }
+
+
+    getPostStatus(postPlatform: PostPlatform): Promise<PostPlatformStatus> {
+        throw new Error("Method not implemented.");
     }
 }

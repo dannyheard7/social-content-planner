@@ -53,7 +53,7 @@ const FacebookPageConnection: React.FC<Props> = ({ existingConnections }) => {
                     <FacebookLogin
                         appId={facebookAppId!}
                         fields="accounts"
-                        scope="manage_pages,publish_pages"
+                        scope="manage_pages,publish_pages,read_insights"
                         callback={onFacebookLogin}
                         textButton={existingConnections.length > 0 ? "Link Another Page" : "Link Page"}
                         icon={<FacebookIcon style={{ margin: 0, marginRight: '0.5rem', padding: 0 }} />}
