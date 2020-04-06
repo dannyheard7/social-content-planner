@@ -35,7 +35,7 @@ export class StatusPollerConsumer {
             }
         }));
 
-        const latestUpdate = await this.postStatusService.getLatestPostStatusUpdateTime(post);
+        const latestUpdate = await this.postStatusService.getLatestPostStatusTimestamp(post);
 
         await Promise.all([
             this.postStatusService.saveStatuses(statuses),

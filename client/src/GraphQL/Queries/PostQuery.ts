@@ -17,6 +17,10 @@ export const POST_QUERY = gql`
           platform
         }
       }
+      status {
+        positiveReactionsCount
+        negativeReactionsCount
+      }
     }
   }
 `;
