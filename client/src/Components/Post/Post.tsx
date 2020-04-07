@@ -6,6 +6,7 @@ import Loading from '../Loading/Loading';
 import PlatformIcon from '../Platform/PlatformIcon';
 import { IconButton, Link, Grid, Typography } from '@material-ui/core';
 import { AppContext } from '../AppContext/AppContextProvider';
+import PostStatusChart from './PostStatusChart';
 
 const Post: React.FC = () => {
   const { filesEndpoint } = useContext(AppContext);
@@ -47,6 +48,7 @@ const Post: React.FC = () => {
           </Grid>
         ))}
       </Grid>
+      <PostStatusChart statuses={post.status} />
     </Grid>
   );
 };

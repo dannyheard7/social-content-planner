@@ -36,6 +36,7 @@ export interface PostQueryData {
     }[],
     media: {
       fileId: string
-    }[]
+    }[],
+    status: any[] // TODO: move into custom definition
   }
 }

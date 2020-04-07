@@ -22,7 +22,11 @@ export class PostStatusService {
     getAggregatedStatuses = async (postId: string) => {
         const results = await this.postStatusRepository
             .createQueryBuilder()
-            .select(["sum(positive_reactions_count)", "sum(negative_reactions_count)", "sum(comments_count)", "sum(shares_count)", "timestamp"])
+            .select("sum(positive_reactions_count)", "positiveReactionsCount")
+            .addSelect("sum(negative_reactions_count)", "negativeReactionsCount")
+            .addSelect("sum(comments_count)", "commentsCount")
+            .addSelect("sum(shares_count)", "sharesCount")
+            .addSelect("timestamp")
             .groupBy("timestamp")
             .where({ postId })
             .getRawMany();
@@ -50,8 +54,6 @@ export class PostStatusService {
     saveStatuses = (statuses: PostPlatformStatus[]) => this.postStatusRepository.save(statuses);
 
     async getLatestPostStatusTimestamp(post: Post): Promise<Date | undefined> {
-        this.postStatusRepository.findOne
-
         const status = await this.postStatusRepository.findOne({
             select: ["timestamp"],
             where: { postId: post.id },
