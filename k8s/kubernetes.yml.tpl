@@ -30,7 +30,7 @@ metadata:
   name: api-files-storage-claim
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 1Gi
