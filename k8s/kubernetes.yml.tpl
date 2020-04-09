@@ -30,7 +30,7 @@ metadata:
   name: api-files-storage-claim
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
@@ -41,6 +41,8 @@ metadata:
   name: api-deployment
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: api
