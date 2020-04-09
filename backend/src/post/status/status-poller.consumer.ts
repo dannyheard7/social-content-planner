@@ -29,7 +29,9 @@ export class StatusPollerConsumer {
 
             switch (platformConnection.platform) {
                 case Platform.FACEBOOK:
-                    return this.facebookService.getPostStatus(postPlatform)
+                    return this.facebookService.getPostStatus(postPlatform);
+                case Platform.TWITTER:
+                    return this.twitterService.getPostStatus(postPlatform);
                 default:
                     throw new Error("Platform not currently supported");
             }

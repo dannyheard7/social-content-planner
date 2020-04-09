@@ -115,7 +115,7 @@ export class TwitterService implements PlatformService {
                 throw new Error(e.message);
             });
 
-        postPlatform.platformEntityId = res.id;
+        postPlatform.platformEntityId = res.id_str;
         postPlatform.platformEntityUrl = `https://twitter.com/${res.user.screen_name}/status/${res.id_str}`;
 
         return postPlatform;
@@ -171,8 +171,33 @@ export class TwitterService implements PlatformService {
         });
     }
 
+    async getPostStatus(postPlatform: PostPlatform): Promise<PostPlatformStatus> {
+        const platformConnection = await postPlatform.platformConnection;
+        const consumer = this.createOAuthConsumer();
 
-    getPostStatus(postPlatform: PostPlatform): Promise<PostPlatformStatus> {
-        throw new Error("Method not implemented.");
+        const url = `https://api.twitter.com/labs/1/tweets/metrics/private?ids=${postPlatform.platformEntityId}`;
+        const data = await fetch(
+            url,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': consumer.authHeader(url, platformConnection.accessToken, platformConnection.accessTokenSecret, 'GET')
+                }
+            }
+        )
+            .then(response => response.json())
+            .catch(e => {
+                throw new Error(e.message);
+            });
+
+        const status = new PostPlatformStatus();
+        status.postId = postPlatform.postId;
+        status.postPlatformId = postPlatform.id;
+        status.positiveReactionsCount = data.data[0].tweet.like_count
+        status.negativeReactionsCount = 0; // Don't need to do this for twitter
+        status.commentsCount = data.data[0].tweet.reply_count;
+        status.sharesCount = data.data[0].tweet.retweet_count + data.data[0].tweet.quote_count;
+
+        return status;
     }
 }
