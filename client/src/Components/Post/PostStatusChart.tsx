@@ -1,6 +1,6 @@
-import { Grid } from '@material-ui/core';
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, TooltipPayload, ResponsiveContainer } from 'recharts';
+import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 
 const PostStatusChart: React.FC<{ statuses: any[] }> = ({ statuses }) => {
@@ -13,16 +13,22 @@ const PostStatusChart: React.FC<{ statuses: any[] }> = ({ statuses }) => {
     return (
         <Grid container >
             <Grid item md={12}>
-                <ResponsiveContainer width="99%" height={300}>
-                    <LineChart data={statuses} margin={{ top: 5, right: 30, left: 20, bottom: 5 }} height={300} width={300}>
-                        <XAxis dataKey="timestamp" tickFormatter={formatXAxis} />
-                        <YAxis />
-                        <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-                        <Line type="monotone" dataKey="positiveReactionsCount" name="Positive Reactions" stroke="#82ca9d" />
-                        <Line type="monotone" dataKey="negativeReactionsCount" name="Negative Reactions" stroke="#8884d8" />
-                        <Tooltip labelFormatter={(value) => formatXAxis(value as string)} />
-                    </LineChart>
-                </ResponsiveContainer>
+                {statuses.length > 0 ?
+                    <ResponsiveContainer width="99%" height={300}>
+                        <LineChart data={statuses} margin={{ top: 5, right: 30, left: 20, bottom: 5 }} height={300} width={300}>
+                            <XAxis dataKey="timestamp" tickFormatter={formatXAxis} scale='utcTime' />
+                            <YAxis />
+                            <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+                            <Line type="monotone" dataKey="positiveReactionsCount" name="Positive Reactions" stroke="#82ca9d" />
+                            <Line type="monotone" dataKey="negativeReactionsCount" name="Negative Reactions" stroke="#8884d8" />
+                            <Line type="monotone" dataKey="sharesCount" name="Shares" stroke="#8884d8" />
+                            <Line type="monotone" dataKey="commentsCount" name="Comments" stroke="#8884d8" />
+                            <Tooltip labelFormatter={(value) => formatXAxis(value as string)} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                    :
+                    <Typography>This post has no stats yet (Check again later)</Typography>
+                }
             </Grid>
         </Grid>
     );

@@ -31,9 +31,9 @@ const Post: React.FC = () => {
       <Grid item><Typography variant="h4" component="h4">{dateFormatter.format(new Date(post.createdAt))}</Typography></Grid>
       <Grid item><Typography>{post.text}</Typography></Grid>
       <Grid container>
-        {post.media.map(({ fileId }) => (
+        {post.media.map(({ fileId }, index) => (
           <Grid item md={3} xs={4} key={fileId}>
-            <img src={`${filesEndpoint}/${fileId}`} width="100%" height="auto" />
+            <img src={`${filesEndpoint}/${fileId}`} width="100%" height="auto" alt={`Post media ${index + 1}`} />
           </Grid>
         ))}
       </Grid>

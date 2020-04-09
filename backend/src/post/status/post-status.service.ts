@@ -39,7 +39,7 @@ export class PostStatusService {
 
     async schedulePostStatusPolling(post: Post, lastUpdateTime?: Date, current: Date = new Date()) {
         // IN future we could add extra polling as part of a premium package
-        const delay = lastUpdateTime ? (current.getTime() - lastUpdateTime.getTime()) * 2 : this.minutesToMilliseconds(1);
+        const delay = lastUpdateTime ? (current.getTime() - lastUpdateTime.getTime()) * 1.75 : this.minutesToMilliseconds(5);
 
         await this.pollerQueue.add(
             {

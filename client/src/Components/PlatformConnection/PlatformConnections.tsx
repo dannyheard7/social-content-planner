@@ -6,11 +6,12 @@ import { PLATFORM_CONNECTIONS_QUERY, PlatformConnectionQueryData } from "../../G
 import Platform from "../../Common/Enums/Platform";
 import TwitterConnection from "./TwitterConnections";
 import ExistingConnections from "./ExistingConnections";
+import Loading from "../Loading/Loading";
 
 const PlatformConnections: React.FC = () => {
   const { data, loading } = useQuery<PlatformConnectionQueryData>(PLATFORM_CONNECTIONS_QUERY);
 
-  if (loading) return <p>Loading</p>;
+  if (loading) return <Loading />;
   if (!data) return <p>Error loading data</p>;
 
   const platformConnections = data.platformConnections.map(pc => ({ ...pc, platform: Platform[pc.platform] }));

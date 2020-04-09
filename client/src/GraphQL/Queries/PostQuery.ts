@@ -20,6 +20,8 @@ export const POST_QUERY = gql`
       status {
         positiveReactionsCount
         negativeReactionsCount
+        sharesCount
+        commentsCount
         timestamp
       }
     }
@@ -47,7 +49,9 @@ export interface PostQueryData {
 }
 
 interface PostStatus {
-  positiveReactionsCount: number
-  negativeReactionsCount: number
+  positiveReactionsCount: number,
+  negativeReactionsCount: number,
+  sharesCount: number,
+  commentsCount: number
   timestamp: Date
 }

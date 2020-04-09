@@ -37,7 +37,7 @@ const GoogleAnalytics: React.FC = () => {
                 location.search
             );
         }
-    }, [location])
+    }, [location, previous])
 
     return null;
 }

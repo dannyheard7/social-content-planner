@@ -14,6 +14,17 @@ metadata:
   name: react-app-config
 ---
 apiVersion: v1
+data:
+  AUTH0_DOMAIN: "https://smarketing.eu.auth0.com/"
+  FACEBOOK_APP_ID: "2002136040088512"
+  TWITTER_CONSUMER_KEY: "0FUfd55TBCepUErv001kUHA89"
+  REDIS_HOST: localhost
+  REDIS_PORT: "6379"
+kind: ConfigMap
+metadata:
+  name: api-config
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: api-files-storage-claim
@@ -39,17 +50,17 @@ spec:
         app: api
     spec:
       volumes:
-      - name: api-files-storage
-        persistentVolumeClaim:
-          claimName: api-files-storage-claim
+        - name: api-files-storage
+          persistentVolumeClaim:
+            claimName: api-files-storage-claim
       containers:
         - name: api
           image: gcr.io/GOOGLE_CLOUD_PROJECT/smarketing-api:COMMIT_SHA
           ports:
-            - containerPort: 7000    
+            - containerPort: 7000
           volumeMounts:
-          - mountPath: "/data/files"
-            name: api-files-storage
+            - mountPath: "/data/files"
+              name: api-files-storage
           env:
             - name: TYPEORM_HOST
               valueFrom:
@@ -78,9 +89,9 @@ spec:
                   key: port
             - name: AUTH0_DOMAIN
               valueFrom:
-                secretKeyRef:
-                  name: app
-                  key: auth0-domain
+                configMapKeyRef:
+                  name: api-config
+                  key: AUTH0_DOMAIN
             - name: AUTH0_AUDIENCE
               valueFrom:
                 secretKeyRef:
@@ -88,9 +99,9 @@ spec:
                   key: auth0-audience
             - name: FACEBOOK_APP_ID
               valueFrom:
-                secretKeyRef:
-                  name: app
-                  key: facebook-app-id
+                configMapKeyRef:
+                  name: api-config
+                  key: FACEBOOK_APP_ID
             - name: FACEBOOK_APP_SECRET
               valueFrom:
                 secretKeyRef:
@@ -98,19 +109,34 @@ spec:
                   key: facebook-app-secret
             - name: TWITTER_CONSUMER_KEY
               valueFrom:
-                secretKeyRef:
-                  name: app
-                  key: twitter-consumer-key
+                configMapKeyRef:
+                  name: api-config
+                  key: TWITTER_CONSUMER_KEY
             - name: TWITTER_CONSUMER_SECRET
               valueFrom:
                 secretKeyRef:
                   name: app
                   key: twitter-consumer-secret
             - name: FILE_DIR
+              value: "/data/files"
+            - name: REDIS_HOST
               valueFrom:
-                secretKeyRef:
-                  name: app
-                  key: file-dir
+                configMapKeyRef:
+                  name: api-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: REDIS_PORT
+        - name: redis
+          image: docker.io/redis:alpine
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          ports:
+            - containerPort: 6379
 ---
 apiVersion: v1
 kind: Service
