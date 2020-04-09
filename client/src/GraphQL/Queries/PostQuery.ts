@@ -20,10 +20,15 @@ export const POST_QUERY = gql`
       status {
         positiveReactionsCount
         negativeReactionsCount
+        timestamp
       }
     }
   }
 `;
+
+export interface PostQueryVars {
+  id: string;
+}
 
 export interface PostQueryData {
   post: {
@@ -37,6 +42,12 @@ export interface PostQueryData {
     media: {
       fileId: string
     }[],
-    status: any[] // TODO: move into custom definition
+    status: PostStatus[]
   }
+}
+
+interface PostStatus {
+  positiveReactionsCount: number
+  negativeReactionsCount: number
+  timestamp: Date
 }

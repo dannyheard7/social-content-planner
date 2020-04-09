@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks';
 import React, { useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import { PostQueryData, POST_QUERY } from '../../GraphQL/Queries/PostQuery';
+import { PostQueryData, POST_QUERY, PostQueryVars } from '../../GraphQL/Queries/PostQuery';
 import Loading from '../Loading/Loading';
 import PlatformIcon from '../Platform/PlatformIcon';
 import { IconButton, Link, Grid, Typography } from '@material-ui/core';
@@ -11,9 +11,9 @@ import PostStatusChart from './PostStatusChart';
 const Post: React.FC = () => {
   const { filesEndpoint } = useContext(AppContext);
   const { id } = useParams();
-  const { data, loading } = useQuery<PostQueryData>(POST_QUERY, {
+  const { data, loading } = useQuery<PostQueryData, PostQueryVars>(POST_QUERY, {
     variables: {
-      id
+      id: id!
     }
   });
 
