@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation } from '@apollo/client';
 import { Dialog, DialogContent, DialogTitle, Grid, List, ListItem, ListItemText } from "@material-ui/core";
 import { Facebook as FacebookIcon } from "@material-ui/icons";
 import React, { Fragment, useContext, useState, useEffect } from "react";
@@ -7,6 +7,7 @@ import Platform from "../../Common/Enums/Platform";
 import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
 import { AddPlatformConnectionMutationData, AddPlatformConnectionMutationVars, ADD_PLATFORM_CONNECTION_MUTATION } from "../../GraphQL/Mutations/AddPlatformConnection";
 import { AppContext } from "../AppContext/AppContextProvider";
+import { PLATFORM_CONNECTIONS_QUERY, PlatformConnectionQueryData } from '../../GraphQL/Queries/PlatformConnections';
 
 interface Props {
     existingConnections: PlatformConnection[];
@@ -19,7 +20,23 @@ const FacebookPageConnection: React.FC<Props> = ({ existingConnections }) => {
     const [existingConnectionIds] = useState(existingConnections.map(pc => pc.entityId));
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    const [addPlatformMutation, { data }] = useMutation<AddPlatformConnectionMutationData, AddPlatformConnectionMutationVars>(ADD_PLATFORM_CONNECTION_MUTATION);
+    const [addPlatformMutation, { data }] = useMutation<AddPlatformConnectionMutationData, AddPlatformConnectionMutationVars>(
+        ADD_PLATFORM_CONNECTION_MUTATION,
+        {
+            update(cache, { data: { addPlatformConnection } }) {
+                const data = cache.readQuery<PlatformConnectionQueryData>({ query: PLATFORM_CONNECTIONS_QUERY });
+
+                cache.writeQuery<PlatformConnectionQueryData>({
+                    query: PLATFORM_CONNECTIONS_QUERY,
+                    data: {
+                        platformConnections: data ?
+                            [...data.platformConnections, addPlatformConnection] :
+                            [addPlatformConnection]
+                    },
+                });
+            }
+        }
+    );
 
     useEffect(() => {
         if (data) setDialogOpen(false);

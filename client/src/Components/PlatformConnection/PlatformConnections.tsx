@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from '@apollo/client';
 import React, { Fragment } from "react";
 import FacebookPageConnection from "./FacebookPageConnections";
 

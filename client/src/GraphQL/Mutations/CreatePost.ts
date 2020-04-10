@@ -1,10 +1,12 @@
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client';
 import CreatePostInput from '../Inputs/CreatePostInput';
 
 export const CREATE_POST_MUTATION = gql`
   mutation createPost($post: PostInput!) {
     createPost(post: $post) {
       id
+      text
+      createdAt
     }
   }
 `;
@@ -14,7 +16,9 @@ export interface CreatePostMutationVars {
 }
 
 export interface CreatePostMutationData {
-  post: {
+  createPost: {
     id: string;
+    text: string;
+    createdAt: string;
   };
 }

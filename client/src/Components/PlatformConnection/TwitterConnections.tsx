@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { Button, Grid } from "@material-ui/core";
 import { Twitter as TwitterIcon } from "@material-ui/icons";
 import React, { Fragment, useContext, useEffect } from "react";
@@ -7,6 +7,7 @@ import Platform from "../../Common/Enums/Platform";
 import { AddOauthPlatformConnectionMutationData, AddOauthPlatformConnectionMutationVars, ADD_OAUTH_PLATFORM_CONNECTION_MUTATION } from "../../GraphQL/Mutations/AddOAuthPlatformConnection";
 import { GetPlatformOAuthRequestTokenQueryData, GetPlatformOAuthRequestTokenQueryVars, GET_PLATFORM_OAUTH_REQUEST_TOKEN } from "../../GraphQL/Queries/GetPlatformOAuthRequestToken";
 import { AppContext } from "../AppContext/AppContextProvider";
+import { PlatformConnectionQueryData, PLATFORM_CONNECTIONS_QUERY } from '../../GraphQL/Queries/PlatformConnections';
 
 const TwitterConnection: React.FC = () => {
     const { clientAddress } = useContext(AppContext);
@@ -24,7 +25,21 @@ const TwitterConnection: React.FC = () => {
     }, [data]);
 
     const [addPlatformMutation] = useMutation<AddOauthPlatformConnectionMutationData, AddOauthPlatformConnectionMutationVars>(
-        ADD_OAUTH_PLATFORM_CONNECTION_MUTATION);
+        ADD_OAUTH_PLATFORM_CONNECTION_MUTATION,
+        {
+            update(cache, { data: { addOAuthPlatformConnection } }) {
+                const data = cache.readQuery<PlatformConnectionQueryData>({ query: PLATFORM_CONNECTIONS_QUERY });
+
+                cache.writeQuery<PlatformConnectionQueryData>({
+                    query: PLATFORM_CONNECTIONS_QUERY,
+                    data: {
+                        platformConnections: data ?
+                            [...data.platformConnections, addOAuthPlatformConnection] :
+                            [addOAuthPlatformConnection]
+                    },
+                });
+            }
+        });
 
     useEffect(() => {
         if (queryParams.get("oauth_token") && queryParams.get("oauth_verifier") && sessionStorage.getItem("oauthSecret")) {

@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import React, { useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { PostQueryData, POST_QUERY, PostQueryVars } from '../../GraphQL/Queries/PostQuery';
