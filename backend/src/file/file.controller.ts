@@ -1,25 +1,18 @@
-import {
-  Controller,
-  Post,
-  Request,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
-  Get,
-  Param,
-  Response,
-} from '@nestjs/common';
+import { Controller, Get, Param, Post, Request, Response, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { basename, extname } from 'path';
 import { FileEntity } from './file.entity';
 import { FileService } from './file.service';
-import { CurrentUser } from '../authz/current.user.decorator';
 
 @Controller('files')
 export class FilesController {
-  constructor(private readonly fileService: FileService) { }
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly fileService: FileService
+  ) { }
 
   @Get(':imgId')
   async test(@Param('imgId') imgId, @Response() res) {
@@ -33,7 +26,7 @@ export class FilesController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './files',
+        destination: this.configService.get("FILE_DIR"),
         filename: (req, file, cb) => {
           const randomName = Array(32)
             .fill(null)
