@@ -120,7 +120,7 @@ spec:
                   name: app
                   key: twitter-consumer-secret
             - name: FILE_DIR
-              value: "/data/files"
+              value: /data/files
             - name: REDIS_HOST
               valueFrom:
                 configMapKeyRef:

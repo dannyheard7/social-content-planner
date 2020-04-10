@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
   });
-  app.useStaticAssets(path.join(__dirname, '/../files'));
+  app.useStaticAssets(path.join(__dirname, process.env.FILE_DIR));
   app.use(helmet());
   await app.listen(7000);
 }
