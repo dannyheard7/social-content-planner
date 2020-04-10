@@ -290,19 +290,19 @@ kind: Deployment
 metadata:
   name: nginx-ingress-controller
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/name: nginx-ingress
+    app.kubernetes.io/part-of: nginx-ingress
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: ingress-nginx
-      app.kubernetes.io/part-of: ingress-nginx
+      app.kubernetes.io/name: nginx-ingress
+      app.kubernetes.io/part-of: nginx-ingress
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: ingress-nginx
-        app.kubernetes.io/part-of: ingress-nginx
+        app.kubernetes.io/name: nginx-ingress
+        app.kubernetes.io/part-of: nginx-ingress
     spec:
       # hostNetwork makes it possible to use ipv6 and to preserve the source IP correctly regardless of docker configuration
       # however, it is not a hard dependency of the nginx-ingress-controller itself and it may cause issues if port 10254 already is taken on the host
@@ -348,8 +348,8 @@ kind: Service
 metadata:
   name: nginx-ingress-lb
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/name: nginx-ingress
+    app.kubernetes.io/part-of: nginx-ingress
 spec:
   externalTrafficPolicy: Local
   type: LoadBalancer
@@ -362,6 +362,5 @@ spec:
       name: https
       targetPort: 443
   selector:
-    # Selects nginx-ingress-controller pods
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/name: nginx-ingress
+    app.kubernetes.io/part-of: nginx-ingress
