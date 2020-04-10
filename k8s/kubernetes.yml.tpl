@@ -63,6 +63,7 @@ spec:
           volumeMounts:
             - mountPath: "/data/files"
               name: api-files-storage
+              subPath: files
           env:
             - name: TYPEORM_HOST
               valueFrom:
@@ -133,6 +134,10 @@ spec:
                   key: REDIS_PORT
         - name: redis
           image: docker.io/redis:alpine
+          volumeMounts:
+            - mountPath: "/data"
+              name: redis-storage
+              subPath: redis
           resources:
             requests:
               cpu: 100m
