@@ -7,6 +7,7 @@ import Platform from './Platform';
 import { PlatformConnection } from './PlatformConnection.entity';
 import { OAuthTokenResult } from './OAuthTokenResult.entity';
 import { TwitterService } from './twitter.service';
+import { FacebookPageInstagramAccount } from './InstagramUser';
 
 @Injectable()
 export class PlatformConnectionService {
@@ -70,5 +71,12 @@ export class PlatformConnectionService {
         })) throw new Error("This platform connection already exists");
 
         return await this.platformConnectionRepository.save(platformConnection);
+    }
+
+    async getAvailableInstagramAccounts(user: User): Promise<FacebookPageInstagramAccount[]> {
+        const platformConnections = await this.platformConnectionRepository.find({ userId: user.sub, platform: Platform.FACEBOOK });
+
+        const promises = platformConnections.map(pc => this.facebookService.getPageLinkedInstagramAccounts(pc));
+        return [].concat.apply([], (await Promise.all(promises)));
     }
 }

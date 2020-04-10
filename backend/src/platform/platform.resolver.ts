@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver, ID } from '@nestjs/graphql';
 import { GqlAuthGuard } from '../authz/auth.guard';
 import { CurrentUser } from '../authz/current.user.decorator';
 import { AddOAuthPlatformConnectionInput } from './AddOAuthPlatformConnectionInput';
@@ -8,6 +8,7 @@ import { OAuthTokenResult } from './OAuthTokenResult.entity';
 import Platform from './Platform';
 import { PlatformConnectionService } from './platform-connection.service';
 import { PlatformConnection } from './PlatformConnection.entity';
+import { FacebookPageInstagramAccount } from './InstagramUser';
 
 @Resolver()
 export class PlatformResolver {
@@ -64,5 +65,11 @@ export class PlatformResolver {
         const oauthAccessToken = await this.platformConnectionService.getOAuthAccessToken(
             input.platform, input.oauthToken, input.oauthTokenSecret, input.oauthVerifier);
         return await this.platformConnectionService.create(user, input.platform, undefined, oauthAccessToken);
+    }
+
+    @UseGuards(GqlAuthGuard)
+    @Query(of => [FacebookPageInstagramAccount])
+    async getAvailableInstagramAccounts(@CurrentUser() user: User): Promise<FacebookPageInstagramAccount[]> {
+        return await this.platformConnectionService.getAvailableInstagramAccounts(user);
     }
 }

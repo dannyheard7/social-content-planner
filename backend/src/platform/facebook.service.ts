@@ -11,6 +11,7 @@ import Platform from './Platform';
 import { PlatformConnection } from './PlatformConnection.entity';
 import PlatformService from './PlatformService';
 import { PostPlatformStatus, CustomStatusData } from '../post/status/PostPlatformStatus.entity';
+import { FacebookPageInstagramAccount } from './InstagramUser';
 
 @Injectable()
 export class FacebookService implements PlatformService {
@@ -76,7 +77,7 @@ export class FacebookService implements PlatformService {
         return postPlatform;
     }
 
-    private async getFacebookPageAccessToken(
+    private async getPageAccessToken(
         userId: string,
         userAccessToken: string,
         pageId: string,
@@ -114,7 +115,7 @@ export class FacebookService implements PlatformService {
         platformConnection.entityId = platformConnectionInput.entityId;
         platformConnection.platform = Platform.FACEBOOK;
         platformConnection.entityName = platformConnectionInput.entityName;
-        platformConnection.accessToken = await this.getFacebookPageAccessToken(
+        platformConnection.accessToken = await this.getPageAccessToken(
             platformConnectionInput.platformUserId,
             platformConnectionInput.accessToken,
             platformConnectionInput.entityId,
@@ -129,10 +130,10 @@ export class FacebookService implements PlatformService {
         const platformConnection = await postPlatform.platformConnection;
 
         const metrics = ["post_impressions_unique", "post_impressions_fan"];
-        const fields = ["shares", "reactions.summary(true)", "comments.limit(1).summary(true)", `insights.metric(${metrics.join(",")})`];
+        const fields = ["shares", "reactions.summary(true)", "comments.limit(1).summary(true)", `insights.metric(${metrics.join(",")})`].join(",");
 
         const postData = await fetch(
-            `https://graph.facebook.com/v6.0/${postPlatform.platformEntityId}?fields=${fields.join(",")}&access_token=${platformConnection.accessToken}`,
+            `https://graph.facebook.com/v6.0/${postPlatform.platformEntityId}?fields=${fields}&access_token=${platformConnection.accessToken}`,
 
         )
             .then(res => res.json())
@@ -175,5 +176,21 @@ export class FacebookService implements PlatformService {
             ), []);
 
         return status;
+    }
+
+    async getPageLinkedInstagramAccounts(
+        platformConnection: PlatformConnection
+    ): Promise<FacebookPageInstagramAccount[]> {
+        const fields = ["profile_pic", "username"].join(",");
+
+        const data = await fetch(
+            `https://graph.facebook.com/v6.0/${platformConnection.entityId}/instagram_accounts?fields=${fields}&access_token=${platformConnection.accessToken}`,
+        )
+            .then(response => response.json())
+            .catch(e => {
+                throw new Error(e.message);
+            });
+
+        return data.data.map((igUser) => new FacebookPageInstagramAccount(igUser.id, igUser.username, igUser.profile_pic));
     }
 }

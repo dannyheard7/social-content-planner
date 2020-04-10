@@ -7,6 +7,7 @@ import Platform from "../../Common/Enums/Platform";
 import TwitterConnection from "./TwitterConnections";
 import ExistingConnections from "./ExistingConnections";
 import Loading from "../Loading/Loading";
+import InstagramConnection from './InstagramConnections';
 
 const PlatformConnections: React.FC = () => {
   const { data, loading } = useQuery<PlatformConnectionQueryData>(PLATFORM_CONNECTIONS_QUERY);
@@ -22,6 +23,7 @@ const PlatformConnections: React.FC = () => {
       <FacebookPageConnection
         existingConnections={platformConnections.filter(pc => pc.platform === Platform.FACEBOOK)} />
       <TwitterConnection />
+      <InstagramConnection />
     </Fragment>
   );
 };
