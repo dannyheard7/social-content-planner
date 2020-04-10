@@ -4,9 +4,9 @@ data:
     window.env = {}
     window.env.AUTH0_DOMAIN="smarketing.eu.auth0.com"
     window.env.AUTH0_CLIENT_ID="4IWpAYFnCEjhtVbxdaXaP0nzVltpmk7A"
-    window.env.CLIENT_ADDRESS="habite.site"
-    window.env.GRAPHQL_HOST="https://api.habite.site/graphql"
-    window.env.FILES_ENDPOINT="https://api.habite.site/files"
+    window.env.CLIENT_ADDRESS="elevait.co.uk"
+    window.env.GRAPHQL_HOST="https://api.elevait.co.uk/graphql"
+    window.env.FILES_ENDPOINT="https://api.elevait.co.uk/files"
     window.env.FACEBOOK_APP_ID="2002136040088512"
     window.env.GA_TRACKING_ID="UA-162565362-1"
 kind: ConfigMap
@@ -267,13 +267,13 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: habite.site
+    - host: elevait.co.uk
       http:
         paths:
           - backend:
               serviceName: client-nodeport-service
               servicePort: 80
-    - host: api.habite.site
+    - host: api.elevait.co.uk
       http:
         paths:
           - backend:
@@ -281,6 +281,6 @@ spec:
               servicePort: 81
   tls:
     - hosts:
-        - habite.site
-        - api.habite.site
-      secretName: habite-site
+        - elevait.co.uk
+        - api.elevait.co.uk
+      secretName: elevate-site

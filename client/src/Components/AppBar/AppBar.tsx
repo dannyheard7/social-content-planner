@@ -36,7 +36,7 @@ const AppMenu: React.FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Smarketing
+            Elevait
           </Typography>
           {isAuthenticated ? (
             <Fragment>
