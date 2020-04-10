@@ -18,25 +18,12 @@ export class FilesController {
   async test(@Param('imgId') imgId, @Response() res) {
     const file = await this.fileService.findById(imgId);
 
-    return res.sendFile(file.filename, { root: 'files' });
+    return res.sendFile(file.filename, { root: this.configService.get("FILE_DIR") });
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: this.configService.get("FILE_DIR"),
-        filename: (req, file, cb) => {
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
-          return cb(null, `${randomName}${extname(file.originalname)}`);
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Request() req
