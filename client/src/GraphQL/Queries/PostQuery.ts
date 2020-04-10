@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import { gql } from '@apollo/client';
 import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
 
 export const POST_QUERY = gql`

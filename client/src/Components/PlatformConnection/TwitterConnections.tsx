@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { Button, Grid } from "@material-ui/core";
 import { Twitter as TwitterIcon } from "@material-ui/icons";
 import React, { Fragment, useContext, useEffect } from "react";

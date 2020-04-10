@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation } from '@apollo/client';
 import { Dialog, DialogContent, DialogTitle, Grid, List, ListItem, ListItemText } from "@material-ui/core";
 import { Facebook as FacebookIcon } from "@material-ui/icons";
 import React, { Fragment, useContext, useState, useEffect } from "react";

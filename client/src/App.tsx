@@ -1,10 +1,8 @@
-import { ApolloProvider } from "@apollo/react-hooks";
-import { makeStyles } from "@material-ui/core";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
-import { setContext } from "apollo-link-context";
-import { createHttpLink } from "apollo-link-http";
+
 import React, { useContext } from "react";
+import { ApolloProvider, InMemoryCache, ApolloClient, createHttpLink } from "@apollo/client";
+import { setContext } from "@apollo/link-context";
+import { makeStyles } from "@material-ui/core";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import styles from "./App.styles";
 import AppState from "./Common/Interfaces/AppState";

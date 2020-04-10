@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { Divider, List, ListItem, ListItemText, Typography, Grid, Link } from '@material-ui/core';
 import React, { Fragment } from 'react';
 import { PostsQueryData, POSTS_QUERY } from '../../GraphQL/Queries/PostsQuery';

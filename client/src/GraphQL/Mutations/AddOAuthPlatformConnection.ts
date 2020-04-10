@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import { gql } from '@apollo/client';
 import AddOAuthPlatformConnectionInput from "../Inputs/AddOAuthPlatformConnectionInput";
 import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
 
@@ -14,9 +14,9 @@ mutation AddOauthPlatformConnection($platformConnection: AddOAuthPlatformConnect
 `;
 
 export interface AddOauthPlatformConnectionMutationVars {
-    platformConnection: AddOAuthPlatformConnectionInput;
+  platformConnection: AddOAuthPlatformConnectionInput;
 }
 
 export interface AddOauthPlatformConnectionMutationData {
-    addOAuthPlatformConnection: PlatformConnection;
+  addOAuthPlatformConnection: PlatformConnection;
 }
