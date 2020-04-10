@@ -6,6 +6,7 @@ import Platform from '../../platform/Platform';
 import { TwitterService } from '../../platform/twitter.service';
 import { PostService } from '../post.service';
 import { PostStatusService } from './post-status.service';
+import { PostPlatformStatus } from './PostPlatformStatus.entity';
 
 @Processor(POST_STATUS_POLLER_QUEUE_NAME)
 export class StatusPollerConsumer {
@@ -29,18 +30,19 @@ export class StatusPollerConsumer {
 
             switch (platformConnection.platform) {
                 case Platform.FACEBOOK:
-                    return this.facebookService.getPostStatus(postPlatform);
+                    return this.facebookService.getPostStatus(postPlatform).catch((e: Error) => e.message);
                 case Platform.TWITTER:
-                    return this.twitterService.getPostStatus(postPlatform);
+                    return this.twitterService.getPostStatus(postPlatform).catch((e: Error) => e.message);
                 default:
                     throw new Error("Platform not currently supported");
             }
         }));
+        const successfulStatuses = statuses.filter(s => s instanceof PostPlatformStatus) as PostPlatformStatus[];
 
         const latestUpdate = await this.postStatusService.getLatestPostStatusTimestamp(post);
 
         await Promise.all([
-            this.postStatusService.saveStatuses(statuses),
+            this.postStatusService.saveStatuses(successfulStatuses),
             this.postStatusService.schedulePostStatusPolling(post, latestUpdate ?? post.createdAt)
         ]);
     }

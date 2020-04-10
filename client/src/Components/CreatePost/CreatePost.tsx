@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { Button, Checkbox, FormControlLabel, FormGroup, Grid, makeStyles, TextField, Typography } from '@material-ui/core';
 import classNames from 'classnames';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { ErrorMessage, useForm } from 'react-hook-form';
 import { useUploadFile } from '../../Common/FileUploadHook';
@@ -9,6 +9,9 @@ import { resetOrientation } from '../../Common/Image';
 import { CREATE_POST_MUTATION, CreatePostMutationData, CreatePostMutationVars } from '../../GraphQL/Mutations/CreatePost';
 import styles from './CreatePost.styles';
 import { PlatformConnectionQueryData, PLATFORM_CONNECTIONS_QUERY } from '../../GraphQL/Queries/PlatformConnections';
+import { POSTS_QUERY, PostsQueryData } from '../../GraphQL/Queries/PostsQuery';
+import { useHistory } from 'react-router-dom';
+import Loading from '../Loading/Loading';
 
 const useStyles = makeStyles(styles);
 
@@ -18,11 +21,29 @@ interface FileWithPreview extends File {
 
 const CreatePost: React.FC = () => {
      const classes = useStyles();
+     const { push } = useHistory();
      const { register, handleSubmit, errors } = useForm();
      const { uploadFile, files } = useUploadFile();
      const [filePreviews, setFilePreviews] = useState<FileWithPreview[]>([]);
      const { data, loading } = useQuery<PlatformConnectionQueryData>(PLATFORM_CONNECTIONS_QUERY);
-     const [createPost] = useMutation<CreatePostMutationData, CreatePostMutationVars>(CREATE_POST_MUTATION);
+     const [createPost, { data: mutationData, loading: mutationLoading }] = useMutation<CreatePostMutationData, CreatePostMutationVars>(
+          CREATE_POST_MUTATION,
+          {
+               update(cache, { data: { createPost } }) {
+                    const data = cache.readQuery<PostsQueryData>({ query: POSTS_QUERY });
+
+                    cache.writeQuery<PostsQueryData>({
+                         query: POSTS_QUERY,
+                         data: {
+                              posts: data ? [createPost, ...data.posts] : [createPost]
+                         }
+                    });
+               }
+          });
+
+     useEffect(() => {
+          if (mutationData && mutationData.createPost) push(`/posts/${mutationData.createPost.id}`);
+     }, [mutationData, push])
 
      const onDrop = useCallback(async (acceptedFiles: File[]) => {
           const newFilePreviews = await Promise.all(
@@ -36,7 +57,7 @@ const CreatePost: React.FC = () => {
 
      const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({ onDrop, accept: 'image/*' });
 
-     if (loading) return <p>Loading</p>;
+     if (loading || mutationLoading) return <Loading />;
      if (!data) return <p>Error loading platforms</p>;
 
      const onSubmit = (values: Record<string, any>) => {
