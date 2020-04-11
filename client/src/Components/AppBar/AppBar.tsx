@@ -26,15 +26,17 @@ const AppMenu: React.FC = () => {
         })}
       >
         <Toolbar>
-          <IconButton
-            edge="start"
-            className={classNames(classes.menuButton, drawerOpen && classes.hide)}
-            color="inherit"
-            aria-label="menu"
-            onClick={() => setDrawerOpen(true)}
-          >
-            <MenuIcon />
-          </IconButton>
+          {isAuthenticated &&
+            <IconButton
+              edge="start"
+              className={classNames(classes.menuButton, drawerOpen && classes.hide)}
+              color="inherit"
+              aria-label="menu"
+              onClick={() => setDrawerOpen(true)}
+            >
+              <MenuIcon />
+            </IconButton>
+          }
           <Typography variant="h6" className={classes.title}>
             Elevait
           </Typography>

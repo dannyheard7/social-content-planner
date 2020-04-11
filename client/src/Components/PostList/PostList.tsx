@@ -23,7 +23,7 @@ const PostList: React.FC = () => {
                 {!data ?
                     <Typography>There was an error loading your posts</Typography> :
                     <Fragment>
-                        {data.posts.length === 0 && <Typography>You have no posts</Typography>}
+                        {data.posts.length === 0 && <Typography>You have no posts, would you like to <Link to="/post/new" component={RouterLink}>create one?</Link></Typography>}
                         <List>
                             {data!.posts.map(post => (
                                 <Fragment>
