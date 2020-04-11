@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import ReactGA from 'react-ga';
 import { useLocation } from 'react-router-dom';
 import config from '../../config';
+import { AuthenticationContext } from '../Authentication/AuthenticationContextProvider';
 
 const GoogleAnalytics: React.FC = () => {
+    const { user } = useContext(AuthenticationContext);
+
     const [previous, setPrevious] = useState<{
         pathname: string,
         search: string
@@ -16,6 +19,7 @@ const GoogleAnalytics: React.FC = () => {
         ReactGA.set({
             page,
             location: `${location.origin}${page}`,
+            userId: user?.sub
         });
         ReactGA.pageview(page);
         setPrevious({
