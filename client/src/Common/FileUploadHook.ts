@@ -7,8 +7,10 @@ export const useUploadFile = () => {
   const { token } = useContext(AuthenticationContext);
   const { filesEndpoint } = useContext(AppContext);
   const [files, setFiles] = useState<UploadedFile[]>([]);
+  const [fileUploadInProgress, setFileUploadInProgress] = useState(false);
 
   const uploadFile = async (file: File) => {
+    setFileUploadInProgress(true);
     const data = new FormData();
     data.append('file', file);
 
@@ -22,9 +24,10 @@ export const useUploadFile = () => {
 
     const uploadFile = await response.json();
     setFiles((state) => [...state, uploadFile]);
+    setFileUploadInProgress(false);
   };
 
   const removeImage = (fileToRemove: UploadedFile) => setFiles((state) => state.filter(file => file.id !== fileToRemove.id))
 
-  return { uploadFile, files, onFilesRearranged: setFiles, removeImage };
+  return { uploadFile, files, onFilesRearranged: setFiles, removeImage, fileUploadInProgress };
 };

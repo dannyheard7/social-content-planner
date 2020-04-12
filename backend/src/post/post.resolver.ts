@@ -57,4 +57,10 @@ export class PostResolver {
         const { id } = post;
         return await this.postStatusService.getAggregatedStatuses(id);
     }
+
+    @ResolveField(of => AggregatedStatus, { nullable: true })
+    async latestStatus(@Parent() post: Post) {
+        const { id } = post;
+        return await this.postStatusService.getLatestAggregatedStatus(id);
+    }
 }

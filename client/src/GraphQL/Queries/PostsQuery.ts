@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
+import { PostStatus } from '../../Common/Interfaces/PostStatus';
 
 export const POSTS_QUERY = gql`
   query Posts {
@@ -13,6 +14,12 @@ export const POSTS_QUERY = gql`
           platform
         }
       }
+      latestStatus {
+        positiveReactionsCount
+        negativeReactionsCount
+        sharesCount
+        commentsCount
+      }
     }
   }
 `;
@@ -24,6 +31,7 @@ export interface PostsQueryData {
     createdAt: string;
     platforms: {
       platformConnection: PlatformConnection
-    }[]
+    }[],
+    latestStatus: PostStatus
   }[]
 }

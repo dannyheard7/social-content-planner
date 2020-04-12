@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
+import { PostStatus } from '../../Common/Interfaces/PostStatus';
 
 export const POST_QUERY = gql`
   query Posts($id: ID!) {
@@ -46,12 +47,4 @@ export interface PostQueryData {
     }[],
     status: PostStatus[]
   }
-}
-
-interface PostStatus {
-  positiveReactionsCount: number,
-  negativeReactionsCount: number,
-  sharesCount: number,
-  commentsCount: number
-  timestamp: Date
 }

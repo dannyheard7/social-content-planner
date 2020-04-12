@@ -54,52 +54,55 @@ const DraggablePostImage: React.FC<{ file: UploadedFile, index: number, onRemove
      )
 }
 
-const PostImages: React.FC<{ files: UploadedFile[], onFilesRearranged: (files: UploadedFile[]) => void, removeImage: (file: UploadedFile) => void }> =
-     ({ files, onFilesRearranged, removeImage }) => {
-          const onDragEnd = (result: DropResult) => {
-               if (!result.destination || result.destination.index === result.source.index)
-                    return;
+const PostImages: React.FC<{
+     files: UploadedFile[],
+     fileUploadInProgress: boolean,
+     onFilesRearranged: (files: UploadedFile[]) => void,
+     removeImage: (file: UploadedFile) => void
+}> = ({ files, onFilesRearranged, removeImage, fileUploadInProgress }) => {
+     const onDragEnd = (result: DropResult) => {
+          if (!result.destination || result.destination.index === result.source.index)
+               return;
 
-               if (result.destination.index > result.source.index) {
-                    onFilesRearranged([
-                         ...files.slice(0, result.source.index),
-                         ...files.slice(result.source.index + 1, result.destination.index + 1),
-                         ...files.slice(result.source.index, result.source.index + 1),
-                         ...files.slice(result.destination.index + 1)
-                    ]);
-               } else {
-                    onFilesRearranged([
-                         ...files.slice(0, result.destination.index),
-                         ...files.slice(result.source.index, result.source.index + 1),
-                         ...files.slice(result.destination.index, result.source.index),
-                         ...files.slice(result.source.index + 1)
-                    ])
-               }
+          if (result.destination.index > result.source.index) {
+               onFilesRearranged([
+                    ...files.slice(0, result.source.index),
+                    ...files.slice(result.source.index + 1, result.destination.index + 1),
+                    ...files.slice(result.source.index, result.source.index + 1),
+                    ...files.slice(result.destination.index + 1)
+               ]);
+          } else {
+               onFilesRearranged([
+                    ...files.slice(0, result.destination.index),
+                    ...files.slice(result.source.index, result.source.index + 1),
+                    ...files.slice(result.destination.index, result.source.index),
+                    ...files.slice(result.source.index + 1)
+               ])
           }
-
-          return (
-               <Fragment>
-                    {files.length > 0 && (
-                         <DragDropContext onDragEnd={onDragEnd}>
-                              <Droppable direction="horizontal" droppableId="Images">
-                                   {provided => (
-                                        <Grid item md={12} container direction="row" ref={provided.innerRef} {...provided.droppableProps}>
-                                             {files.map((file, index) => <DraggablePostImage file={file} index={index} key={file.id} onRemoveImage={removeImage} />)}
-                                             {provided.placeholder}
-                                        </Grid>
-                                   )}
-                              </Droppable>
-                         </DragDropContext>
-                    )}
-               </Fragment>
-          )
      }
+
+     return (
+          <Fragment>
+               <DragDropContext onDragEnd={onDragEnd}>
+                    <Droppable direction="horizontal" droppableId="Images">
+                         {provided => (
+                              <Grid item md={12} container direction="row" ref={provided.innerRef} {...provided.droppableProps}>
+                                   {files.map((file, index) => <DraggablePostImage file={file} index={index} key={file.id} onRemoveImage={removeImage} />)}
+                                   {provided.placeholder}
+                                   {fileUploadInProgress && <Loading />}
+                              </Grid>
+                         )}
+                    </Droppable>
+               </DragDropContext>
+          </Fragment>
+     )
+}
 
 const CreatePost: React.FC = () => {
      const classes = useStyles();
      const { push } = useHistory();
      const { register, handleSubmit, errors } = useForm();
-     const { uploadFile, files, onFilesRearranged, removeImage } = useUploadFile();
+     const { uploadFile, files, onFilesRearranged, removeImage, fileUploadInProgress } = useUploadFile();
      const { data, loading } = useQuery<PlatformConnectionQueryData>(PLATFORM_CONNECTIONS_QUERY);
      const [createPost, { data: mutationData, loading: mutationLoading }] = useMutation<CreatePostMutationData, CreatePostMutationVars>(
           CREATE_POST_MUTATION,
@@ -181,7 +184,7 @@ const CreatePost: React.FC = () => {
                                              )}
                                    </div>
                               </Grid>
-                              <PostImages files={files} onFilesRearranged={onFilesRearranged} removeImage={removeImage} />
+                              <PostImages files={files} onFilesRearranged={onFilesRearranged} removeImage={removeImage} fileUploadInProgress={fileUploadInProgress} />
                               <Grid item>
                                    <FormGroup>
                                         <TextField multiline={true} aria-label="Text" placeholder="Text" name="text" inputRef={register({ required: true })} error={errors.text !== undefined} />

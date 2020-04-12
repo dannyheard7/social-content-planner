@@ -1,8 +1,12 @@
 import React from "react";
-import { Typography } from "@material-ui/core";
+import { CircularProgress, Grid } from "@material-ui/core";
 
 const Loading: React.FC = () => {
-    return <Typography>Loading..</Typography>
+    return (
+        <Grid container justify="center" item md={3} >
+            <CircularProgress />
+        </Grid>
+    );
 };
 
 export default Loading;

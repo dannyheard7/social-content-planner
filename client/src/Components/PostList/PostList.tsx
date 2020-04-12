@@ -1,10 +1,11 @@
 import { useQuery } from '@apollo/client';
-import { Divider, List, ListItem, ListItemText, Typography, Grid, Link } from '@material-ui/core';
+import { Divider, Grid, Link, List, ListItem, ListItemText, Typography } from '@material-ui/core';
 import React, { Fragment } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { PostsQueryData, POSTS_QUERY } from '../../GraphQL/Queries/PostsQuery';
 import Loading from '../Loading/Loading';
 import PlatformIcon from '../Platform/PlatformIcon';
-import { Link as RouterLink } from 'react-router-dom';
+import StatusSummary from '../Status/StatusSummary';
 
 const PostList: React.FC = () => {
     const { data, loading } = useQuery<PostsQueryData>(POSTS_QUERY);
@@ -23,17 +24,21 @@ const PostList: React.FC = () => {
                 {!data ?
                     <Typography>There was an error loading your posts</Typography> :
                     <Fragment>
-                        {data.posts.length === 0 && <Typography>You have no posts, would you like to <Link to="/post/new" component={RouterLink}>create one?</Link></Typography>}
+                        {data.posts.length === 0 &&
+                            <Typography>
+                                You have no posts, would you like to <Link to="/post/new" component={RouterLink}>create one</Link>?
+                            </Typography>
+                        }
                         <List>
-                            {data!.posts.map(post => (
+                            {data.posts.map(post => (
                                 <Fragment>
-                                    <Link to={`posts/${post.id}`} component={RouterLink}>
+                                    <Link to={`posts/${post.id}`} component={RouterLink} underline="none">
                                         <ListItem alignItems="flex-start">
                                             <ListItemText
                                                 primary={dateFormatter.format(new Date(post.createdAt))}
                                                 secondary={
                                                     <Grid container spacing={2}>
-                                                        <Grid item>
+                                                        <Grid item md={12}>
                                                             <Typography
                                                                 component="span"
                                                                 variant="body2"
@@ -47,6 +52,9 @@ const PostList: React.FC = () => {
                                                                 <PlatformIcon platform={platform.platformConnection.platform} />
                                                             </Grid>
                                                         ))}
+                                                        {post.latestStatus &&
+                                                            <StatusSummary status={post.latestStatus} />
+                                                        }
                                                     </Grid>
                                                 }
                                             />

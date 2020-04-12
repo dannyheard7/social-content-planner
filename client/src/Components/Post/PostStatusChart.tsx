@@ -1,14 +1,16 @@
 import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { PostStatus } from '../../Common/Interfaces/PostStatus';
 
 
-const PostStatusChart: React.FC<{ statuses: any[] }> = ({ statuses }) => {
+const PostStatusChart: React.FC<{ statuses: PostStatus[] }> = ({ statuses }) => {
 
     const dateFormatter = new Intl.DateTimeFormat('default', {
         year: 'numeric', month: 'long', day: 'numeric', weekday: 'short', hour: 'numeric', minute: 'numeric'
     });
     const formatXAxis = (tickItem: string) => dateFormatter.format(new Date(tickItem));
+    const getDomain = (): [number, number] => [new Date(statuses[0].timestamp).getTime(), new Date(statuses[statuses.length - 1].timestamp).getTime()]
 
     return (
         <Grid container >
@@ -16,7 +18,7 @@ const PostStatusChart: React.FC<{ statuses: any[] }> = ({ statuses }) => {
                 {statuses.length > 0 ?
                     <ResponsiveContainer width="99%" height={300}>
                         <LineChart data={statuses} margin={{ top: 5, right: 30, left: 20, bottom: 5 }} height={300} width={300}>
-                            <XAxis dataKey="timestamp" tickFormatter={formatXAxis} scale='utcTime' />
+                            <XAxis dataKey="timestamp" tickFormatter={formatXAxis} domain={getDomain()} />
                             <YAxis />
                             <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
                             <Line type="monotone" dataKey="positiveReactionsCount" name="Positive Reactions" stroke="#82ca9d" />

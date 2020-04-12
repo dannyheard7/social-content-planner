@@ -19,6 +19,25 @@ export class PostStatusService {
 
     find = (options?: FindManyOptions<PostPlatformStatus>) => this.postStatusRepository.find(options);
 
+    getLatestAggregatedStatus = async (postId: string) => {
+        const result = await this.postStatusRepository
+            .createQueryBuilder()
+            .select("sum(positive_reactions_count)", "positiveReactionsCount")
+            .addSelect("sum(negative_reactions_count)", "negativeReactionsCount")
+            .addSelect("sum(comments_count)", "commentsCount")
+            .addSelect("sum(shares_count)", "sharesCount")
+            .addSelect("timestamp")
+            .groupBy("timestamp")
+            .orderBy("timestamp", "DESC")
+            .where({ postId })
+            .getRawOne();
+
+        if (result)
+            return new AggregatedStatus(result.timestamp, result.positiveReactionsCount,
+                result.negativeReactionsCount, result.commentsCount, result.sharesCount);
+        else return undefined;
+    }
+
     getAggregatedStatuses = async (postId: string) => {
         const results = await this.postStatusRepository
             .createQueryBuilder()
@@ -28,6 +47,7 @@ export class PostStatusService {
             .addSelect("sum(shares_count)", "sharesCount")
             .addSelect("timestamp")
             .groupBy("timestamp")
+            .orderBy("timestamp", "DESC")
             .where({ postId })
             .getRawMany();
 
