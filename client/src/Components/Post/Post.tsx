@@ -33,7 +33,7 @@ const Post: React.FC = () => {
       <Grid container>
         {post.media.map(({ fileId }, index) => (
           <Grid item md={3} xs={4} key={fileId}>
-            <img src={`${filesEndpoint}/${fileId}`} width="100%" height="auto" alt={`Post media ${index + 1}`} />
+            <img src={`${filesEndpoint}/${fileId}?size=small`} width="100%" height="auto" alt={`Post media ${index + 1}`} />
           </Grid>
         ))}
       </Grid>

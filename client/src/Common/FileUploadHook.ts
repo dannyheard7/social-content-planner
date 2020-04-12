@@ -21,8 +21,10 @@ export const useUploadFile = () => {
     });
 
     const uploadFile = await response.json();
-    setFiles([...files, uploadFile]);
+    setFiles((state) => [...state, uploadFile]);
   };
 
-  return { uploadFile, files };
+  const removeImage = (fileToRemove: UploadedFile) => setFiles((state) => state.filter(file => file.id !== fileToRemove.id))
+
+  return { uploadFile, files, onFilesRearranged: setFiles, removeImage };
 };

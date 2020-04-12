@@ -33,7 +33,6 @@ scalar DateTime
 type File {
   id: ID!
   userId: ID!
-  ext: String!
 }
 
 type Mutation {

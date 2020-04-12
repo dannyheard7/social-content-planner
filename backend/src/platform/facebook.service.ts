@@ -22,7 +22,7 @@ export class FacebookService implements PlatformService {
         if (media.length > 0) {
             const imageUploadRequests = media.map(imageFile => {
                 const data = new FormData();
-                data.append('file', fs.createReadStream(path.join(this.configService.get("FILE_DIR"), imageFile.filename)));
+                data.append('file', fs.createReadStream(path.join(this.configService.get("FILE_DIR"), imageFile.getLargeSizeFilename())));
 
                 return fetch(
                     `https://graph.facebook.com/v6.0/${platformConnection.entityId}/photos?published=false&access_token=${platformConnection.accessToken}`,

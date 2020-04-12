@@ -1,31 +1,105 @@
 import { useMutation, useQuery } from '@apollo/client';
-import { Button, Checkbox, FormControlLabel, FormGroup, Grid, makeStyles, TextField, Typography, Link } from '@material-ui/core';
-
+import { Button, Checkbox, Fab, FormControlLabel, FormGroup, Grid, Link, makeStyles, TextField, Typography, Tooltip } from '@material-ui/core';
+import { Clear as RemoveIcon } from '@material-ui/icons';
 import classNames from 'classnames';
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react';
+import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import { useDropzone } from 'react-dropzone';
 import { ErrorMessage, useForm } from 'react-hook-form';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { useUploadFile } from '../../Common/FileUploadHook';
-import { resetOrientation } from '../../Common/Image';
-import { CREATE_POST_MUTATION, CreatePostMutationData, CreatePostMutationVars } from '../../GraphQL/Mutations/CreatePost';
-import styles from './CreatePost.styles';
+import { UploadedFile } from '../../Common/Interfaces/UploadedFile';
+import { CreatePostMutationData, CreatePostMutationVars, CREATE_POST_MUTATION } from '../../GraphQL/Mutations/CreatePost';
 import { PlatformConnectionQueryData, PLATFORM_CONNECTIONS_QUERY } from '../../GraphQL/Queries/PlatformConnections';
-import { POSTS_QUERY, PostsQueryData } from '../../GraphQL/Queries/PostsQuery';
-import { useHistory, Link as RouterLink } from 'react-router-dom';
+import { PostsQueryData, POSTS_QUERY } from '../../GraphQL/Queries/PostsQuery';
+import { AppContext } from '../AppContext/AppContextProvider';
 import Loading from '../Loading/Loading';
+import styles from './CreatePost.styles';
 
 const useStyles = makeStyles(styles);
 
-interface FileWithPreview extends File {
-     preview?: string;
+const DraggablePostImage: React.FC<{ file: UploadedFile, index: number, onRemoveImage: (file: UploadedFile) => void }> = ({ file, index, onRemoveImage }) => {
+     const { filesEndpoint } = useContext(AppContext);
+     const classes = useStyles();
+     const [isHoveredOver, setIsHoveredOver] = useState(false);
+
+     return (
+          <Draggable draggableId={file.id} index={index}>
+               {provided => (
+                    <Grid item md={3}
+                         ref={provided.innerRef}
+                         {...provided.draggableProps}
+                         {...provided.dragHandleProps}
+                         className={classes.imagePreviewContainer}
+                         onMouseEnter={() => setIsHoveredOver(true)}
+                         onMouseLeave={() => setIsHoveredOver(false)}
+                    >
+                         <img
+                              src={`${filesEndpoint}/${file.id}?size=small`}
+                              width="100%"
+                              height="auto"
+                              key={file.id}
+                              alt={`Preview`}
+                              className={classes.imagePreview} />
+                         {isHoveredOver &&
+                              <Tooltip title="Remove image">
+                                   <Fab className={classes.clearImageButton} color="secondary" size="small" onClick={() => onRemoveImage(file)}>
+                                        <RemoveIcon />
+                                   </Fab>
+                              </Tooltip>
+                         }
+                    </Grid>
+               )}
+          </Draggable>
+     )
 }
+
+const PostImages: React.FC<{ files: UploadedFile[], onFilesRearranged: (files: UploadedFile[]) => void, removeImage: (file: UploadedFile) => void }> =
+     ({ files, onFilesRearranged, removeImage }) => {
+          const onDragEnd = (result: DropResult) => {
+               if (!result.destination || result.destination.index === result.source.index)
+                    return;
+
+               if (result.destination.index > result.source.index) {
+                    onFilesRearranged([
+                         ...files.slice(0, result.source.index),
+                         ...files.slice(result.source.index + 1, result.destination.index + 1),
+                         ...files.slice(result.source.index, result.source.index + 1),
+                         ...files.slice(result.destination.index + 1)
+                    ]);
+               } else {
+                    onFilesRearranged([
+                         ...files.slice(0, result.destination.index),
+                         ...files.slice(result.source.index, result.source.index + 1),
+                         ...files.slice(result.destination.index, result.source.index),
+                         ...files.slice(result.source.index + 1)
+                    ])
+               }
+          }
+
+          return (
+               <Fragment>
+                    {files.length > 0 && (
+                         <DragDropContext onDragEnd={onDragEnd}>
+                              <Droppable direction="horizontal" droppableId="Images">
+                                   {provided => (
+                                        <Grid item md={12} container direction="row" ref={provided.innerRef} {...provided.droppableProps}>
+                                             {files.map((file, index) => <DraggablePostImage file={file} index={index} key={file.id} onRemoveImage={removeImage} />)}
+                                             {provided.placeholder}
+                                        </Grid>
+                                   )}
+                              </Droppable>
+                         </DragDropContext>
+                    )}
+               </Fragment>
+          )
+     }
 
 const CreatePost: React.FC = () => {
      const classes = useStyles();
      const { push } = useHistory();
      const { register, handleSubmit, errors } = useForm();
-     const { uploadFile, files } = useUploadFile();
-     const [filePreviews, setFilePreviews] = useState<FileWithPreview[]>([]);
+     const { uploadFile, files, onFilesRearranged, removeImage } = useUploadFile();
      const { data, loading } = useQuery<PlatformConnectionQueryData>(PLATFORM_CONNECTIONS_QUERY);
      const [createPost, { data: mutationData, loading: mutationLoading }] = useMutation<CreatePostMutationData, CreatePostMutationVars>(
           CREATE_POST_MUTATION,
@@ -47,14 +121,8 @@ const CreatePost: React.FC = () => {
      }, [mutationData, push])
 
      const onDrop = useCallback(async (acceptedFiles: File[]) => {
-          const newFilePreviews = await Promise.all(
-               acceptedFiles.map((f) => {
-                    if (!filePreviews.some(file => file.name === f.name)) uploadFile(f);
-                    return resetOrientation(f)
-               }))
-
-          setFilePreviews(f => ([...f, ...newFilePreviews]));
-     }, [uploadFile, filePreviews]);
+          await Promise.all(acceptedFiles.map((f) => uploadFile(f)));
+     }, [uploadFile]);
 
      const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({ onDrop, accept: 'image/*' });
 
@@ -113,24 +181,7 @@ const CreatePost: React.FC = () => {
                                              )}
                                    </div>
                               </Grid>
-                              {
-                                   filePreviews.length > 0 && (
-                                        <Grid item md={12} container direction="row">
-                                             {filePreviews.map(file => (
-                                                  <Grid item md={3}>
-                                                       <img
-                                                            alt="Preview"
-                                                            key={file.preview}
-                                                            src={file.preview}
-                                                            className={classes.imagePreview}
-
-                                                            width="100%"
-                                                       />
-                                                  </Grid>
-                                             ))}
-                                        </Grid>
-                                   )
-                              }
+                              <PostImages files={files} onFilesRearranged={onFilesRearranged} removeImage={removeImage} />
                               <Grid item>
                                    <FormGroup>
                                         <TextField multiline={true} aria-label="Text" placeholder="Text" name="text" inputRef={register({ required: true })} error={errors.text !== undefined} />
@@ -142,7 +193,7 @@ const CreatePost: React.FC = () => {
                               </Grid>
                               {data.platformConnections.map(pc => {
                                    return (
-                                        <Grid item>
+                                        <Grid item key={pc.id}>
                                              <FormGroup>
                                                   <FormControlLabel
                                                        control={

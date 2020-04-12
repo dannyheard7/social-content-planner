@@ -4,6 +4,12 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 @Entity('file')
 @ObjectType('File')
 export class FileEntity {
+  constructor(userId: string, filename: string, extension: string) {
+    this.userId = userId;
+    this.filename = filename;
+    this.ext = extension;
+  }
+
   @PrimaryGeneratedColumn('uuid')
   @Field(type => ID)
   id: string;
@@ -14,9 +20,15 @@ export class FileEntity {
 
   @Column({ length: 50, nullable: false })
   @HideField()
-  filename: string;
+  private filename: string;
 
   @Column({ length: 10, nullable: false })
-  @Field(type => String)
+  @HideField()
   ext: string;
+
+  @HideField()
+  getLargeSizeFilename = () => `${this.filename}-lg${this.ext}`
+
+  @HideField()
+  getSmallSizeFilename = () => `${this.filename}-sm${this.ext}`
 }

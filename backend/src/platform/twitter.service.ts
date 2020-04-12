@@ -69,7 +69,7 @@ export class TwitterService implements PlatformService {
 
             const imageUploadRequests = media.map(imageFile => {
                 const data = new FormData();
-                data.append('media', fs.createReadStream(path.join(this.configService.get("FILE_DIR"), imageFile.filename)));
+                data.append('media', fs.createReadStream(path.join(this.configService.get("FILE_DIR"), imageFile.getLargeSizeFilename())));
 
                 return fetch(
                     url,

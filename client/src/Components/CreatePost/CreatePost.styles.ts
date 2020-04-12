@@ -24,7 +24,15 @@ export default (theme: Theme) => ({
   imageDropContinerReject: {
     borderColor: '#ff1744',
   },
+  imagePreviewContainer: {
+    position: 'relative' as 'relative'
+  },
   imagePreview: {
     imageOrientation: 'from-image',
   },
+  clearImageButton: {
+    position: 'absolute' as 'absolute',
+    top: 0,
+    right: 0
+  }
 });
