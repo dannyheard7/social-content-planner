@@ -3,5 +3,5 @@ export interface PostStatus {
     negativeReactionsCount: number,
     sharesCount: number,
     commentsCount: number
-    timestamp: Date
+    timestamp: number
 }

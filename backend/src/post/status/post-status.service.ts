@@ -47,7 +47,7 @@ export class PostStatusService {
             .addSelect("sum(shares_count)", "sharesCount")
             .addSelect("timestamp")
             .groupBy("timestamp")
-            .orderBy("timestamp", "DESC")
+            .orderBy("timestamp", "ASC")
             .where({ postId })
             .getRawMany();
 

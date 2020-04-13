@@ -6,6 +6,7 @@ import { AuthzModule } from './authz/authz.module';
 import { FileModule } from './file/file.module';
 import { PlatformModule } from './platform/platform.module';
 import { PostModule } from './post/post.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { PostModule } from './post/post.module';
     PlatformModule,
     PostModule,
     FileModule,
+    CommonModule
   ],
   providers: [],
 })

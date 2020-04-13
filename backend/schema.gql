@@ -18,17 +18,15 @@ input AddPlatformConnectionInput {
 }
 
 type AggregatedStatus {
-  timestamp: DateTime!
+  timestamp: Date!
   positiveReactionsCount: Int!
   negativeReactionsCount: Int!
   commentsCount: Int!
   sharesCount: Int!
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
+"""Date custom scalar type"""
+scalar Date
 
 type File {
   id: ID!
@@ -65,8 +63,8 @@ type Post {
   id: ID!
   text: String!
   userId: ID!
-  createdAt: DateTime
-  updatedAt: DateTime!
+  createdAt: Date
+  updatedAt: Date!
   media: [PostMedia!]!
   platforms: [PostPlatform!]!
   status: [AggregatedStatus!]!

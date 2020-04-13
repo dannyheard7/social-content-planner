@@ -2,7 +2,6 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType('AggregatedStatus')
 export class AggregatedStatus {
-
     constructor(timestamp: Date, positiveReactionsCount: number,
         negativeReactionsCount: number, commentsCount: number,
         sharesCount: number) {
@@ -13,7 +12,7 @@ export class AggregatedStatus {
         this.sharesCount = sharesCount;
     }
 
-    @Field(type => Date)
+    @Field()
     timestamp: Date;
 
     @Field(type => Int)
