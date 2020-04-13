@@ -187,7 +187,7 @@ const CreatePost: React.FC = () => {
                               <PostImages files={files} onFilesRearranged={onFilesRearranged} removeImage={removeImage} fileUploadInProgress={fileUploadInProgress} />
                               <Grid item>
                                    <FormGroup>
-                                        <TextField multiline={true} aria-label="Text" placeholder="Text" name="text" inputRef={register({ required: true })} error={errors.text !== undefined} />
+                                        <TextField multiline={true} rows={3} aria-label="Text" placeholder="Text" name="text" inputRef={register({ required: true })} error={errors.text !== undefined} />
                                         <ErrorMessage name="text" message="Post text is required" errors={errors} />
                                    </FormGroup>
                               </Grid>
@@ -212,7 +212,7 @@ const CreatePost: React.FC = () => {
                                    )
                               })}
                               <Grid item>
-                                   <Button type="submit" variant="contained">Create Post</Button>
+                                   <Button type="submit" variant="contained" color="primary">Create Post</Button>
                               </Grid>
                          </Grid>
                     </form>

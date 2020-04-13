@@ -34,6 +34,7 @@ type File {
 }
 
 type Mutation {
+  sendFeedback(email: String, feedback: SendFeebackInput!): Boolean!
   addPlatformConnection(platformConnection: AddPlatformConnectionInput!): PlatformConnection!
   addOAuthPlatformConnection(platformConnection: AddOAuthPlatformConnectionInput!): PlatformConnection!
   createPost(post: PostInput!): Post!
@@ -71,6 +72,18 @@ type Post {
   latestStatus: AggregatedStatus
 }
 
+type PostComment {
+  id: ID!
+  postId: ID!
+  postPlatformId: ID!
+  timestamp: Date!
+  message: String!
+  replyingToId: ID
+  postPlatform: PostPlatform!
+  post: Post!
+  replyingTo: PostComment
+}
+
 input PostInput {
   text: String!
   images: [ID!]!
@@ -99,4 +112,8 @@ type Query {
   getPlatformOAuthRequestToken(callbackUrl: String!, platform: Platform!): OAuthTokenResult!
   post(id: ID!): Post!
   posts: [Post!]!
+}
+
+input SendFeebackInput {
+  message: String!
 }

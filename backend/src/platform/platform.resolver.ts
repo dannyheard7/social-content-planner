@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { GqlAuthGuard } from '../authz/auth.guard';
+import { GqlAuthGuardJWT } from '../authz/auth.guard';
 import { CurrentUser } from '../authz/current.user.decorator';
 import { AddOAuthPlatformConnectionInput } from './AddOAuthPlatformConnectionInput';
 import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
@@ -15,13 +15,13 @@ export class PlatformResolver {
         private readonly platformConnectionService: PlatformConnectionService
     ) { }
 
-    @UseGuards(GqlAuthGuard)
+    @UseGuards(GqlAuthGuardJWT)
     @Query(() => [PlatformConnection])
     async platformConnections(@CurrentUser() user: User) {
         return await this.platformConnectionService.getAllForUser(user);
     }
 
-    @UseGuards(GqlAuthGuard)
+    @UseGuards(GqlAuthGuardJWT)
     @Query(of => OAuthTokenResult)
     async getPlatformOAuthRequestToken(
         @Args({
@@ -38,7 +38,7 @@ export class PlatformResolver {
         return await this.platformConnectionService.getOAuthRequestToken(platform, callbackUrl);
     }
 
-    @UseGuards(GqlAuthGuard)
+    @UseGuards(GqlAuthGuardJWT)
     @Mutation(of => PlatformConnection)
     async addPlatformConnection(
         @Args({
@@ -51,7 +51,7 @@ export class PlatformResolver {
         return await this.platformConnectionService.create(user, platformConnectionInput.platform, platformConnectionInput);
     }
 
-    @UseGuards(GqlAuthGuard)
+    @UseGuards(GqlAuthGuardJWT)
     @Mutation(of => PlatformConnection)
     async addOAuthPlatformConnection(
         @Args({

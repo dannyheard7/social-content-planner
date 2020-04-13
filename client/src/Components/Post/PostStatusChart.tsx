@@ -1,8 +1,7 @@
 import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, ScatterChart, Scatter, ComposedChart } from 'recharts';
+import { CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { PostStatus } from '../../Common/Interfaces/PostStatus';
-
 
 const PostStatusChart: React.FC<{ statuses: PostStatus[] }> = ({ statuses }) => {
     const dateFormatter = new Intl.DateTimeFormat('default', {

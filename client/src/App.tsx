@@ -19,33 +19,34 @@ import PlatformConnections from "./Components/PlatformConnection/PlatformConnect
 import Post from "./Components/Post/Post";
 import PostList from "./Components/PostList/PostList";
 import config from './config';
+import Feedback from "./Components/Feedback/Feedback";
 
 const useStyles = makeStyles(styles);
 
 const Routes: React.FC = () => {
   const { isAuthenticated, token, loading } = useContext(AuthenticationContext);
 
-  if (loading) return <Loading />
+  if (loading) return <Loading />;
+
+  const httpLink = createHttpLink({
+    uri: config.GRAPHQL_HOST
+  });
+
+  const authLink = setContext((_, { headers }) => {
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : ""
+      }
+    };
+  });
+
+  const client = new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache()
+  });
 
   if (isAuthenticated) {
-    const httpLink = createHttpLink({
-      uri: config.GRAPHQL_HOST
-    });
-
-    const authLink = setContext((_, { headers }) => {
-      return {
-        headers: {
-          ...headers,
-          authorization: token ? `Bearer ${token}` : ""
-        }
-      };
-    });
-
-    const client = new ApolloClient({
-      link: authLink.concat(httpLink),
-      cache: new InMemoryCache()
-    });
-
     return (
       <ApolloProvider client={client}>
         <Switch>
@@ -64,6 +65,9 @@ const Routes: React.FC = () => {
           <Route exact path="/post/new">
             <CreatePost />
           </Route>
+          <Route exact path="/feedback">
+            <Feedback />
+          </Route>
           <Route>
             <Redirect to="/posts" />
           </Route>
@@ -72,17 +76,22 @@ const Routes: React.FC = () => {
     );
   } else {
     return (
-      <Switch>
-        <Route exact path="/login">
-          <Login />
-        </Route>
-        <Route exact path="/login-callback">
-          <LoginCallback />
-        </Route>
-        <Route>
-          <Redirect to="/login" />
-        </Route>
-      </Switch>
+      <ApolloProvider client={client}>
+        <Switch>
+          <Route exact path="/login">
+            <Login />
+          </Route>
+          <Route exact path="/login-callback">
+            <LoginCallback />
+          </Route>
+          <Route exact path="/feedback">
+            <Feedback />
+          </Route>
+          <Route>
+            <Redirect to="/login" />
+          </Route>
+        </Switch>
+      </ApolloProvider>
     );
   }
 };

@@ -1,6 +1,6 @@
 import { UseGuards, UnauthorizedException } from '@nestjs/common';
 import { Args, ID, Mutation, Query, Resolver, ResolveField, Parent } from '@nestjs/graphql';
-import { GqlAuthGuard } from '../authz/auth.guard';
+import { GqlAuthGuardJWT } from '../authz/auth.guard';
 import { CurrentUser } from '../authz/current.user.decorator';
 import { Post } from './Post.entity';
 import { PostService } from './post.service';
@@ -18,7 +18,7 @@ export class PostResolver {
         private readonly postStatusService: PostStatusService
     ) { }
 
-    @UseGuards(GqlAuthGuard)
+    @UseGuards(GqlAuthGuardJWT)
     @Query(() => Post)
     async post(
         @Args({ name: 'id', type: () => ID }) postId: string,
@@ -27,7 +27,7 @@ export class PostResolver {
         return await this.postService.findByIdAndUser(postId, user);
     }
 
-    @UseGuards(GqlAuthGuard)
+    @UseGuards(GqlAuthGuardJWT)
     @Query(() => [Post])
     async posts(
         @CurrentUser() user: User,
@@ -36,7 +36,7 @@ export class PostResolver {
         return await this.postService.getAllForUser(user);
     }
 
-    @UseGuards(GqlAuthGuard)
+    @UseGuards(GqlAuthGuardJWT)
     @Mutation(() => Post)
     async createPost(
         @Args({ name: 'post', type: () => PostInput }) postInput: PostInput,

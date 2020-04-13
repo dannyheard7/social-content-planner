@@ -26,38 +26,36 @@ const AppMenu: React.FC = () => {
         })}
       >
         <Toolbar>
-          {isAuthenticated &&
-            <IconButton
-              edge="start"
-              className={classNames(classes.menuButton, drawerOpen && classes.hide)}
-              color="inherit"
-              aria-label="menu"
-              onClick={() => setDrawerOpen(true)}
-            >
-              <MenuIcon />
-            </IconButton>
-          }
+          <IconButton
+            edge="start"
+            className={classNames(classes.menuButton, drawerOpen && classes.hide)}
+            color="inherit"
+            aria-label="menu"
+            onClick={() => setDrawerOpen(true)}
+          >
+            <MenuIcon />
+          </IconButton>
           <Typography variant="h6" className={classes.title}>
             Elevait
           </Typography>
-          {isAuthenticated ? (
-            <Fragment>
-              <Drawer
-                className={classes.drawer}
-                open={drawerOpen}
-                onClose={() => { setDrawerOpen(false) }}
-                variant="persistent"
-                classes={{
-                  paper: classes.drawerPaper,
-                }}
-              >
-                <div className={classes.drawerHeader}>
-                  <IconButton onClick={() => { setDrawerOpen(false) }}>
-                    {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                  </IconButton>
-                </div>
-                <Divider />
-                <List>
+          <Drawer
+            className={classes.drawer}
+            open={drawerOpen}
+            onClose={() => { setDrawerOpen(false) }}
+            variant="persistent"
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+          >
+            <div className={classes.drawerHeader}>
+              <IconButton onClick={() => { setDrawerOpen(false) }}>
+                {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+              </IconButton>
+            </div>
+            <Divider />
+            <List>
+              {isAuthenticated && (
+                <Fragment>
                   <Link to="/posts" component={RouterLink} onClick={() => { setDrawerOpen(false) }}>
                     <ListItem button>
                       <ListItemText>Posts</ListItemText>
@@ -73,8 +71,17 @@ const AppMenu: React.FC = () => {
                       <ListItemText>Platforms</ListItemText>
                     </ListItem>
                   </Link>
-                </List>
-              </Drawer>
+                </Fragment>
+              )}
+              <Link to="/feedback" component={RouterLink} onClick={() => { setDrawerOpen(false) }}>
+                <ListItem button>
+                  <ListItemText>Feedback</ListItemText>
+                </ListItem>
+              </Link>
+            </List>
+          </Drawer>
+          {isAuthenticated ? (
+            <Fragment>
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
