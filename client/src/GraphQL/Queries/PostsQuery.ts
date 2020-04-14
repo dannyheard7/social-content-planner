@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
+import Platform from '../../Common/Enums/Platform';
 import { PostStatus } from '../../Common/Interfaces/PostStatus';
 
 export const POSTS_QUERY = gql`
@@ -9,10 +9,8 @@ export const POSTS_QUERY = gql`
       text
       createdAt
       platforms {
-        platformConnection {
-          id
-          platform
-        }
+        id
+        platform
       }
       latestStatus {
         positiveReactionsCount
@@ -30,7 +28,8 @@ export interface PostsQueryData {
     text: string;
     createdAt: string;
     platforms: {
-      platformConnection: PlatformConnection
+      id: string,
+      platform: Platform
     }[],
     latestStatus: PostStatus
   }[]

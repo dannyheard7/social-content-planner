@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const SEND_FEEDBACK_MUTATION = gql`
-  mutation sendFeedback($email: String $feedback: SendFeebackInput!) {
+  mutation sendFeedback($email: String, $feedback: SendFeebackInput!) {
     sendFeedback(email: $email, feedback: $feedback)
   }
 `;

@@ -45,10 +45,10 @@ const Post: React.FC = () => {
       </Grid>
       <Grid container item>
         {post.platforms.map(platform => (
-          <Grid item md={1} sm={1} xs={1} key={platform.platformConnection.id}>
-            <Link href={platform.platformEntityUrl} target="_blank" rel="noreferrer" title={`View post on ${platform.platformConnection.platform}`}>
+          <Grid item md={1} sm={1} xs={1} key={platform.id}>
+            <Link href={platform.platformEntityUrl} target="_blank" rel="noreferrer" title={`View post on ${platform.platform}`}>
               <IconButton>
-                <PlatformIcon platform={platform.platformConnection.platform} />
+                <PlatformIcon platform={platform.platform} />
               </IconButton>
             </Link>
           </Grid>

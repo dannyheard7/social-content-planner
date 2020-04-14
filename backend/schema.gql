@@ -37,6 +37,7 @@ type Mutation {
   sendFeedback(email: String, feedback: SendFeebackInput!): Boolean!
   addPlatformConnection(platformConnection: AddPlatformConnectionInput!): PlatformConnection!
   addOAuthPlatformConnection(platformConnection: AddOAuthPlatformConnectionInput!): PlatformConnection!
+  removePlatformConnection(id: ID!): ID!
   createPost(post: PostInput!): Post!
 }
 
@@ -101,9 +102,10 @@ type PostPlatform {
   id: ID!
   postId: ID!
   platformConnectionId: ID!
+  platform: Platform!
   platformEntityId: String
   platformEntityUrl: String
-  platformConnection: PlatformConnection!
+  platformConnection: PlatformConnection
   post: Post!
 }
 

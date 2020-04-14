@@ -149,7 +149,7 @@ const CreatePost: React.FC = () => {
           return (
                <Grid container direction="column" spacing={2}>
                     <Grid item md={12}>
-                         <Typography variant="h2" component="h1">Create Post</Typography>
+                         <Typography component="h1" variant="h3">Create Post</Typography>
                     </Grid>
                     <Grid item md={12}>
                          <Typography>
@@ -163,7 +163,7 @@ const CreatePost: React.FC = () => {
           return (
                <Grid container direction="column" spacing={2}>
                     <Grid item md={12}>
-                         <Typography variant="h2" component="h1">Create Post</Typography>
+                         <Typography component="h1" variant="h3">Create Post</Typography>
                     </Grid>
                     <form onSubmit={handleSubmit(onSubmit)}>
                          <Grid container direction="column" spacing={1}>

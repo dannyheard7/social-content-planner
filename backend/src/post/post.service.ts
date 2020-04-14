@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import * as uuid from 'uuid/v4';
+import { PlatformConnectionService } from '../platform/platform-connection.service';
 import { Post } from './Post.entity';
-import { PostMediaItem } from './PostMediaItem.entity';
 import { PostInput } from './PostInput';
+import { PostMediaItem } from './PostMediaItem.entity';
 import { PostPlatform } from './PostPlatform.entity';
-import { FileEntity } from '../file/file.entity';
 
 @Injectable()
 export class PostService {
@@ -16,6 +16,7 @@ export class PostService {
         @InjectRepository(PostPlatform)
         private readonly postPlatformRepository: Repository<PostPlatform>,
         private readonly connection: Connection,
+        private readonly platformConnectionService: PlatformConnectionService
     ) { }
 
     findById = (id: string) => this.postRepository.findOne({ id });
@@ -43,10 +44,13 @@ export class PostService {
             return postImage;
         });
 
-        const platforms = postInput.platformConnections.map(pf => {
+        const platformConnections = await this.platformConnectionService.getByIds(postInput.platformConnections);
+
+        const platforms = platformConnections.map(pf => {
             const postPlatform = new PostPlatform();
-            postPlatform.platformConnectionId = pf;
+            postPlatform.platformConnectionId = pf.id;
             postPlatform.postId = post.id;
+            postPlatform.platform = pf.platform
             return postPlatform;
         });
 

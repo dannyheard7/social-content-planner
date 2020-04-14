@@ -2,6 +2,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn, Column } from 'typeorm';
 import { Post } from './Post.entity';
 import { PlatformConnection } from '../platform/PlatformConnection.entity';
+import Platform from '../platform/Platform';
 
 @Entity('post_platform_connection')
 @ObjectType('PostPlatform')
@@ -13,6 +14,9 @@ export class PostPlatform {
   @Column({ nullable: false, name: "post_id" })
   @Field(type => ID)
   postId: string;
+
+  @Column({ type: "enum", enum: Platform })
+  platform: Platform;
 
   @Column({ nullable: false, name: "platform_connection_id" })
   @Field(type => ID)
@@ -29,7 +33,7 @@ export class PostPlatform {
     platformConnection => platformConnection.id,
   )
   @JoinColumn({ name: 'platform_connection_id' })
-  platformConnection: Promise<PlatformConnection>;
+  platformConnection?: Promise<PlatformConnection>;
 
   @ManyToOne(
     type => Post,

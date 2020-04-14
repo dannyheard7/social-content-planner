@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { GqlAuthGuardJWT } from '../authz/auth.guard';
+import { Args, Mutation, Query, Resolver, ID } from '@nestjs/graphql';
+import { GqlAuthGuard } from '../authz/auth.guard';
 import { CurrentUser } from '../authz/current.user.decorator';
 import { AddOAuthPlatformConnectionInput } from './AddOAuthPlatformConnectionInput';
 import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
@@ -15,13 +15,13 @@ export class PlatformResolver {
         private readonly platformConnectionService: PlatformConnectionService
     ) { }
 
-    @UseGuards(GqlAuthGuardJWT)
+    @UseGuards(GqlAuthGuard)
     @Query(() => [PlatformConnection])
     async platformConnections(@CurrentUser() user: User) {
         return await this.platformConnectionService.getAllForUser(user);
     }
 
-    @UseGuards(GqlAuthGuardJWT)
+    @UseGuards(GqlAuthGuard)
     @Query(of => OAuthTokenResult)
     async getPlatformOAuthRequestToken(
         @Args({
@@ -38,7 +38,7 @@ export class PlatformResolver {
         return await this.platformConnectionService.getOAuthRequestToken(platform, callbackUrl);
     }
 
-    @UseGuards(GqlAuthGuardJWT)
+    @UseGuards(GqlAuthGuard)
     @Mutation(of => PlatformConnection)
     async addPlatformConnection(
         @Args({
@@ -51,7 +51,7 @@ export class PlatformResolver {
         return await this.platformConnectionService.create(user, platformConnectionInput.platform, platformConnectionInput);
     }
 
-    @UseGuards(GqlAuthGuardJWT)
+    @UseGuards(GqlAuthGuard)
     @Mutation(of => PlatformConnection)
     async addOAuthPlatformConnection(
         @Args({
@@ -64,5 +64,19 @@ export class PlatformResolver {
         const oauthAccessToken = await this.platformConnectionService.getOAuthAccessToken(
             input.platform, input.oauthToken, input.oauthTokenSecret, input.oauthVerifier);
         return await this.platformConnectionService.create(user, input.platform, undefined, oauthAccessToken);
+    }
+
+    @UseGuards(GqlAuthGuard)
+    @Mutation(of => ID)
+    async removePlatformConnection(
+        @Args({
+            name: 'id',
+            type: () => ID,
+        })
+        id: string,
+        @CurrentUser() user: User,
+    ): Promise<string> {
+        const pc = await this.platformConnectionService.findByIdAndUser(id, user);
+        return await this.platformConnectionService.delete(pc);
     }
 }

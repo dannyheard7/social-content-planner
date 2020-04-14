@@ -1,8 +1,8 @@
 import { useMutation } from '@apollo/client';
-import { Dialog, DialogContent, DialogTitle, Grid, List, ListItem, ListItemText } from "@material-ui/core";
+import { Dialog, DialogContent, DialogTitle, Grid, List, ListItem, ListItemText, Button } from "@material-ui/core";
 import { Facebook as FacebookIcon } from "@material-ui/icons";
 import React, { Fragment, useContext, useState, useEffect } from "react";
-import FacebookLogin, { ReactFacebookLoginInfo } from "react-facebook-login";
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import Platform from "../../Common/Enums/Platform";
 import PlatformConnection from "../../Common/Interfaces/PlatformConnection";
 import { AddPlatformConnectionMutationData, AddPlatformConnectionMutationVars, ADD_PLATFORM_CONNECTION_MUTATION } from "../../GraphQL/Mutations/AddPlatformConnection";
@@ -16,7 +16,7 @@ interface Props {
 const FacebookPageConnection: React.FC<Props> = ({ existingConnections }) => {
     const { facebookAppId } = useContext(AppContext);
     const [accounts, setAccounts] = useState([]);
-    const [userInfo, setUserInfo] = useState<ReactFacebookLoginInfo | null>(null);
+    const [userInfo, setUserInfo] = useState<any | null>(null);
     const [existingConnectionIds] = useState(existingConnections.map(pc => pc.entityId));
     const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -42,7 +42,7 @@ const FacebookPageConnection: React.FC<Props> = ({ existingConnections }) => {
         if (data) setDialogOpen(false);
     }, [data])
 
-    const onFacebookLogin = (userInfo: ReactFacebookLoginInfo) => {
+    const onFacebookLogin = (userInfo: any) => {
         setUserInfo(userInfo);
         setAccounts((userInfo as any).accounts.data.filter((page: any) => !existingConnectionIds.includes(page.id)));
         setDialogOpen(true)
@@ -72,8 +72,12 @@ const FacebookPageConnection: React.FC<Props> = ({ existingConnections }) => {
                         fields="accounts"
                         scope="manage_pages,publish_pages,read_insights"
                         callback={onFacebookLogin}
-                        textButton={existingConnections.length > 0 ? "Link Another Page" : "Link Page"}
-                        icon={<FacebookIcon style={{ margin: 0, marginRight: '0.5rem', padding: 0 }} />}
+                        render={(renderProps: any) => (
+                            <Button variant="contained" onClick={renderProps.onClick} style={{ backgroundColor: "#3b5998", color: "#fff" }}>
+                                <FacebookIcon style={{ marginRight: '0.5rem' }} />
+                                Link Facebook Page
+                            </Button>
+                        )}
                     />
                 </Grid>
             </Grid>

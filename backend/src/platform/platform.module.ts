@@ -16,7 +16,8 @@ import { TwitterService } from './twitter.service';
   ],
   exports: [
     FacebookService,
-    TwitterService
+    TwitterService,
+    PlatformConnectionService
   ],
 })
 export class PlatformModule { }

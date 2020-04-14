@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AddPlatformConnectionInput } from './AddPlatformConnectionInput';
 import { FacebookService } from './facebook.service';
+import { OAuthTokenResult } from './OAuthTokenResult.entity';
 import Platform from './Platform';
 import { PlatformConnection } from './PlatformConnection.entity';
-import { OAuthTokenResult } from './OAuthTokenResult.entity';
 import { TwitterService } from './twitter.service';
 
 @Injectable()
@@ -18,6 +18,9 @@ export class PlatformConnectionService {
         private readonly facebookService: FacebookService,
         private readonly twitterService: TwitterService
     ) { }
+
+    getByIds = (ids: string[]) => this.platformConnectionRepository.createQueryBuilder().andWhereInIds(ids).getMany();
+    findByIdAndUser = (id: string, user: User) => this.platformConnectionRepository.findOne({ id, userId: user.sub });
 
     async getAllForUser(user: User): Promise<PlatformConnection[]> {
         return await this.platformConnectionRepository.find({
@@ -70,5 +73,10 @@ export class PlatformConnectionService {
         })) throw new Error("This platform connection already exists");
 
         return await this.platformConnectionRepository.save(platformConnection);
+    }
+
+    async delete(platformConnection: PlatformConnection): Promise<string> {
+        await this.platformConnectionRepository.delete({ id: platformConnection.id });
+        return platformConnection.id;
     }
 }

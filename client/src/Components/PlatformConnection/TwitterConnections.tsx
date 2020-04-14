@@ -74,9 +74,9 @@ const TwitterConnection: React.FC = () => {
         <Fragment>
             <Grid container direction="column" spacing={2}>
                 <Grid item>
-                    <Button variant="contained" color="primary" onClick={(e) => onTwitterAuthenticate()}>
+                    <Button variant="contained" onClick={(e) => onTwitterAuthenticate()} style={{ backgroundColor: "#1DA1F2", color: "#fff" }}>
                         <TwitterIcon style={{ marginRight: '0.5rem' }} />
-                        Link Twitter
+                        Link Twitter Account
                     </Button>
                 </Grid>
             </Grid>

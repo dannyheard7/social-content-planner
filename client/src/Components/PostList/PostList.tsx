@@ -48,8 +48,8 @@ const PostList: React.FC = () => {
                                                             </Typography>
                                                         </Grid>
                                                         {post.platforms.map(platform => (
-                                                            <Grid item>
-                                                                <PlatformIcon platform={platform.platformConnection.platform} />
+                                                            <Grid item key={platform.id}>
+                                                                <PlatformIcon platform={platform.platform} />
                                                             </Grid>
                                                         ))}
                                                         {post.latestStatus &&
