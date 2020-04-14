@@ -11,7 +11,8 @@ const settings = {
   GRAPHQL_HOST: window.env.GRAPHQL_HOST,
   FILES_ENDPOINT: window.env.FILES_ENDPOINT,
   FACEBOOK_APP_ID: window.env.FACEBOOK_APP_ID,
-  GA_TRACKING_ID: window.env.GA_TRACKING_ID
+  GA_TRACKING_ID: window.env.GA_TRACKING_ID,
+  RECAPTCHA_SITE_KEY: window.env.RECAPTCHA_SITE_KEY
 };
 
 export default settings;

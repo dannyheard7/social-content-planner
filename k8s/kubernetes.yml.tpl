@@ -9,6 +9,7 @@ data:
     window.env.FILES_ENDPOINT="https://api.elevait.co.uk/files"
     window.env.FACEBOOK_APP_ID="2002136040088512"
     window.env.GA_TRACKING_ID="UA-162565362-1"
+    window.env.RECAPTCHA_SITE_KEY='6LeIVukUAAAAADjozPp-25RKxbeLesxrGiFV6Hou'
 kind: ConfigMap
 metadata:
   name: react-app-config
@@ -20,6 +21,10 @@ data:
   TWITTER_CONSUMER_KEY: "0FUfd55TBCepUErv001kUHA89"
   REDIS_HOST: localhost
   REDIS_PORT: "6379"
+  SMTP_SERVER: smtp.zoho.eu
+  SMTP_PORT: "465"
+  EMAIL_SENDER: noreply@elevait.co.uk
+  EMAIL_SENDER_NAME: "No Reply"
 kind: ConfigMap
 metadata:
   name: api-config
@@ -132,6 +137,31 @@ spec:
                 configMapKeyRef:
                   name: api-config
                   key: REDIS_PORT
+            - name: SMTP_SERVER
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: SMTP_SERVER
+            - name: SMTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: SMTP_PORT
+            - name: EMAIL_SENDER
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: EMAIL_SENDER
+            - name: EMAIL_SENDER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app
+                  key: email-sender-password
+            - name: EMAIL_SENDER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: EMAIL_SENDER_NAME
         - name: redis
           image: docker.io/redis:alpine
           volumeMounts:
