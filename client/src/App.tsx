@@ -20,6 +20,7 @@ import Post from "./Components/Post/Post";
 import PostList from "./Components/PostList/PostList";
 import config from './config';
 import Feedback from "./Components/Feedback/Feedback";
+import PrivacyPolicy from "./Components/PrivacyPolicy/PrivacyPolicy";
 
 const useStyles = makeStyles(styles);
 
@@ -68,6 +69,9 @@ const Routes: React.FC = () => {
           <Route exact path="/feedback">
             <Feedback />
           </Route>
+          <Route exact path="/privacy-policy">
+            <PrivacyPolicy />
+          </Route>
           <Route>
             <Redirect to="/posts" />
           </Route>
@@ -86,6 +90,9 @@ const Routes: React.FC = () => {
           </Route>
           <Route exact path="/feedback">
             <Feedback />
+          </Route>
+          <Route exact path="/privacy-policy">
+            <PrivacyPolicy />
           </Route>
           <Route>
             <Redirect to="/login" />

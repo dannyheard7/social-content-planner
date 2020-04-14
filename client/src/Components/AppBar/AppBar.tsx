@@ -78,6 +78,11 @@ const AppMenu: React.FC = () => {
                   <ListItemText>Feedback</ListItemText>
                 </ListItem>
               </Link>
+              <Link to="/privacy-policy" component={RouterLink} onClick={() => { setDrawerOpen(false) }}>
+                <ListItem button>
+                  <ListItemText>Privacy Policy</ListItemText>
+                </ListItem>
+              </Link>
             </List>
           </Drawer>
           {isAuthenticated ? (
@@ -111,6 +116,7 @@ const AppMenu: React.FC = () => {
               <ListItemText onClick={loginWithRedirect}>Login</ListItemText>
             </div>
           }
+
         </Toolbar>
       </AppBar>
     </div>
