@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client';
-import { Button, Checkbox, Fab, FormControlLabel, FormGroup, Grid, Link, makeStyles, TextField, Typography, Tooltip } from '@material-ui/core';
-import { Clear as RemoveIcon } from '@material-ui/icons';
+import { Button, Card, CardActions, CardContent, Fab, FormGroup, Grid, Icon, Link, makeStyles, TextField, Tooltip, Typography, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText } from '@material-ui/core';
+import { Add as AddIcon, Clear as RemoveIcon } from '@material-ui/icons';
 import classNames from 'classnames';
 import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
@@ -8,12 +8,14 @@ import { useDropzone } from 'react-dropzone';
 import { ErrorMessage, useForm } from 'react-hook-form';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { useUploadFile } from '../../Common/FileUploadHook';
+import PlatformConnection from '../../Common/Interfaces/PlatformConnection';
 import { UploadedFile } from '../../Common/Interfaces/UploadedFile';
 import { CreatePostMutationData, CreatePostMutationVars, CREATE_POST_MUTATION } from '../../GraphQL/Mutations/CreatePost';
 import { PlatformConnectionQueryData, PLATFORM_CONNECTIONS_QUERY } from '../../GraphQL/Queries/PlatformConnections';
 import { PostsQueryData, POSTS_QUERY } from '../../GraphQL/Queries/PostsQuery';
 import { AppContext } from '../AppContext/AppContextProvider';
 import Loading from '../Loading/Loading';
+import PlatformIcon from '../Platform/PlatformIcon';
 import styles from './CreatePost.styles';
 
 const useStyles = makeStyles(styles);
@@ -98,18 +100,93 @@ const PostImages: React.FC<{
      )
 }
 
+const PostPlatforms: React.FC<{
+     possibleConnections: PlatformConnection[],
+     selectedConnections?: PlatformConnection[],
+     onChangeConnections: (connections: PlatformConnection[]) => void
+}> = ({ possibleConnections, selectedConnections, onChangeConnections }) => {
+     const unselectedConnections = possibleConnections.filter(pc => !selectedConnections?.some(sc => sc.id === pc.id) || true);
+     const [dialogOpen, setDialogOpen] = useState(false);
+
+     return (
+          <Grid container direction="column" spacing={1}>
+               <Grid item>
+                    <Typography variant="h4" component="h2">Platforms</Typography>
+               </Grid>
+               <Grid container item spacing={1}>
+                    {selectedConnections?.map(pc => {
+                         return (
+                              <Grid item md={3}>
+                                   <Card >
+                                        <CardContent>
+                                             <Icon>
+                                                  <PlatformIcon platform={pc.platform} />
+                                             </Icon>
+                                             <Typography >
+                                                  {pc.entityName}
+                                             </Typography>
+                                        </CardContent>
+                                        <CardActions>
+                                             <Button size="small" onClick={() => onChangeConnections(selectedConnections!.filter(sc => sc.id !== pc.id))}>
+                                                  Remove
+                                             </Button>
+                                        </CardActions>
+                                   </Card>
+                              </Grid>
+                         )
+                    })}
+                    {unselectedConnections.length > 0 &&
+                         <Grid item md={3} container alignContent="center">
+                              <Fab onClick={() => setDialogOpen(true)} size="small">
+                                   <AddIcon />
+                              </Fab>
+                         </Grid>
+                    }
+               </Grid>
+               {dialogOpen &&
+                    <Dialog aria-labelledby="simple-dialog-title" open={dialogOpen} onClose={() => setDialogOpen(false)}>
+                         <DialogTitle id="simple-dialog-title">Choose platform</DialogTitle>
+                         <DialogContent>
+                              <List>
+                                   {unselectedConnections.map((platform) => (
+                                        <ListItem button onClick={() => {
+                                             onChangeConnections(selectedConnections ? [...selectedConnections, platform] : [platform]);
+                                             setDialogOpen(false);
+                                        }} key={platform.id}>
+                                             <ListItemText
+                                                  primary={platform.entityName}
+                                                  secondary={platform.platform.charAt(0).toUpperCase() + platform.platform.slice(1).toLowerCase()}
+                                             />
+                                        </ListItem>
+                                   ))}
+                              </List>
+                         </DialogContent>
+                    </Dialog>
+               }
+          </Grid>
+     )
+}
+
 const CreatePost: React.FC = () => {
      const classes = useStyles();
      const { push } = useHistory();
-     const { register, handleSubmit, errors } = useForm();
+     const { register, handleSubmit, errors, setValue, watch } = useForm();
+
+     useEffect(() => {
+          register({ name: 'platforms', type: 'custom' }, { required: true })
+     }, [register]);
+
      const { uploadFile, files, onFilesRearranged, removeImage, fileUploadInProgress } = useUploadFile();
+
+     const onDrop = useCallback(async (acceptedFiles: File[]) => await Promise.all(acceptedFiles.map((f) => uploadFile(f))), [uploadFile]);
+     const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({ onDrop, accept: 'image/*' });
+
      const { data, loading } = useQuery<PlatformConnectionQueryData>(PLATFORM_CONNECTIONS_QUERY);
      const [createPost, { data: mutationData, loading: mutationLoading }] = useMutation<CreatePostMutationData, CreatePostMutationVars>(
           CREATE_POST_MUTATION,
           {
                update(cache, { data: { createPost } }) {
                     const data = cache.readQuery<PostsQueryData>({ query: POSTS_QUERY });
-
                     cache.writeQuery<PostsQueryData>({
                          query: POSTS_QUERY,
                          data: {
@@ -121,13 +198,7 @@ const CreatePost: React.FC = () => {
 
      useEffect(() => {
           if (mutationData && mutationData.createPost) push(`/posts/${mutationData.createPost.id}`);
-     }, [mutationData, push])
-
-     const onDrop = useCallback(async (acceptedFiles: File[]) => {
-          await Promise.all(acceptedFiles.map((f) => uploadFile(f)));
-     }, [uploadFile]);
-
-     const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({ onDrop, accept: 'image/*' });
+     }, [mutationData, push]);
 
      if (loading || mutationLoading) return <Loading />;
      if (!data) return <p>Error loading platforms</p>;
@@ -139,7 +210,7 @@ const CreatePost: React.FC = () => {
                     post: {
                          text: values.text,
                          images: files.map(f => f.id),
-                         platformConnections: platformConnectionIds.filter(pcId => values[pcId] === true)
+                         platformConnections: (values.platforms as PlatformConnection[]).map(pc => pc.id)
                     }
                }
           })
@@ -158,65 +229,53 @@ const CreatePost: React.FC = () => {
                     </Grid>
                </Grid>
           )
-     }
-     else {
+     } else {
           return (
-               <Grid container direction="column" spacing={2}>
-                    <Grid item md={12}>
-                         <Typography component="h1" variant="h3">Create Post</Typography>
-                    </Grid>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                         <Grid container direction="column" spacing={1}>
-                              <Grid item md={12}>
-                                   <Typography variant="h4" component="h2">Images</Typography>
-                              </Grid>
-                              <Grid item md={12}>
-                                   <div {...getRootProps()} className={classNames(classes.imageDropContainer, {
-                                        [classes.imageDropContinerActive]: isDragActive,
-                                        [classes.imageDropContinerAccept]: isDragAccept,
-                                        [classes.imageDropContinerReject]: isDragReject
-                                   })} >
-                                        <input {...getInputProps()} />
-                                        {isDragActive ? (
-                                             <p>Drop the files here ...</p>
-                                        ) : (
-                                                  <p>Drag 'n' drop some files here, or click to select files</p>
-                                             )}
-                                   </div>
-                              </Grid>
-                              <PostImages files={files} onFilesRearranged={onFilesRearranged} removeImage={removeImage} fileUploadInProgress={fileUploadInProgress} />
-                              <Grid item>
-                                   <FormGroup>
-                                        <TextField multiline={true} rows={3} aria-label="Text" placeholder="Text" name="text" inputRef={register({ required: true })} error={errors.text !== undefined} />
-                                        <ErrorMessage name="text" message="Post text is required" errors={errors} />
-                                   </FormGroup>
-                              </Grid>
-                              <Grid item>
-                                   <Typography variant="h4" component="h2">Platforms</Typography>
-                              </Grid>
-                              {data.platformConnections.map(pc => {
-                                   return (
-                                        <Grid item key={pc.id}>
-                                             <FormGroup>
-                                                  <FormControlLabel
-                                                       control={
-                                                            <Checkbox
-                                                                 inputRef={register()}
-                                                                 name={pc.id}
-                                                            />
-                                                       }
-                                                       label={`${pc.platform} - ${pc.entityName}`}
-                                                  />
-                                             </FormGroup>
-                                        </Grid>
-                                   )
-                              })}
-                              <Grid item>
-                                   <Button type="submit" variant="contained" color="primary">Create Post</Button>
-                              </Grid>
+               <form onSubmit={handleSubmit(onSubmit)}>
+                    <Grid container direction="column" spacing={2}>
+                         <Grid item md={12}>
+                              <Typography component="h1" variant="h3">Create Post</Typography>
                          </Grid>
-                    </form>
-               </Grid >
+
+                         <Grid item md={12}>
+                              <Typography variant="h4" component="h2">Images</Typography>
+                         </Grid>
+                         <Grid item md={12}>
+                              <div {...getRootProps()} className={classNames(classes.imageDropContainer, {
+                                   [classes.imageDropContainerActive]: isDragActive,
+                                   [classes.imageDropContainerAccept]: isDragAccept,
+                                   [classes.imageDropContainerReject]: isDragReject
+                              })} >
+                                   <input {...getInputProps()} />
+                                   {isDragActive ? (
+                                        <p>Drop the files here ...</p>
+                                   ) : (
+                                             <p>Drag 'n' drop some files here, or click to select files</p>
+                                        )}
+                              </div>
+                         </Grid>
+                         <PostImages files={files} onFilesRearranged={onFilesRearranged} removeImage={removeImage} fileUploadInProgress={fileUploadInProgress} />
+                         <Grid item>
+                              <FormGroup>
+                                   <TextField
+                                        multiline={true} rows={3} aria-label="Text" placeholder="Text" name="text"
+                                        inputRef={register({ required: true })} error={errors.text !== undefined} />
+                                   <ErrorMessage name="text" message="Post text is required" errors={errors} />
+                              </FormGroup>
+                         </Grid>
+                         <Grid item>
+                              <PostPlatforms
+                                   possibleConnections={data.platformConnections}
+                                   selectedConnections={watch('platforms') as PlatformConnection[]}
+                                   onChangeConnections={(platforms) => setValue('platforms', platforms)} />
+                              <ErrorMessage name="platforms" message="You must select at least one platform to post to" errors={errors} />
+                         </Grid>
+
+                         <Grid item container justify="flex-end">
+                              <Button type="submit" variant="contained" color="primary">Create Post</Button>
+                         </Grid>
+                    </Grid>
+               </form>
           );
      }
 };

@@ -71,6 +71,7 @@ const AppMenu: React.FC = () => {
                       <ListItemText>Platforms</ListItemText>
                     </ListItem>
                   </Link>
+                  <Divider />
                 </Fragment>
               )}
               <Link to="/feedback" component={RouterLink} onClick={() => { setDrawerOpen(false) }}>
@@ -116,7 +117,6 @@ const AppMenu: React.FC = () => {
               <ListItemText onClick={loginWithRedirect}>Login</ListItemText>
             </div>
           }
-
         </Toolbar>
       </AppBar>
     </div>

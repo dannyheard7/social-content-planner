@@ -11,7 +11,7 @@ const Login: React.FC = () => {
         <Typography variant="h3" component="h1">Welcome to Elevait</Typography>
       </Grid>
       <Grid item xs={12}>
-        <Typography>At Elevait you can manage your social media presence in one location, creating posts quickly and provide easy to understand analytics</Typography>
+        <Typography>At Elevait you can manage your social media presence in one location, creating posts quickly and understanding their impacts with our analytics</Typography>
       </Grid>
       <Grid item xs={12}>
         <Typography>We are currently integrated with Facebook and Twitter, and will continue adding more networks</Typography>

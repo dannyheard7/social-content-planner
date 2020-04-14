@@ -56,7 +56,7 @@ const Feedback: React.FC = () => {
           return (
                <Grid container direction="column" spacing={2}>
                     <Grid item md={12}>
-                         <Typography variant="h2" component="h1">Submit Feedback</Typography>
+                         <Typography variant="h3" component="h1">Submit Feedback</Typography>
                     </Grid>
                     <form onSubmit={handleSubmit(onSubmit)}>
                          <Grid container direction="column" spacing={3}>
@@ -82,8 +82,8 @@ const Feedback: React.FC = () => {
                                    sitekey={recaptchaSiteKey}
                                    onChange={onCaptchaVerify}
                               />
-                              <Grid item>
-                                   <Button type="submit" variant="contained" color="primary">Submit Feedback</Button>
+                              <Grid item container justify="flex-end">
+                                   <Button type="submit" variant="contained" color="primary">Submit</Button>
                               </Grid>
                          </Grid>
                     </form>

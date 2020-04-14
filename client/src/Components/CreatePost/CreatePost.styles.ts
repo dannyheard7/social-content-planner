@@ -15,13 +15,13 @@ export default (theme: Theme) => ({
     outline: 'none',
     transition: 'border .24s ease-in-out',
   },
-  imageDropContinerActive: {
+  imageDropContainerActive: {
     borderColor: '#2196f3',
   },
-  imageDropContinerAccept: {
+  imageDropContainerAccept: {
     borderColor: '#00e676',
   },
-  imageDropContinerReject: {
+  imageDropContainerReject: {
     borderColor: '#ff1744',
   },
   imagePreviewContainer: {

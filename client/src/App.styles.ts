@@ -6,7 +6,7 @@ export default (theme: Theme) => ({
     maxWidth: theme.breakpoints.width('md'),
     margin: '1rem auto',
     [theme.breakpoints.down('md')]: {
-      padding: theme.spacing(1)
+      padding: theme.spacing(3)
     },
   }
 });
