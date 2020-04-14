@@ -8,6 +8,7 @@ import { PostInput } from './PostInput';
 import { PublisherService } from './publisher.service';
 import { PostStatusService } from './status/post-status.service';
 import { AggregatedStatus } from './status/AggregatedStatus';
+import { StatusDifferential } from './status/StatusDifferential';
 
 
 @Resolver(of => Post)
@@ -54,13 +55,16 @@ export class PostResolver {
 
     @ResolveField(of => [AggregatedStatus])
     async status(@Parent() post: Post) {
-        const { id } = post;
-        return await this.postStatusService.getAggregatedStatuses(id);
+        return await this.postStatusService.getAggregatedStatuses(post);
     }
 
     @ResolveField(of => AggregatedStatus, { nullable: true })
     async latestStatus(@Parent() post: Post) {
-        const { id } = post;
-        return await this.postStatusService.getLatestAggregatedStatus(id);
+        return await this.postStatusService.getLatestAggregatedStatus(post);
+    }
+
+    @ResolveField(of => StatusDifferential, { nullable: true })
+    async engagementDifferential(@Parent() post: Post) {
+        return await this.postStatusService.getEngagementDifferential(post);
     }
 }

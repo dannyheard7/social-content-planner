@@ -2,11 +2,12 @@ import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Queue } from 'bull';
-import { Repository, FindManyOptions } from 'typeorm';
+import { Repository, FindManyOptions, LessThan } from 'typeorm';
 import { POST_STATUS_POLLER_QUEUE_NAME } from '../../constants';
 import { Post } from '../Post.entity';
 import { PostPlatformStatus } from './PostPlatformStatus.entity';
 import { AggregatedStatus } from './AggregatedStatus';
+import { StatusDifferential } from './StatusDifferential';
 
 
 @Injectable()
@@ -19,7 +20,7 @@ export class PostStatusService {
 
     find = (options?: FindManyOptions<PostPlatformStatus>) => this.postStatusRepository.find(options);
 
-    getLatestAggregatedStatus = async (postId: string) => {
+    getLatestAggregatedStatus = async (post: Post) => {
         const result = await this.postStatusRepository
             .createQueryBuilder()
             .select("sum(positive_reactions_count)", "positiveReactionsCount")
@@ -29,7 +30,7 @@ export class PostStatusService {
             .addSelect("timestamp")
             .groupBy("timestamp")
             .orderBy("timestamp", "DESC")
-            .where({ postId })
+            .where({ postId: post.id })
             .getRawOne();
 
         if (result)
@@ -38,7 +39,7 @@ export class PostStatusService {
         else return undefined;
     }
 
-    getAggregatedStatuses = async (postId: string) => {
+    getAggregatedStatuses = async (post: Post) => {
         const results = await this.postStatusRepository
             .createQueryBuilder()
             .select("sum(positive_reactions_count)", "positiveReactionsCount")
@@ -48,11 +49,37 @@ export class PostStatusService {
             .addSelect("timestamp")
             .groupBy("timestamp")
             .orderBy("timestamp", "ASC")
-            .where({ postId })
+            .where({ postId: post.id })
             .getRawMany();
 
         return results.map((result) => new AggregatedStatus(result.timestamp, result.positiveReactionsCount,
             result.negativeReactionsCount, result.commentsCount, result.sharesCount));
+    }
+
+    getEngagementDifferential = async (post: Post) => {
+        const results = await this.postStatusRepository
+            .createQueryBuilder("post_platform_status")
+            .select("sum(positive_reactions_count)", "positiveReactionsCount")
+            .addSelect("sum(negative_reactions_count)", "negativeReactionsCount")
+            .addSelect("sum(comments_count)", "commentsCount")
+            .addSelect("sum(shares_count)", "sharesCount")
+            .addSelect("timestamp")
+            .groupBy("timestamp")
+            .orderBy("timestamp", "DESC")
+            .innerJoin("post_platform_status.post", "post")
+            .where("post.userId = :userId", { userId: post.userId })
+            .where("post.createdAt <= :createdAt", { createdAt: post.createdAt })
+            .orWhere("post.id = :id", { id: post.id })
+            .limit(2)
+            .getRawMany();
+
+        if (results.length < 2) return null;
+
+        const statuses = results.map((result) =>
+            new AggregatedStatus(result.timestamp, result.positiveReactionsCount,
+                result.negativeReactionsCount, result.commentsCount, result.sharesCount));
+
+        return statuses[0].getDifferential(statuses[1]);
     }
 
     private minutesToMilliseconds = (minutes) => minutes * 60 * 1000;

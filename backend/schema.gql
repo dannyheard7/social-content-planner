@@ -71,6 +71,7 @@ type Post {
   platforms: [PostPlatform!]!
   status: [AggregatedStatus!]!
   latestStatus: AggregatedStatus
+  engagementDifferential: StatusDifferential
 }
 
 type PostComment {
@@ -118,4 +119,12 @@ type Query {
 
 input SendFeebackInput {
   message: String!
+}
+
+type StatusDifferential {
+  overallDiff: Float!
+  positiveReactionsDiff: Float!
+  negativeReactionsDiff: Float!
+  commentsCountDiff: Float!
+  sharesCountDiff: Float!
 }

@@ -23,6 +23,13 @@ export const POST_QUERY = gql`
         commentsCount
         timestamp
       }
+      engagementDifferential {
+        positiveReactionsDiff
+        negativeReactionsDiff
+        commentsCountDiff
+        sharesCountDiff,
+        overallDiff
+      }
     }
   }
 `;
